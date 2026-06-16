@@ -69,12 +69,12 @@
   .slide{
     width:1080px;height:1080px;display:flex;flex-direction:column;
     font-family:'Outfit',sans-serif;position:relative;overflow:hidden;
-    padding:90px;
+    padding:90px 90px 30px;
   }
   .slide.light{ background:linear-gradient(to bottom, var(--nature-50), #ffffff); color:var(--nature-800); }
   .slide.dark{ background:var(--nature-900); color:#ffffff; }
   .slide.orange{ background:var(--orange); color:#ffffff; }
-  .slide.orange .badge-num{ background:var(--nature-900); color:#fff; }
+  .slide.orange .badge-num{ background:#fff; color:#14528F; }
   .slide.orange .badge-label{ color:#ffffff; }
   .slide.orange .hl{ color:var(--nature-900); }
   .slide.orange .slide-footer{ border-top-color:rgba(40,57,74,.2); }
@@ -87,8 +87,9 @@
     color:#fff;font-size:30px;font-weight:800;
   }
   .badge-label{font-size:28px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
-  .slide.light .badge-label{color:var(--orange-600);}
+  .slide.light .badge-label{color:#0E3C6B;}
   .slide.dark .badge-label{color:var(--orange);}
+  .slide.light .badge-num{background:#0E3C6B;}
 
   .slide-headline{
     font-size:80px;font-weight:800;line-height:1.18;
@@ -105,6 +106,7 @@
     pointer-events:none;
   }
   .slide.dark .quote-watermark{opacity:.16;}
+  .slide.light .quote-watermark{color:#0E3C6B;}
 
   .slide-bg-layer{
     position:absolute;inset:0;
@@ -114,9 +116,9 @@
   .slide.dark .slide-bg-layer{opacity:.24;}
   .slide-badge, .slide-footer{position:relative;z-index:1;}
 
-  .slide-footer{display:flex;align-items:center;justify-content:center;margin-top:30px;padding-top:30px;border-top:2px solid rgba(40,57,74,.08);}
+  .slide-footer{display:flex;align-items:center;justify-content:center;margin-top:30px;padding-top:30px;border-top:2px solid rgba(40,57,74,.08);height:150px;flex-shrink:0;}
   .slide.dark .slide-footer{border-top-color:rgba(255,255,255,.15);}
-  .slide-logo{height:84px;width:auto;}
+  .slide-logo{height:100%;width:auto;}
 
   .downloads{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px;}
   button{
@@ -276,9 +278,9 @@
       </div>
 
       <div class="downloads">
-        <button onclick="downloadSlide('slide1','idee-recue.png')">⬇ Slide 1 (idée reçue)</button>
-        <button onclick="downloadSlide('slide2','realite.png')">⬇ Slide 2 (réalité)</button>
-        <button onclick="downloadSlide('slide3','conseil.png')">⬇ Slide 3 (conseil)</button>
+        <button onclick="downloadSlide('slide1','1-idee-recue.png')">⬇ Slide 1 (idée reçue)</button>
+        <button onclick="downloadSlide('slide2','2-realite.png')">⬇ Slide 2 (réalité)</button>
+        <button onclick="downloadSlide('slide3','3-conseil.png')">⬇ Slide 3 (conseil)</button>
       </div>
 
       <div class="caption-panel">
@@ -351,13 +353,27 @@ ${hashtags}`;
   ['myth','truth','advice','hashtags'].forEach(id => $(id).addEventListener('input', buildSlides));
 
   function downloadSlide(slideId, filename){
-    const node = $(slideId);
-    html2canvas(node, { scale: 1, useCORS: true }).then(canvas => {
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    });
+    const original = $(slideId);
+    const clone = original.cloneNode(true);
+    clone.style.position = 'fixed';
+    clone.style.top = '0';
+    clone.style.left = '-99999px';
+    clone.style.transform = 'none';
+    clone.removeAttribute('id');
+    document.body.appendChild(clone);
+
+    html2canvas(clone, { scale: 1, useCORS: true, width: 1080, height: 1080, windowWidth: 1080, windowHeight: 1080 })
+      .then(canvas => {
+        document.body.removeChild(clone);
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      })
+      .catch(err => {
+        document.body.removeChild(clone);
+        alert("Erreur lors de l'export : " + err.message);
+      });
   }
 
   function copyCaption(){
