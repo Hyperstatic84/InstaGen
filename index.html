@@ -93,7 +93,8 @@
 
   .slide-headline{
     font-size:80px;font-weight:800;line-height:1.18;
-    flex:1;white-space:pre-wrap;word-break:break-word;
+    flex:1;min-height:0;overflow:hidden;
+    white-space:pre-wrap;word-break:break-word;
     position:relative;z-index:1;
   }
   .hl{color:var(--orange);}
@@ -173,22 +174,22 @@
 
         <div class="field">
           <label>Idée reçue (slide 1)</label>
-          <textarea id="myth" maxlength="120" placeholder="Ex : Tirer en laisse = vouloir **dominer**.">Tirer en laisse = vouloir **dominer** son maître.</textarea>
+          <textarea id="myth" maxlength="180" placeholder="Ex : Tirer en laisse = vouloir **dominer**.">Tirer en laisse = vouloir **dominer** son maître. Une idée encore très répandue chez les propriétaires.</textarea>
           <div class="count" id="myth-count"></div>
         </div>
 
         <div class="field">
           <label>La réalité (slide 2)</label>
-          <textarea id="truth" maxlength="160" placeholder="Ex : **Faux.** Il n'a jamais appris à marcher en laisse.">**Faux.** Il n'a simplement **jamais appris** à marcher en laisse détendue.</textarea>
+          <textarea id="truth" maxlength="240" placeholder="Ex : **Faux.** Il n'a jamais appris à marcher en laisse.">**Faux.** Il n'a simplement **jamais appris** à marcher en laisse détendue : ce n'est pas une question de hiérarchie, mais d'apprentissage.</textarea>
           <div class="count" id="truth-count"></div>
         </div>
 
         <div class="field">
           <label>Conseil pratique (slide 3)</label>
-          <textarea id="advice" maxlength="120" placeholder="Ex : **Renforcement positif** dès les premiers pas.">**Renforcement positif** dès les premiers pas, dans le calme.</textarea>
+          <textarea id="advice" maxlength="180" placeholder="Ex : **Renforcement positif** dès les premiers pas.">Travaillez le **renforcement positif** dès les premiers pas, dans un environnement calme et sans distraction.</textarea>
           <div class="count" id="advice-count"></div>
         </div>
-        <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Entoure un mot ou groupe de mots de <strong>**double astérisques**</strong> pour le surligner en orange sur le visuel. Reste court : une accroche, pas une phrase complète.</p>
+        <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Entoure un mot ou groupe de mots de <strong>**double astérisques**</strong> pour le surligner en orange sur le visuel. La taille du texte s'adapte automatiquement à la longueur pour rester entre le titre et le pied de page.</p>
 
         <div class="field">
           <label>Hashtags</label>
@@ -319,18 +320,32 @@
     return str.replace(/\*\*/g, '');
   }
 
+  const HEADLINE_MAX_SIZE = 80;
+  const HEADLINE_MIN_SIZE = 38;
+
+  function fitHeadline(el){
+    el.style.fontSize = HEADLINE_MAX_SIZE + 'px';
+    let size = HEADLINE_MAX_SIZE;
+    while (el.scrollHeight > el.clientHeight && size > HEADLINE_MIN_SIZE) {
+      size -= 2;
+      el.style.fontSize = size + 'px';
+    }
+  }
+
   function buildSlides(){
     const myth = $('myth').value.trim() || '—';
     const truth = $('truth').value.trim() || '—';
     const advice = $('advice').value.trim() || '—';
 
-    $('s1-text').innerHTML = renderHighlighted(myth);
-    $('s2-text').innerHTML = renderHighlighted(truth);
-    $('s3-text').innerHTML = renderHighlighted(advice);
+    const s1 = $('s1-text'), s2 = $('s2-text'), s3 = $('s3-text');
+    s1.innerHTML = renderHighlighted(myth);
+    s2.innerHTML = renderHighlighted(truth);
+    s3.innerHTML = renderHighlighted(advice);
+    [s1, s2, s3].forEach(fitHeadline);
 
-    updateCount('myth','myth-count',120);
-    updateCount('truth','truth-count',160);
-    updateCount('advice','advice-count',120);
+    updateCount('myth','myth-count',180);
+    updateCount('truth','truth-count',240);
+    updateCount('advice','advice-count',180);
 
     updateCaption(myth, truth, advice);
   }
@@ -397,16 +412,16 @@ ${hashtags}`;
     const schema = {
       type: 'object',
       properties: {
-        myth: { type: 'string', description: "L'idée reçue, formulée en une phrase très courte et percutante (10 mots maximum). Entoure 1 mot clé de **double astérisques** pour le surligner." },
-        truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue, en une phrase courte et percutante (15 mots maximum). Entoure 1 à 2 mots clés de **double astérisques**." },
-        advice: { type: 'string', description: "Un conseil pratique, actionnable, en une phrase courte (10 mots maximum). Entoure 1 mot clé de **double astérisques**." },
+        myth: { type: 'string', description: "L'idée reçue, en 1 à 2 phrases courtes et percutantes (20 mots maximum). Entoure 1 mot clé de **double astérisques** pour le surligner." },
+        truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue, en 1 à 2 phrases (30 mots maximum), avec une brève explication du pourquoi. Entoure 1 à 2 mots clés de **double astérisques**." },
+        advice: { type: 'string', description: "Un conseil pratique et actionnable, en 1 à 2 phrases courtes (20 mots maximum). Entoure 1 mot clé de **double astérisques**." },
         hashtags: { type: 'string', description: "Une liste de 8 à 10 hashtags pertinents séparés par des espaces, en français, en rapport avec le comportement canin et l'activité de Thomas." }
       },
       required: ['myth', 'truth', 'advice', 'hashtags'],
       additionalProperties: false
     };
 
-    const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPD) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Tu rédiges du contenu pour des posts Instagram au format \"idée reçue / réalité / conseil pratique\". Le ton doit être percutant et direct, façon accroche publicitaire : des phrases courtes, sans verbiage, qui se lisent d'un coup d'œil sur une image carrée. Pas de phrases complètes alambiquées : va droit au but. Utilise systématiquement la syntaxe **mot** pour mettre en valeur les mots clés indiqués dans le schéma.";
+    const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPD) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Tu rédiges du contenu pour des posts Instagram au format \"idée reçue / réalité / conseil pratique\". Le ton doit être percutant et direct, façon accroche publicitaire, mais peut développer en une ou deux phrases pour apporter un minimum de contexte ou d'explication — sans devenir verbeux pour autant : chaque champ doit rester lisible d'un coup d'œil sur une image carrée. Utilise systématiquement la syntaxe **mot** pour mettre en valeur les mots clés indiqués dans le schéma.";
 
     const userPrompt = topic
       ? `Crée un post Instagram qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`
