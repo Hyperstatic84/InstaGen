@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Générateur de posts Instagram · Thomas Le Blanc</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+<style>
+  :root{
+    --nature-50:#EEF7FF;
+    --nature-400:#3A88D4;
+    --nature-600:#14528F;
+    --nature-800:#28394A;
+    --nature-900:#1E2D3D;
+    --orange:#f97316;
+    --orange-600:#ea580c;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Outfit',system-ui,sans-serif;
+    background:#eef1f5;
+    color:var(--nature-800);
+    padding:32px 36px 60px;
+  }
+  h1{font-size:21px;font-weight:700;margin-bottom:4px;}
+  .sub{color:#64748b;font-size:13px;margin-bottom:28px;max-width:640px;line-height:1.5;}
+
+  .layout{display:flex;gap:30px;flex-wrap:wrap;align-items:flex-start;}
+
+  .panel{
+    background:#fff;
+    border-radius:10px;
+    padding:22px 24px;
+    box-shadow:0 2px 12px rgba(20,40,70,.07);
+    width:360px;
+    flex-shrink:0;
+  }
+  .panel h2{font-size:14px;margin-bottom:16px;letter-spacing:.02em;}
+
+  .ai-panel{border:1.5px solid #fed7aa;background:#fff8f1;margin-bottom:20px;}
+  .ai-panel h2{color:var(--orange-600);}
+  .ai-status{font-size:12px;margin-top:10px;min-height:14px;}
+  .ai-status.success{color:#16a34a;font-weight:600;}
+  .ai-status.error{color:#dc2626;font-weight:600;}
+
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;font-size:11px;font-weight:600;color:#475569;
+    margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;
+  }
+  .field textarea, .field input[type="text"], .field input[type="password"]{
+    width:100%;min-height:72px;resize:vertical;
+    border:1px solid #d8dee6;border-radius:6px;padding:9px 11px;
+    font-family:inherit;font-size:13px;line-height:1.45;color:var(--nature-800);
+  }
+  .field input[type="text"], .field input[type="password"]{min-height:auto;height:38px;}
+  .field textarea:focus, .field input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 2px rgba(249,115,22,.18);}
+  .count{font-size:10.5px;color:#94a3b8;margin-top:4px;text-align:right;}
+  .count.warn{color:var(--orange-600);font-weight:600;}
+
+  .right-col{flex:1;min-width:340px;}
+
+  .carousel{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:8px;}
+  .slide-wrap{
+    width:300px;height:300px;overflow:hidden;border-radius:8px;
+    box-shadow:0 6px 22px rgba(20,40,70,.2);position:relative;
+  }
+  .scaler{width:1080px;height:1080px;transform:scale(0.27778);transform-origin:top left;}
+
+  .slide{
+    width:1080px;height:1080px;display:flex;flex-direction:column;
+    font-family:'Outfit',sans-serif;position:relative;overflow:hidden;
+    padding:90px;
+  }
+  .slide.light{ background:linear-gradient(to bottom, var(--nature-50), #ffffff); color:var(--nature-800); }
+  .slide.dark{ background:var(--nature-900); color:#ffffff; }
+  .slide.orange{ background:var(--orange); color:#ffffff; }
+  .slide.orange .badge-num{ background:var(--nature-900); color:#fff; }
+  .slide.orange .badge-label{ color:#ffffff; }
+  .slide.orange .hl{ color:var(--nature-900); }
+  .slide.orange .slide-footer{ border-top-color:rgba(40,57,74,.2); }
+  .slide.orange .quote-watermark{ color:#ffffff; opacity:.18; }
+
+  .slide-badge{display:flex;align-items:center;gap:18px;margin-bottom:50px;}
+  .badge-num{
+    width:64px;height:64px;background:var(--orange);border-radius:16px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;font-size:30px;font-weight:800;
+  }
+  .badge-label{font-size:28px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;}
+  .slide.light .badge-label{color:var(--orange-600);}
+  .slide.dark .badge-label{color:var(--orange);}
+
+  .slide-headline{
+    font-size:80px;font-weight:800;line-height:1.18;
+    flex:1;white-space:pre-wrap;word-break:break-word;
+    position:relative;z-index:1;
+  }
+  .hl{color:var(--orange);}
+
+  .quote-watermark{
+    position:absolute;top:-100px;left:-100px;
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:1440px;font-weight:700;line-height:1;
+    color:var(--orange);opacity:.13;
+    pointer-events:none;
+  }
+  .slide.dark .quote-watermark{opacity:.16;}
+
+  .slide-bg-layer{
+    position:absolute;inset:0;
+    background-size:cover;background-position:center;
+    opacity:.16;filter:grayscale(45%);
+  }
+  .slide.dark .slide-bg-layer{opacity:.24;}
+  .slide-badge, .slide-footer{position:relative;z-index:1;}
+
+  .slide-footer{display:flex;align-items:center;justify-content:center;margin-top:30px;padding-top:30px;border-top:2px solid rgba(40,57,74,.08);}
+  .slide.dark .slide-footer{border-top-color:rgba(255,255,255,.15);}
+  .slide-logo{height:84px;width:auto;}
+
+  .downloads{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px;}
+  button{
+    background:var(--nature-800);color:#fff;border:none;border-radius:7px;
+    padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
+  }
+  button.alt{background:var(--orange);}
+  button:disabled{opacity:.6;cursor:default;}
+  button:hover:not(:disabled){opacity:.88;}
+  button:active:not(:disabled){transform:translateY(1px);}
+
+  .caption-panel{
+    background:#fff;border-radius:10px;padding:22px 24px;max-width:640px;
+    box-shadow:0 2px 12px rgba(20,40,70,.07);
+  }
+  .caption-panel h2{font-size:14px;margin-bottom:14px;}
+  .caption-panel textarea{
+    width:100%;min-height:190px;font-family:inherit;font-size:13px;line-height:1.55;
+    padding:14px;border:1px solid #d8dee6;border-radius:8px;color:var(--nature-800);resize:vertical;
+  }
+  .caption-actions{display:flex;gap:10px;margin-top:12px;}
+  .copied{font-size:12px;color:#16a34a;font-weight:600;align-self:center;opacity:0;transition:opacity .2s;}
+  .copied.show{opacity:1;}
+</style>
+</head>
+<body>
+
+  <h1>Générateur de posts carrousel — Idées reçues</h1>
+  <p class="sub">Génère le contenu via l'IA ou remplis les champs manuellement (idée reçue, réalité, conseil pratique). L'aperçu et la légende se mettent à jour automatiquement. Télécharge chaque slide en PNG (1080×1080, prêt pour Instagram).</p>
+
+  <div class="layout">
+
+    <div class="left-col" style="width:360px;flex-shrink:0;">
+
+      <div class="panel ai-panel">
+        <h2>✨ Générer le contenu avec l'IA</h2>
+        <div class="field">
+          <label>Clé API Anthropic</label>
+          <input type="password" id="api-key" placeholder="sk-ant-...">
+          <div class="hint" style="font-size:10.5px;color:#94a3b8;margin-top:5px;line-height:1.4;">Ta clé reste uniquement dans ton navigateur (stockée en local) et n'est envoyée qu'à l'API Anthropic. Ne partage jamais ce fichier une fois ta clé enregistrée.</div>
+        </div>
+        <div class="field">
+          <label>Sujet (optionnel)</label>
+          <input type="text" id="ai-topic" placeholder="Ex : le collier étrangleur — laisse vide pour une suggestion">
+        </div>
+        <button class="alt" id="ai-generate" style="width:100%">✨ Générer via IA</button>
+        <div class="ai-status" id="ai-status"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Contenu du post</h2>
+
+        <div class="field">
+          <label>Idée reçue (slide 1)</label>
+          <textarea id="myth" maxlength="120" placeholder="Ex : Tirer en laisse = vouloir **dominer**.">Tirer en laisse = vouloir **dominer** son maître.</textarea>
+          <div class="count" id="myth-count"></div>
+        </div>
+
+        <div class="field">
+          <label>La réalité (slide 2)</label>
+          <textarea id="truth" maxlength="160" placeholder="Ex : **Faux.** Il n'a jamais appris à marcher en laisse.">**Faux.** Il n'a simplement **jamais appris** à marcher en laisse détendue.</textarea>
+          <div class="count" id="truth-count"></div>
+        </div>
+
+        <div class="field">
+          <label>Conseil pratique (slide 3)</label>
+          <textarea id="advice" maxlength="120" placeholder="Ex : **Renforcement positif** dès les premiers pas.">**Renforcement positif** dès les premiers pas, dans le calme.</textarea>
+          <div class="count" id="advice-count"></div>
+        </div>
+        <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Entoure un mot ou groupe de mots de <strong>**double astérisques**</strong> pour le surligner en orange sur le visuel. Reste court : une accroche, pas une phrase complète.</p>
+
+        <div class="field">
+          <label>Hashtags</label>
+          <textarea id="hashtags" maxlength="300">#comportementalistecanin #educationcanine #chien #chiens #hautegaronne #ariege #chiendeprotectiondetroupeau #renforcementpositif #bienetreanimal #toulouse</textarea>
+        </div>
+
+        <div class="field">
+          <label>Photo de fond (filigrane)</label>
+          <input type="file" id="bg-photo" accept="image/*">
+          <div class="hint" style="font-size:10.5px;color:#94a3b8;margin-top:5px;line-height:1.4;">Choisis une photo en rapport avec le sujet du post (un chien en laisse, un patou, etc.) — elle s'applique en filigrane discret sur les 3 slides. Reste en local, jamais envoyée nulle part.</div>
+          <button type="button" id="bg-remove" style="margin-top:8px;background:#94a3b8;display:none;">Retirer la photo</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="right-col">
+
+      <div class="carousel">
+
+        <div class="slide-wrap">
+          <div class="scaler">
+            <div class="slide orange" id="slide1">
+              <div class="slide-bg-layer" id="bg1"></div>
+              <div class="quote-watermark">“</div>
+              <div class="slide-badge">
+                <span class="badge-num">1</span>
+                <span class="badge-label">Idée reçue</span>
+              </div>
+              <div class="slide-headline" id="s1-text"></div>
+              <div class="slide-footer">
+                <svg class="slide-logo" viewBox="0 0 1125.18 406.57" xmlns="http://www.w3.org/2000/svg">
+                  <defs><style>.cls-1{fill:#fff;}.cls-2{fill:#1E2D3D;}</style></defs>
+                  <g><rect class="cls-2" x="408.4" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><g><path class="cls-1" d="M581.51,287.21c-7.86-2.87-16.86-5.75-25-4.31-5.84,1.05-11.4,2.68-16.96,4.6-10.54,3.64-21.36,6.9-32.29,4.41-3.64-.86-6.99-2.49-9.39-5.36-5.75-6.9-3.16-19.26.38-27.3,8.62-19.64,23.85-36.12,42.73-46.37,5.17-2.78,10.54-4.79,16.38-5.56,13.8-1.82,27.02,5.36,37.75,13.7,10.73,8.33,20.21,19.06,27.02,31.33,2.97,5.27,5.17,10.63,6.23,16.57,1.53,7.86.96,17.05-6.51,20.79-7.47,3.74-17.72,4.02-25.77,2.11-4.98-1.25-9.68-2.87-14.47-4.6h-.1Z"/><path class="cls-1" d="M608.24,173.11c-9.01,10.25-23.18,13.03-32.48,3.07-2.3-2.49-4.22-5.27-5.46-8.53-2.3-6.13-3.07-12.74-2.11-19.26,1.63-12.07,7.28-24.05,17.44-30.94,5.36-3.74,12.07-4.79,18.3-3.07,3.26.96,5.84,2.87,8.14,5.27,3.35,3.45,5.56,7.66,6.71,12.36,2.59,10.73.86,21.46-3.93,31.42-1.72,3.54-4.02,6.61-6.61,9.58v.1Z"/><path class="cls-1" d="M547.5,176.36c-8.14,8.53-20.41,7.38-29.03-.1s-13.22-18.01-14.66-29.41c-1.15-9.29,1.05-20.5,7.76-27.21,2.49-2.49,5.17-4.5,8.62-5.36,13.03-3.26,23.38,5.56,29.6,16.57,2.01,3.54,3.26,7.19,4.31,11.11,2.3,8.62,2.3,17.63-.86,25.87-1.25,3.35-3.26,6.13-5.56,8.62l-.19-.1Z"/><path class="cls-1" d="M510.33,226.85c-6.71,9.01-19.93,7.76-28.74.96-9.77-7.57-15.81-19.06-16.96-31.52-.57-6.42.57-12.45,3.93-17.92,2.49-4.22,6.32-7.09,11.21-7.86,6.9-1.15,13.6.96,19.06,5.36,6.23,5.08,10.92,11.5,13.8,18.97,4.02,10.63,4.79,22.51-2.3,32Z"/><path class="cls-1" d="M642.06,227.62c-8.81,6.99-22.13,8.33-28.93-.77-4.31-5.75-5.84-12.74-5.17-19.93,1.34-13.03,8.24-25.58,19.26-32.86,8.24-5.46,20.69-5.75,26.73,2.87,3.26,4.69,4.98,10.06,4.98,15.9,0,13.51-6.32,26.35-16.86,34.68v.1Z"/></g></g>
+                  <g><rect class="cls-2" x="50" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1" d="M197.8,142.5l5.58,7.69,5.58-7.69c9.29-12.86,24.24-20.48,40.11-20.48,27.32,0,49.48,22.16,49.48,49.48v.97c0,41.71-52.01,90.15-79.14,110.85-4.61,3.49-10.26,5.24-16.02,5.24s-11.45-1.71-16.02-5.24c-27.14-20.71-79.14-69.14-79.14-110.85v-.97c0-27.32,22.16-49.48,49.48-49.48,15.87,0,30.82,7.62,40.11,20.48Z"/></g>
+                  <g><rect class="cls-2" x="766.79" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1" d="M921.74,120.39c-29.9,0-53.84,13.62-71.27,29.83-17.32,16.1-28.9,35.3-34.42,48.51-1.22,2.92-1.22,6.18,0,9.1,5.51,13.21,17.1,32.45,34.42,48.51,17.43,16.17,41.37,29.83,71.27,29.83s53.84-13.62,71.27-29.83c17.32-16.1,28.9-35.3,34.42-48.51,1.22-2.92,1.22-6.18,0-9.1-5.51-13.21-17.1-32.45-34.42-48.51-17.43-16.17-41.37-29.83-71.27-29.83ZM868.45,203.28c0-29.42,23.87-53.29,53.29-53.29s53.29,23.87,53.29,53.29-23.87,53.29-53.29,53.29-53.29-23.87-53.29-53.29ZM921.74,179.6c0,13.06-10.62,23.68-23.68,23.68-4.26,0-8.25-1.11-11.73-3.11-.37,4.03-.04,8.18,1.07,12.29,5.07,18.95,24.57,30.2,43.52,25.13,18.95-5.07,30.2-24.57,25.13-43.52-4.51-16.91-20.54-27.68-37.41-26.2,1.96,3.44,3.11,7.44,3.11,11.73Z"/></g>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-wrap">
+          <div class="scaler">
+            <div class="slide dark" id="slide2">
+              <div class="slide-bg-layer" id="bg2"></div>
+              <div class="quote-watermark">“</div>
+              <div class="slide-badge">
+                <span class="badge-num">2</span>
+                <span class="badge-label">La réalité</span>
+              </div>
+              <div class="slide-headline" id="s2-text"></div>
+              <div class="slide-footer">
+                <svg class="slide-logo" viewBox="0 0 1125.18 406.57" xmlns="http://www.w3.org/2000/svg">
+                  <defs><style>.cls-1b{fill:#fff;}.cls-2b{fill:#f97316;}</style></defs>
+                  <g><rect class="cls-2b" x="408.4" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><g><path class="cls-1b" d="M581.51,287.21c-7.86-2.87-16.86-5.75-25-4.31-5.84,1.05-11.4,2.68-16.96,4.6-10.54,3.64-21.36,6.9-32.29,4.41-3.64-.86-6.99-2.49-9.39-5.36-5.75-6.9-3.16-19.26.38-27.3,8.62-19.64,23.85-36.12,42.73-46.37,5.17-2.78,10.54-4.79,16.38-5.56,13.8-1.82,27.02,5.36,37.75,13.7,10.73,8.33,20.21,19.06,27.02,31.33,2.97,5.27,5.17,10.63,6.23,16.57,1.53,7.86.96,17.05-6.51,20.79-7.47,3.74-17.72,4.02-25.77,2.11-4.98-1.25-9.68-2.87-14.47-4.6h-.1Z"/><path class="cls-1b" d="M608.24,173.11c-9.01,10.25-23.18,13.03-32.48,3.07-2.3-2.49-4.22-5.27-5.46-8.53-2.3-6.13-3.07-12.74-2.11-19.26,1.63-12.07,7.28-24.05,17.44-30.94,5.36-3.74,12.07-4.79,18.3-3.07,3.26.96,5.84,2.87,8.14,5.27,3.35,3.45,5.56,7.66,6.71,12.36,2.59,10.73.86,21.46-3.93,31.42-1.72,3.54-4.02,6.61-6.61,9.58v.1Z"/><path class="cls-1b" d="M547.5,176.36c-8.14,8.53-20.41,7.38-29.03-.1s-13.22-18.01-14.66-29.41c-1.15-9.29,1.05-20.5,7.76-27.21,2.49-2.49,5.17-4.5,8.62-5.36,13.03-3.26,23.38,5.56,29.6,16.57,2.01,3.54,3.26,7.19,4.31,11.11,2.3,8.62,2.3,17.63-.86,25.87-1.25,3.35-3.26,6.13-5.56,8.62l-.19-.1Z"/><path class="cls-1b" d="M510.33,226.85c-6.71,9.01-19.93,7.76-28.74.96-9.77-7.57-15.81-19.06-16.96-31.52-.57-6.42.57-12.45,3.93-17.92,2.49-4.22,6.32-7.09,11.21-7.86,6.9-1.15,13.6.96,19.06,5.36,6.23,5.08,10.92,11.5,13.8,18.97,4.02,10.63,4.79,22.51-2.3,32Z"/><path class="cls-1b" d="M642.06,227.62c-8.81,6.99-22.13,8.33-28.93-.77-4.31-5.75-5.84-12.74-5.17-19.93,1.34-13.03,8.24-25.58,19.26-32.86,8.24-5.46,20.69-5.75,26.73,2.87,3.26,4.69,4.98,10.06,4.98,15.9,0,13.51-6.32,26.35-16.86,34.68v.1Z"/></g></g>
+                  <g><rect class="cls-2b" x="50" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1b" d="M197.8,142.5l5.58,7.69,5.58-7.69c9.29-12.86,24.24-20.48,40.11-20.48,27.32,0,49.48,22.16,49.48,49.48v.97c0,41.71-52.01,90.15-79.14,110.85-4.61,3.49-10.26,5.24-16.02,5.24s-11.45-1.71-16.02-5.24c-27.14-20.71-79.14-69.14-79.14-110.85v-.97c0-27.32,22.16-49.48,49.48-49.48,15.87,0,30.82,7.62,40.11,20.48Z"/></g>
+                  <g><rect class="cls-2b" x="766.79" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1b" d="M921.74,120.39c-29.9,0-53.84,13.62-71.27,29.83-17.32,16.1-28.9,35.3-34.42,48.51-1.22,2.92-1.22,6.18,0,9.1,5.51,13.21,17.1,32.45,34.42,48.51,17.43,16.17,41.37,29.83,71.27,29.83s53.84-13.62,71.27-29.83c17.32-16.1,28.9-35.3,34.42-48.51,1.22-2.92,1.22-6.18,0-9.1-5.51-13.21-17.1-32.45-34.42-48.51-17.43-16.17-41.37-29.83-71.27-29.83ZM868.45,203.28c0-29.42,23.87-53.29,53.29-53.29s53.29,23.87,53.29,53.29-23.87,53.29-53.29,53.29-53.29-23.87-53.29-53.29ZM921.74,179.6c0,13.06-10.62,23.68-23.68,23.68-4.26,0-8.25-1.11-11.73-3.11-.37,4.03-.04,8.18,1.07,12.29,5.07,18.95,24.57,30.2,43.52,25.13,18.95-5.07,30.2-24.57,25.13-43.52-4.51-16.91-20.54-27.68-37.41-26.2,1.96,3.44,3.11,7.44,3.11,11.73Z"/></g>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-wrap">
+          <div class="scaler">
+            <div class="slide light" id="slide3">
+              <div class="slide-bg-layer" id="bg3"></div>
+              <div class="quote-watermark">“</div>
+              <div class="slide-badge">
+                <span class="badge-num">3</span>
+                <span class="badge-label">En pratique</span>
+              </div>
+              <div class="slide-headline" id="s3-text"></div>
+              <div class="slide-footer">
+                <svg class="slide-logo" viewBox="0 0 1125.18 406.57" xmlns="http://www.w3.org/2000/svg">
+                  <defs><style>.cls-1c{fill:#fff;}.cls-2c{fill:#f97316;}</style></defs>
+                  <g><rect class="cls-2c" x="408.4" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><g><path class="cls-1c" d="M581.51,287.21c-7.86-2.87-16.86-5.75-25-4.31-5.84,1.05-11.4,2.68-16.96,4.6-10.54,3.64-21.36,6.9-32.29,4.41-3.64-.86-6.99-2.49-9.39-5.36-5.75-6.9-3.16-19.26.38-27.3,8.62-19.64,23.85-36.12,42.73-46.37,5.17-2.78,10.54-4.79,16.38-5.56,13.8-1.82,27.02,5.36,37.75,13.7,10.73,8.33,20.21,19.06,27.02,31.33,2.97,5.27,5.17,10.63,6.23,16.57,1.53,7.86.96,17.05-6.51,20.79-7.47,3.74-17.72,4.02-25.77,2.11-4.98-1.25-9.68-2.87-14.47-4.6h-.1Z"/><path class="cls-1c" d="M608.24,173.11c-9.01,10.25-23.18,13.03-32.48,3.07-2.3-2.49-4.22-5.27-5.46-8.53-2.3-6.13-3.07-12.74-2.11-19.26,1.63-12.07,7.28-24.05,17.44-30.94,5.36-3.74,12.07-4.79,18.3-3.07,3.26.96,5.84,2.87,8.14,5.27,3.35,3.45,5.56,7.66,6.71,12.36,2.59,10.73.86,21.46-3.93,31.42-1.72,3.54-4.02,6.61-6.61,9.58v.1Z"/><path class="cls-1c" d="M547.5,176.36c-8.14,8.53-20.41,7.38-29.03-.1s-13.22-18.01-14.66-29.41c-1.15-9.29,1.05-20.5,7.76-27.21,2.49-2.49,5.17-4.5,8.62-5.36,13.03-3.26,23.38,5.56,29.6,16.57,2.01,3.54,3.26,7.19,4.31,11.11,2.3,8.62,2.3,17.63-.86,25.87-1.25,3.35-3.26,6.13-5.56,8.62l-.19-.1Z"/><path class="cls-1c" d="M510.33,226.85c-6.71,9.01-19.93,7.76-28.74.96-9.77-7.57-15.81-19.06-16.96-31.52-.57-6.42.57-12.45,3.93-17.92,2.49-4.22,6.32-7.09,11.21-7.86,6.9-1.15,13.6.96,19.06,5.36,6.23,5.08,10.92,11.5,13.8,18.97,4.02,10.63,4.79,22.51-2.3,32Z"/><path class="cls-1c" d="M642.06,227.62c-8.81,6.99-22.13,8.33-28.93-.77-4.31-5.75-5.84-12.74-5.17-19.93,1.34-13.03,8.24-25.58,19.26-32.86,8.24-5.46,20.69-5.75,26.73,2.87,3.26,4.69,4.98,10.06,4.98,15.9,0,13.51-6.32,26.35-16.86,34.68v.1Z"/></g></g>
+                  <g><rect class="cls-2c" x="50" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1c" d="M197.8,142.5l5.58,7.69,5.58-7.69c9.29-12.86,24.24-20.48,40.11-20.48,27.32,0,49.48,22.16,49.48,49.48v.97c0,41.71-52.01,90.15-79.14,110.85-4.61,3.49-10.26,5.24-16.02,5.24s-11.45-1.71-16.02-5.24c-27.14-20.71-79.14-69.14-79.14-110.85v-.97c0-27.32,22.16-49.48,49.48-49.48,15.87,0,30.82,7.62,40.11,20.48Z"/></g>
+                  <g><rect class="cls-2c" x="766.79" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1c" d="M921.74,120.39c-29.9,0-53.84,13.62-71.27,29.83-17.32,16.1-28.9,35.3-34.42,48.51-1.22,2.92-1.22,6.18,0,9.1,5.51,13.21,17.1,32.45,34.42,48.51,17.43,16.17,41.37,29.83,71.27,29.83s53.84-13.62,71.27-29.83c17.32-16.1,28.9-35.3,34.42-48.51,1.22-2.92,1.22-6.18,0-9.1-5.51-13.21-17.1-32.45-34.42-48.51-17.43-16.17-41.37-29.83-71.27-29.83ZM868.45,203.28c0-29.42,23.87-53.29,53.29-53.29s53.29,23.87,53.29,53.29-23.87,53.29-53.29,53.29-53.29-23.87-53.29-53.29ZM921.74,179.6c0,13.06-10.62,23.68-23.68,23.68-4.26,0-8.25-1.11-11.73-3.11-.37,4.03-.04,8.18,1.07,12.29,5.07,18.95,24.57,30.2,43.52,25.13,18.95-5.07,30.2-24.57,25.13-43.52-4.51-16.91-20.54-27.68-37.41-26.2,1.96,3.44,3.11,7.44,3.11,11.73Z"/></g>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="downloads">
+        <button onclick="downloadSlide('slide1','idee-recue.png')">⬇ Slide 1 (idée reçue)</button>
+        <button onclick="downloadSlide('slide2','realite.png')">⬇ Slide 2 (réalité)</button>
+        <button onclick="downloadSlide('slide3','conseil.png')">⬇ Slide 3 (conseil)</button>
+      </div>
+
+      <div class="caption-panel">
+        <h2>Légende suggérée</h2>
+        <textarea id="caption" readonly></textarea>
+        <div class="caption-actions">
+          <button class="alt" onclick="copyCaption()">Copier la légende</button>
+          <span class="copied" id="copied-msg">Copié ✓</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+
+  function updateCount(fieldId, countId, max){
+    const len = $(fieldId).value.length;
+    const el = $(countId);
+    el.textContent = len + ' / ' + max;
+    el.classList.toggle('warn', len > max * 0.85);
+  }
+
+  function escapeHtml(str){
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function renderHighlighted(str){
+    return escapeHtml(str).replace(/\*\*(.+?)\*\*/g, '<span class="hl">$1</span>');
+  }
+
+  function stripHighlight(str){
+    return str.replace(/\*\*/g, '');
+  }
+
+  function buildSlides(){
+    const myth = $('myth').value.trim() || '—';
+    const truth = $('truth').value.trim() || '—';
+    const advice = $('advice').value.trim() || '—';
+
+    $('s1-text').innerHTML = renderHighlighted(myth);
+    $('s2-text').innerHTML = renderHighlighted(truth);
+    $('s3-text').innerHTML = renderHighlighted(advice);
+
+    updateCount('myth','myth-count',120);
+    updateCount('truth','truth-count',160);
+    updateCount('advice','advice-count',120);
+
+    updateCaption(myth, truth, advice);
+  }
+
+  function updateCaption(myth, truth, advice){
+    const hashtags = $('hashtags').value.trim();
+    $('caption').value =
+`❌ Idée reçue : ${stripHighlight(myth)}
+
+✅ La réalité : ${stripHighlight(truth)}
+
+🐾 En pratique : ${stripHighlight(advice)}
+
+Une question sur le comportement de votre chien ? Je vous accompagne en Haute-Garonne & Ariège.
+🔗 thomasleblanc.fr
+
+${hashtags}`;
+  }
+
+  ['myth','truth','advice','hashtags'].forEach(id => $(id).addEventListener('input', buildSlides));
+
+  function downloadSlide(slideId, filename){
+    const node = $(slideId);
+    html2canvas(node, { scale: 1, useCORS: true }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+  }
+
+  function copyCaption(){
+    const ta = $('caption');
+    ta.select();
+    document.execCommand('copy');
+    const msg = $('copied-msg');
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 1500);
+  }
+
+  // ── Génération de contenu via l'API Claude (appel direct navigateur) ──
+  const apiKeyInput = $('api-key');
+  const savedKey = localStorage.getItem('anthropic_api_key');
+  if (savedKey) apiKeyInput.value = savedKey;
+  apiKeyInput.addEventListener('change', () => {
+    if (apiKeyInput.value.trim()) localStorage.setItem('anthropic_api_key', apiKeyInput.value.trim());
+  });
+
+  async function generateWithAI(apiKey, topic){
+    const schema = {
+      type: 'object',
+      properties: {
+        myth: { type: 'string', description: "L'idée reçue, formulée en une phrase très courte et percutante (10 mots maximum). Entoure 1 mot clé de **double astérisques** pour le surligner." },
+        truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue, en une phrase courte et percutante (15 mots maximum). Entoure 1 à 2 mots clés de **double astérisques**." },
+        advice: { type: 'string', description: "Un conseil pratique, actionnable, en une phrase courte (10 mots maximum). Entoure 1 mot clé de **double astérisques**." },
+        hashtags: { type: 'string', description: "Une liste de 8 à 10 hashtags pertinents séparés par des espaces, en français, en rapport avec le comportement canin et l'activité de Thomas." }
+      },
+      required: ['myth', 'truth', 'advice', 'hashtags'],
+      additionalProperties: false
+    };
+
+    const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPD) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Tu rédiges du contenu pour des posts Instagram au format \"idée reçue / réalité / conseil pratique\". Le ton doit être percutant et direct, façon accroche publicitaire : des phrases courtes, sans verbiage, qui se lisent d'un coup d'œil sur une image carrée. Pas de phrases complètes alambiquées : va droit au but. Utilise systématiquement la syntaxe **mot** pour mettre en valeur les mots clés indiqués dans le schéma.";
+
+    const userPrompt = topic
+      ? `Crée un post Instagram qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`
+      : 'Choisis une idée reçue fréquente et pertinente sur le comportement canin (adaptée à la pratique de Thomas, y compris éventuellement sur les chiens de protection de troupeau) et crée un post Instagram qui la déconstruit.';
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-8',
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }],
+        output_config: {
+          format: { type: 'json_schema', schema: schema }
+        }
+      })
+    });
+
+    if (!res.ok) {
+      let message = `Erreur API (${res.status})`;
+      try {
+        const errBody = await res.json();
+        if (errBody && errBody.error && errBody.error.message) message = errBody.error.message;
+      } catch (e) {}
+      throw new Error(message);
+    }
+
+    const data = await res.json();
+    const textBlock = data.content.find(b => b.type === 'text');
+    if (!textBlock) throw new Error('Réponse inattendue du modèle.');
+    return JSON.parse(textBlock.text);
+  }
+
+  $('ai-generate').addEventListener('click', async () => {
+    const apiKey = apiKeyInput.value.trim();
+    const statusEl = $('ai-status');
+    const btn = $('ai-generate');
+
+    if (!apiKey) {
+      statusEl.textContent = 'Renseigne ta clé API Anthropic ci-dessus.';
+      statusEl.className = 'ai-status error';
+      return;
+    }
+    localStorage.setItem('anthropic_api_key', apiKey);
+
+    btn.disabled = true;
+    btn.textContent = 'Génération en cours...';
+    statusEl.textContent = '';
+    statusEl.className = 'ai-status';
+
+    try {
+      const topic = $('ai-topic').value.trim();
+      const result = await generateWithAI(apiKey, topic);
+      $('myth').value = result.myth || '';
+      $('truth').value = result.truth || '';
+      $('advice').value = result.advice || '';
+      if (result.hashtags) $('hashtags').value = result.hashtags;
+      buildSlides();
+      statusEl.textContent = 'Contenu généré ✓';
+      statusEl.className = 'ai-status success';
+    } catch (err) {
+      statusEl.textContent = 'Erreur : ' + err.message;
+      statusEl.className = 'ai-status error';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '✨ Générer via IA';
+    }
+  });
+
+  // ── Photo de fond en filigrane ──
+  const bgPhotoInput = $('bg-photo');
+  const bgRemoveBtn = $('bg-remove');
+  const bgLayers = ['bg1','bg2','bg3'].map($);
+
+  bgPhotoInput.addEventListener('change', () => {
+    const file = bgPhotoInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      bgLayers.forEach(layer => { layer.style.backgroundImage = `url(${reader.result})`; });
+      bgRemoveBtn.style.display = 'inline-block';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  bgRemoveBtn.addEventListener('click', () => {
+    bgLayers.forEach(layer => { layer.style.backgroundImage = 'none'; });
+    bgPhotoInput.value = '';
+    bgRemoveBtn.style.display = 'none';
+  });
+
+  document.fonts.ready.then(buildSlides);
+  buildSlides();
+</script>
+
+</body>
+</html>
