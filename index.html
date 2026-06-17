@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Générateur de posts Instagram · Thomas Le Blanc</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
 <style>
@@ -24,15 +25,25 @@
   h1{font-size:21px;font-weight:700;margin-bottom:4px;}
   .sub{color:#64748b;font-size:13px;margin-bottom:28px;max-width:640px;line-height:1.5;}
 
-  .layout{display:flex;gap:30px;flex-wrap:wrap;align-items:flex-start;}
+  .layout{
+    display:grid;
+    grid-template-columns:360px 1fr;
+    grid-template-areas:
+      "ai      right"
+      "content right";
+    gap:30px;
+    align-items:start;
+  }
+  .ai-panel{grid-area:ai;}
+  .content-panel{grid-area:content;}
+  .right-col{grid-area:right;min-width:0;}
 
   .panel{
     background:#fff;
     border-radius:10px;
     padding:22px 24px;
     box-shadow:0 2px 12px rgba(20,40,70,.07);
-    width:360px;
-    flex-shrink:0;
+    width:100%;
   }
   .panel h2{font-size:14px;margin-bottom:16px;letter-spacing:.02em;}
 
@@ -57,7 +68,6 @@
   .count{font-size:10.5px;color:#94a3b8;margin-top:4px;text-align:right;}
   .count.warn{color:var(--orange-600);font-weight:600;}
 
-  .right-col{flex:1;min-width:340px;}
 
   .carousel{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:8px;}
   .slide-wrap{
@@ -143,6 +153,20 @@
   .caption-actions{display:flex;gap:10px;margin-top:12px;}
   .copied{font-size:12px;color:#16a34a;font-weight:600;align-self:center;opacity:0;transition:opacity .2s;}
   .copied.show{opacity:1;}
+
+  @media (max-width:860px){
+    body{padding:20px 16px 50px;}
+    .layout{
+      grid-template-columns:1fr;
+      grid-template-areas:
+        "content"
+        "right"
+        "ai";
+      gap:20px;
+    }
+    .carousel{justify-content:center;}
+    .caption-panel{max-width:100%;}
+  }
 </style>
 </head>
 <body>
@@ -151,8 +175,6 @@
   <p class="sub">Génère le contenu via l'IA ou remplis les champs manuellement (idée reçue, réalité, conseil pratique). L'aperçu et la légende se mettent à jour automatiquement. Télécharge chaque slide en PNG (1080×1080, prêt pour Instagram).</p>
 
   <div class="layout">
-
-    <div class="left-col" style="width:360px;flex-shrink:0;">
 
       <div class="panel ai-panel">
         <h2>✨ Générer le contenu avec l'IA</h2>
@@ -169,7 +191,7 @@
         <div class="ai-status" id="ai-status"></div>
       </div>
 
-      <div class="panel">
+      <div class="panel content-panel">
         <h2>Contenu du post</h2>
 
         <div class="field">
@@ -189,7 +211,7 @@
           <textarea id="advice" maxlength="180" placeholder="Ex : **Renforcement positif** dès les premiers pas.">Travaillez le **renforcement positif** dès les premiers pas, dans un environnement calme et sans distraction.</textarea>
           <div class="count" id="advice-count"></div>
         </div>
-        <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Entoure un mot ou groupe de mots de <strong>**double astérisques**</strong> pour le surligner en orange sur le visuel. La taille du texte s'adapte automatiquement à la longueur pour rester entre le titre et le pied de page.</p>
+        <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Entoure un ou plusieurs mots/groupes de mots de <strong>**double astérisques**</strong> pour les surligner en orange sur le visuel — autant que pertinent. La taille du texte s'adapte automatiquement à la longueur pour rester entre le titre et le pied de page.</p>
 
         <div class="field">
           <label>Hashtags</label>
@@ -203,8 +225,6 @@
           <button type="button" id="bg-remove" style="margin-top:8px;background:#94a3b8;display:none;">Retirer la photo</button>
         </div>
       </div>
-
-    </div>
 
     <div class="right-col">
 
@@ -412,16 +432,16 @@ ${hashtags}`;
     const schema = {
       type: 'object',
       properties: {
-        myth: { type: 'string', description: "L'idée reçue, en 1 à 2 phrases courtes et percutantes (20 mots maximum). Entoure 1 mot clé de **double astérisques** pour le surligner." },
-        truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue, en 1 à 2 phrases (30 mots maximum), avec une brève explication du pourquoi. Entoure 1 à 2 mots clés de **double astérisques**." },
-        advice: { type: 'string', description: "Un conseil pratique et actionnable, en 1 à 2 phrases courtes (20 mots maximum). Entoure 1 mot clé de **double astérisques**." },
+        myth: { type: 'string', description: "L'idée reçue, en 1 à 2 phrases courtes et percutantes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques** pour le surligner — plusieurs si le sens le justifie, sinon un seul suffit." },
+        truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue, en 1 à 2 phrases (30 mots maximum), avec une brève explication du pourquoi. Entoure chaque mot ou groupe de mots clé de **double astérisques** — autant que nécessaire pour faire ressortir les points essentiels, sans en abuser." },
+        advice: { type: 'string', description: "Un conseil pratique et actionnable, en 1 à 2 phrases courtes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques** — plusieurs si le sens le justifie." },
         hashtags: { type: 'string', description: "Une liste de 8 à 10 hashtags pertinents séparés par des espaces, en français, en rapport avec le comportement canin et l'activité de Thomas." }
       },
       required: ['myth', 'truth', 'advice', 'hashtags'],
       additionalProperties: false
     };
 
-    const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPD) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Tu rédiges du contenu pour des posts Instagram au format \"idée reçue / réalité / conseil pratique\". Le ton doit être percutant et direct, façon accroche publicitaire, mais peut développer en une ou deux phrases pour apporter un minimum de contexte ou d'explication — sans devenir verbeux pour autant : chaque champ doit rester lisible d'un coup d'œil sur une image carrée. Utilise systématiquement la syntaxe **mot** pour mettre en valeur les mots clés indiqués dans le schéma.";
+    const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPD) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Tu rédiges du contenu pour des posts Instagram au format \"idée reçue / réalité / conseil pratique\". Le ton doit être percutant et direct, façon accroche publicitaire, mais peut développer en une ou deux phrases pour apporter un minimum de contexte ou d'explication — sans devenir verbeux pour autant : chaque champ doit rester lisible d'un coup d'œil sur une image carrée. Utilise systématiquement la syntaxe **mot** pour mettre en valeur les mots clés : surligne plusieurs mots ou groupes de mots si plusieurs éléments sont essentiels au message, pas seulement le premier venu.";
 
     const userPrompt = topic
       ? `Crée un post Instagram qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`
