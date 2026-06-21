@@ -150,16 +150,17 @@
   button:hover:not(:disabled){opacity:.88;}
   button:active:not(:disabled){transform:translateY(1px);}
 
-  .caption-panel{
-    background:#fff;border-radius:10px;padding:22px 24px;max-width:640px;
-    box-shadow:0 2px 12px rgba(20,40,70,.07);
+  .ht-count{font-size:10px;color:#94a3b8;font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px;}
+  .ht-count.warn{color:#dc2626;font-weight:700;}
+
+  .captions-wrap{display:flex;flex-direction:column;gap:10px;max-width:640px;}
+  .caption-block{background:#fff;border-radius:10px;padding:16px 20px;box-shadow:0 2px 12px rgba(20,40,70,.07);}
+  .caption-block-label{font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+  .caption-block textarea{
+    width:100%;min-height:100px;font-family:inherit;font-size:12.5px;line-height:1.55;
+    padding:10px 12px;border:1px solid #d8dee6;border-radius:6px;color:var(--nature-800);resize:vertical;
   }
-  .caption-panel h2{font-size:14px;margin-bottom:14px;}
-  .caption-panel textarea{
-    width:100%;min-height:190px;font-family:inherit;font-size:13px;line-height:1.55;
-    padding:14px;border:1px solid #d8dee6;border-radius:8px;color:var(--nature-800);resize:vertical;
-  }
-  .caption-actions{display:flex;gap:10px;margin-top:12px;}
+  .caption-actions{display:flex;gap:10px;margin-top:10px;}
   .copied{font-size:12px;color:#16a34a;font-weight:600;align-self:center;opacity:0;transition:opacity .2s;}
   .copied.show{opacity:1;}
 
@@ -174,7 +175,7 @@
       gap:20px;
     }
     .carousel{justify-content:center;}
-    .caption-panel{max-width:100%;}
+    .captions-wrap{max-width:100%;}
   }
 </style>
 </head>
@@ -223,8 +224,16 @@
         <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Entoure un ou plusieurs mots/groupes de mots de <strong>**double astérisques**</strong> pour les surligner en orange sur le visuel — autant que pertinent. La taille du texte s'adapte automatiquement à la longueur pour rester entre le titre et le pied de page.</p>
 
         <div class="field">
-          <label>Hashtags</label>
-          <textarea id="hashtags" maxlength="300">#comportementalistecanin #educationcanine #chien #chiens #hautegaronne #ariege #chiendeprotectiondetroupeau #renforcementpositif #bienetreanimal #toulouse</textarea>
+          <label>Hashtags slide 1<span class="ht-count" id="ht1-count"></span><button type="button" class="regen-btn" data-field="hashtags1" title="Régénérer ces hashtags via IA">↻ Régénérer</button></label>
+          <textarea id="hashtags1" maxlength="150" placeholder="3 hashtags max">#comportementalistecanin #educationcanine #chien</textarea>
+        </div>
+        <div class="field">
+          <label>Hashtags slide 2<span class="ht-count" id="ht2-count"></span><button type="button" class="regen-btn" data-field="hashtags2" title="Régénérer ces hashtags via IA">↻ Régénérer</button></label>
+          <textarea id="hashtags2" maxlength="150" placeholder="3 hashtags max">#comportementcanin #renforcementpositif #bienetreanimal</textarea>
+        </div>
+        <div class="field">
+          <label>Hashtags slide 3<span class="ht-count" id="ht3-count"></span><button type="button" class="regen-btn" data-field="hashtags3" title="Régénérer ces hashtags via IA">↻ Régénérer</button></label>
+          <textarea id="hashtags3" maxlength="150" placeholder="3 hashtags max">#thomasleblanc #hautegaronne #ariege</textarea>
         </div>
 
         <div class="field">
@@ -313,12 +322,30 @@
         <button onclick="downloadSlide('slide3','3-conseil.png')">⬇ Slide 3 (conseil)</button>
       </div>
 
-      <div class="caption-panel">
-        <h2>Légende suggérée</h2>
-        <textarea id="caption" readonly></textarea>
-        <div class="caption-actions">
-          <button class="alt" onclick="copyCaption()">Copier la légende</button>
-          <span class="copied" id="copied-msg">Copié ✓</span>
+      <div class="captions-wrap">
+        <div class="caption-block">
+          <div class="caption-block-label">Légende slide 1 — Idée reçue</div>
+          <textarea id="caption1" readonly></textarea>
+          <div class="caption-actions">
+            <button class="alt" onclick="copyCaption('caption1','copied-msg1')">Copier</button>
+            <span class="copied" id="copied-msg1">Copié ✓</span>
+          </div>
+        </div>
+        <div class="caption-block">
+          <div class="caption-block-label">Légende slide 2 — La réalité</div>
+          <textarea id="caption2" readonly></textarea>
+          <div class="caption-actions">
+            <button class="alt" onclick="copyCaption('caption2','copied-msg2')">Copier</button>
+            <span class="copied" id="copied-msg2">Copié ✓</span>
+          </div>
+        </div>
+        <div class="caption-block">
+          <div class="caption-block-label">Légende slide 3 — Conseil pratique</div>
+          <textarea id="caption3" readonly></textarea>
+          <div class="caption-actions">
+            <button class="alt" onclick="copyCaption('caption3','copied-msg3')">Copier</button>
+            <span class="copied" id="copied-msg3">Copié ✓</span>
+          </div>
         </div>
       </div>
 
@@ -376,25 +403,33 @@
     updateCount('truth','truth-count',240);
     updateCount('advice','advice-count',180);
 
-    updateCaption(myth, truth, advice);
+    updateCaptions(myth, truth, advice);
   }
 
-  function updateCaption(myth, truth, advice){
-    const hashtags = $('hashtags').value.trim();
-    $('caption').value =
-`❌ Idée reçue : ${stripHighlight(myth)}
+  function countHashtags(str){ return (str.match(/#\S+/g) || []).length; }
 
-✅ La réalité : ${stripHighlight(truth)}
-
-🐾 En pratique : ${stripHighlight(advice)}
-
-Une question sur le comportement de ton chien ? Je t'accompagne en Haute-Garonne & Ariège.
-🔗 thomasleblanc.fr
-
-${hashtags}`;
+  function updateHashtagCount(inputId, countId){
+    const n = countHashtags($(inputId).value);
+    const el = $(countId);
+    el.textContent = `${n}/5`;
+    el.classList.toggle('warn', n > 3);
   }
 
-  ['myth','truth','advice','hashtags'].forEach(id => $(id).addEventListener('input', buildSlides));
+  function updateCaptions(myth, truth, advice){
+    const ht1 = $('hashtags1').value.trim();
+    const ht2 = $('hashtags2').value.trim();
+    const ht3 = $('hashtags3').value.trim();
+    const cta = `\n\nUne question sur le comportement de ton chien ? Je t'accompagne en Haute-Garonne & Ariège.\n🔗 thomasleblanc.fr`;
+    $('caption1').value = `❌ Idée reçue : ${stripHighlight(myth)}${cta}${ht1 ? '\n\n' + ht1 : ''}`;
+    $('caption2').value = `✅ La réalité : ${stripHighlight(truth)}${cta}${ht2 ? '\n\n' + ht2 : ''}`;
+    $('caption3').value = `🐾 En pratique : ${stripHighlight(advice)}${cta}${ht3 ? '\n\n' + ht3 : ''}`;
+  }
+
+  ['myth','truth','advice','hashtags1','hashtags2','hashtags3'].forEach(id => $(id).addEventListener('input', buildSlides));
+  ['hashtags1','hashtags2','hashtags3'].forEach((id, i) => {
+    $(id).addEventListener('input', () => updateHashtagCount(id, `ht${i+1}-count`));
+    updateHashtagCount(id, `ht${i+1}-count`);
+  });
 
   function downloadSlide(slideId, filename){
     const original = $(slideId);
@@ -420,11 +455,11 @@ ${hashtags}`;
       });
   }
 
-  function copyCaption(){
-    const ta = $('caption');
+  function copyCaption(captionId, msgId){
+    const ta = $(captionId);
     ta.select();
     document.execCommand('copy');
-    const msg = $('copied-msg');
+    const msg = $(msgId);
     msg.classList.add('show');
     setTimeout(() => msg.classList.remove('show'), 1500);
   }
@@ -474,9 +509,11 @@ ${hashtags}`;
         myth: { type: 'string', description: "L'idée reçue, en 1 à 2 phrases courtes et percutantes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques** pour le surligner, plusieurs si le sens le justifie, sinon un seul suffit." },
         truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue, en 1 à 2 phrases (30 mots maximum), avec une brève explication du pourquoi. Entoure chaque mot ou groupe de mots clé de **double astérisques**, autant que nécessaire pour faire ressortir les points essentiels, sans en abuser." },
         advice: { type: 'string', description: "Un conseil pratique et actionnable, en 1 à 2 phrases courtes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**, plusieurs si le sens le justifie." },
-        hashtags: { type: 'string', description: "Une liste de 8 à 10 hashtags pertinents séparés par des espaces, en français, en rapport avec le comportement canin et l'activité de Thomas." }
+        hashtags1: { type: 'string', description: "3 hashtags pour le slide 1 (idée reçue), séparés par des espaces, en français." },
+        hashtags2: { type: 'string', description: "3 hashtags pour le slide 2 (réalité), séparés par des espaces, différents du slide 1." },
+        hashtags3: { type: 'string', description: "3 hashtags pour le slide 3 (conseil pratique), séparés par des espaces, différents des slides précédents." }
       },
-      required: ['myth', 'truth', 'advice', 'hashtags'],
+      required: ['myth', 'truth', 'advice', 'hashtags1', 'hashtags2', 'hashtags3'],
       additionalProperties: false
     };
 
@@ -489,9 +526,12 @@ ${hashtags}`;
 
   async function generateSingleField(apiKey, fieldId) {
     const fieldMeta = {
-      myth:  { label: 'idée reçue (slide 1)',     desc: "L'idée reçue, en 1 à 2 phrases courtes et percutantes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**, plusieurs si le sens le justifie." },
-      truth: { label: 'réalité (slide 2)',         desc: "La réalité qui déconstruit l'idée reçue, en 1 à 2 phrases (30 mots maximum), avec une brève explication. Entoure chaque mot ou groupe de mots clé de **double astérisques**, autant que nécessaire." },
-      advice:{ label: 'conseil pratique (slide 3)',desc: "Un conseil pratique et actionnable, en 1 à 2 phrases courtes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**." }
+      myth:      { label: 'idée reçue (slide 1)',       desc: "L'idée reçue, en 1 à 2 phrases courtes et percutantes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**, plusieurs si le sens le justifie." },
+      truth:     { label: 'réalité (slide 2)',           desc: "La réalité qui déconstruit l'idée reçue, en 1 à 2 phrases (30 mots maximum), avec une brève explication. Entoure chaque mot ou groupe de mots clé de **double astérisques**, autant que nécessaire." },
+      advice:    { label: 'conseil pratique (slide 3)',  desc: "Un conseil pratique et actionnable, en 1 à 2 phrases courtes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**." },
+      hashtags1: { label: 'hashtags du slide 1',         desc: "Exactement 3 hashtags pertinents pour le slide de l'idée reçue, séparés par des espaces, en français." },
+      hashtags2: { label: 'hashtags du slide 2',         desc: "Exactement 3 hashtags pertinents pour le slide de la réalité, séparés par des espaces, différents des hashtags du slide 1." },
+      hashtags3: { label: 'hashtags du slide 3',         desc: "Exactement 3 hashtags pertinents pour le slide du conseil pratique, séparés par des espaces, différents des hashtags des slides précédents." }
     };
     const meta = fieldMeta[fieldId];
     const schema = {
@@ -502,9 +542,12 @@ ${hashtags}`;
     };
 
     const ctx = [];
-    if (fieldId !== 'myth'  && $('myth').value.trim())  ctx.push(`Idée reçue : "${$('myth').value.trim()}"`);
-    if (fieldId !== 'truth' && $('truth').value.trim()) ctx.push(`Réalité : "${$('truth').value.trim()}"`);
-    if (fieldId !== 'advice'&& $('advice').value.trim())ctx.push(`Conseil : "${$('advice').value.trim()}"`);
+    if ($('myth').value.trim())      ctx.push(`Idée reçue : "${$('myth').value.trim()}"`);
+    if ($('truth').value.trim())     ctx.push(`Réalité : "${$('truth').value.trim()}"`);
+    if ($('advice').value.trim())    ctx.push(`Conseil : "${$('advice').value.trim()}"`);
+    if ($('hashtags1').value.trim()) ctx.push(`Hashtags slide 1 : "${$('hashtags1').value.trim()}"`);
+    if ($('hashtags2').value.trim()) ctx.push(`Hashtags slide 2 : "${$('hashtags2').value.trim()}"`);
+    if ($('hashtags3').value.trim()) ctx.push(`Hashtags slide 3 : "${$('hashtags3').value.trim()}"`);
 
     const topic = $('ai-topic').value.trim();
     const contextStr = ctx.length ? `\n\nContexte du post :\n${ctx.join('\n')}` : '';
@@ -536,7 +579,10 @@ ${hashtags}`;
       $('myth').value = result.myth || '';
       $('truth').value = result.truth || '';
       $('advice').value = result.advice || '';
-      if (result.hashtags) $('hashtags').value = result.hashtags;
+      if (result.hashtags1) $('hashtags1').value = result.hashtags1;
+      if (result.hashtags2) $('hashtags2').value = result.hashtags2;
+      if (result.hashtags3) $('hashtags3').value = result.hashtags3;
+      ['hashtags1','hashtags2','hashtags3'].forEach((id,i) => updateHashtagCount(id,`ht${i+1}-count`));
       buildSlides();
       statusEl.textContent = 'Contenu généré ✓';
       statusEl.className = 'ai-status success';
@@ -567,7 +613,14 @@ ${hashtags}`;
       statusEl.className = 'ai-status';
       try {
         const result = await generateSingleField(apiKey, fieldId);
-        if (result[fieldId]) { $(fieldId).value = result[fieldId]; buildSlides(); }
+        if (result[fieldId]) {
+          $(fieldId).value = result[fieldId];
+          if (fieldId.startsWith('hashtags')) {
+            const i = fieldId.slice(-1);
+            updateHashtagCount(fieldId, `ht${i}-count`);
+          }
+          buildSlides();
+        }
         statusEl.textContent = 'Bloc régénéré ✓';
         statusEl.className = 'ai-status success';
       } catch (err) {
