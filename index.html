@@ -153,6 +153,15 @@
   .ht-count{font-size:10px;color:#94a3b8;font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px;}
   .ht-count.warn{color:#dc2626;font-weight:700;}
 
+  .type-selector{display:flex;gap:8px;margin-bottom:24px;}
+  .type-btn{
+    background:#fff;color:#475569;border:1.5px solid #d8dee6;border-radius:8px;
+    padding:9px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  .type-btn.active{background:var(--orange);border-color:var(--orange);color:#fff;}
+  .type-btn:hover:not(.active){border-color:var(--orange);color:var(--orange);}
+
   .captions-wrap{display:flex;flex-direction:column;gap:10px;max-width:640px;}
   .caption-block{background:#fff;border-radius:10px;padding:16px 20px;box-shadow:0 2px 12px rgba(20,40,70,.07);}
   .caption-block-label{font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
@@ -184,6 +193,11 @@
   <h1>Générateur de posts carrousel — Idées reçues</h1>
   <p class="sub">Génère le contenu via l'IA ou remplis les champs manuellement (idée reçue, réalité, conseil pratique). L'aperçu et la légende se mettent à jour automatiquement. Télécharge chaque slide en PNG (1080×1080, prêt pour Instagram).</p>
 
+  <div class="type-selector">
+    <button class="type-btn active" data-type="idee-recue">Idée reçue</button>
+    <button class="type-btn" data-type="pro-tips">💡 Pro Tips</button>
+  </div>
+
   <div class="layout">
 
       <div class="panel ai-panel">
@@ -205,19 +219,19 @@
         <h2>Contenu du post</h2>
 
         <div class="field">
-          <label>Idée reçue (slide 1)<button type="button" class="regen-btn" data-field="myth" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
+          <label><span id="label-myth">Idée reçue (slide 1)</span><button type="button" class="regen-btn" data-field="myth" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
           <textarea id="myth" maxlength="180" placeholder="Ex : Tirer en laisse = vouloir **dominer**.">Tirer en laisse = vouloir **dominer** son maître. Une idée encore très répandue chez les propriétaires.</textarea>
           <div class="count" id="myth-count"></div>
         </div>
 
         <div class="field">
-          <label>La réalité (slide 2)<button type="button" class="regen-btn" data-field="truth" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
+          <label><span id="label-truth">La réalité (slide 2)</span><button type="button" class="regen-btn" data-field="truth" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
           <textarea id="truth" maxlength="240" placeholder="Ex : **Faux.** Il n'a jamais appris à marcher en laisse.">**Faux.** Il n'a simplement **jamais appris** à marcher en laisse détendue : ce n'est pas une question de hiérarchie, mais d'apprentissage.</textarea>
           <div class="count" id="truth-count"></div>
         </div>
 
         <div class="field">
-          <label>Conseil pratique (slide 3)<button type="button" class="regen-btn" data-field="advice" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
+          <label><span id="label-advice">Conseil pratique (slide 3)</span><button type="button" class="regen-btn" data-field="advice" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
           <textarea id="advice" maxlength="180" placeholder="Ex : **Renforcement positif** dès les premiers pas.">Travaillez le **renforcement positif** dès les premiers pas, dans un environnement calme et sans distraction.</textarea>
           <div class="count" id="advice-count"></div>
         </div>
@@ -255,7 +269,7 @@
               <div class="quote-watermark">“</div>
               <div class="slide-badge">
                 <span class="badge-num">1</span>
-                <span class="badge-label">Idée reçue</span>
+                <span class="badge-label" id="badge-label-1">Idée reçue</span>
               </div>
               <div class="slide-headline" id="s1-text"></div>
               <div class="slide-footer">
@@ -277,7 +291,7 @@
               <div class="quote-watermark">“</div>
               <div class="slide-badge">
                 <span class="badge-num">2</span>
-                <span class="badge-label">La réalité</span>
+                <span class="badge-label" id="badge-label-2">La réalité</span>
               </div>
               <div class="slide-headline" id="s2-text"></div>
               <div class="slide-footer">
@@ -299,7 +313,7 @@
               <div class="quote-watermark">“</div>
               <div class="slide-badge">
                 <span class="badge-num">3</span>
-                <span class="badge-label">En pratique</span>
+                <span class="badge-label" id="badge-label-3">En pratique</span>
               </div>
               <div class="slide-headline" id="s3-text"></div>
               <div class="slide-footer">
@@ -317,14 +331,14 @@
       </div>
 
       <div class="downloads">
-        <button onclick="downloadSlide('slide1','1-idee-recue.png')">⬇ Slide 1 (idée reçue)</button>
-        <button onclick="downloadSlide('slide2','2-realite.png')">⬇ Slide 2 (réalité)</button>
-        <button onclick="downloadSlide('slide3','3-conseil.png')">⬇ Slide 3 (conseil)</button>
+        <button id="dl-btn-1" onclick="downloadSlide('slide1', POST_TYPE_CONFIG[currentType].downloadFiles[0])">⬇ Slide 1 (idée reçue)</button>
+        <button id="dl-btn-2" onclick="downloadSlide('slide2', POST_TYPE_CONFIG[currentType].downloadFiles[1])">⬇ Slide 2 (réalité)</button>
+        <button id="dl-btn-3" onclick="downloadSlide('slide3', POST_TYPE_CONFIG[currentType].downloadFiles[2])">⬇ Slide 3 (conseil)</button>
       </div>
 
       <div class="captions-wrap">
         <div class="caption-block">
-          <div class="caption-block-label">Légende slide 1 — Idée reçue</div>
+          <div class="caption-block-label" id="caption-label-1">Légende slide 1 — Idée reçue</div>
           <textarea id="caption1" readonly></textarea>
           <div class="caption-actions">
             <button class="alt" onclick="copyCaption('caption1','copied-msg1')">Copier</button>
@@ -332,7 +346,7 @@
           </div>
         </div>
         <div class="caption-block">
-          <div class="caption-block-label">Légende slide 2 — La réalité</div>
+          <div class="caption-block-label" id="caption-label-2">Légende slide 2 — La réalité</div>
           <textarea id="caption2" readonly></textarea>
           <div class="caption-actions">
             <button class="alt" onclick="copyCaption('caption2','copied-msg2')">Copier</button>
@@ -340,7 +354,7 @@
           </div>
         </div>
         <div class="caption-block">
-          <div class="caption-block-label">Légende slide 3 — Conseil pratique</div>
+          <div class="caption-block-label" id="caption-label-3">Légende slide 3 — Conseil pratique</div>
           <textarea id="caption3" readonly></textarea>
           <div class="caption-actions">
             <button class="alt" onclick="copyCaption('caption3','copied-msg3')">Copier</button>
@@ -416,13 +430,15 @@
   }
 
   function updateCaptions(myth, truth, advice){
+    const cfg = POST_TYPE_CONFIG[currentType];
     const ht1 = $('hashtags1').value.trim();
     const ht2 = $('hashtags2').value.trim();
     const ht3 = $('hashtags3').value.trim();
     const cta = `\n\nUne question sur le comportement de ton chien ? Je t'accompagne en Haute-Garonne & Ariège.\n🔗 thomasleblanc.fr`;
-    $('caption1').value = `❌ Idée reçue : ${stripHighlight(myth)}${cta}${ht1 ? '\n\n' + ht1 : ''}`;
-    $('caption2').value = `✅ La réalité : ${stripHighlight(truth)}${cta}${ht2 ? '\n\n' + ht2 : ''}`;
-    $('caption3').value = `🐾 En pratique : ${stripHighlight(advice)}${cta}${ht3 ? '\n\n' + ht3 : ''}`;
+    const [p1, p2, p3] = cfg.captionPrefixes;
+    $('caption1').value = `${p1} : ${stripHighlight(myth)}${cta}${ht1 ? '\n\n' + ht1 : ''}`;
+    $('caption2').value = `${p2} : ${stripHighlight(truth)}${cta}${ht2 ? '\n\n' + ht2 : ''}`;
+    $('caption3').value = `${p3} : ${stripHighlight(advice)}${cta}${ht3 ? '\n\n' + ht3 : ''}`;
   }
 
   ['myth','truth','advice','hashtags1','hashtags2','hashtags3'].forEach(id => $(id).addEventListener('input', buildSlides));
@@ -472,6 +488,111 @@
     if (apiKeyInput.value.trim()) localStorage.setItem('anthropic_api_key', apiKeyInput.value.trim());
   });
 
+  // ── Configuration par type de post ──
+  const POST_TYPE_CONFIG = {
+    'idee-recue': {
+      aiTopicPlaceholder: 'Ex : le collier étrangleur — laisse vide pour une suggestion',
+      slides: [
+        { theme: 'orange', badgeLabel: 'Idée reçue' },
+        { theme: 'dark',   badgeLabel: 'La réalité'  },
+        { theme: 'light',  badgeLabel: 'En pratique' }
+      ],
+      fields: {
+        myth:   { label: 'Idée reçue (slide 1)',       placeholder: 'Ex : Tirer en laisse = vouloir **dominer** son maître. Une idée encore très répandue.' },
+        truth:  { label: 'La réalité (slide 2)',        placeholder: 'Ex : **Faux.** Il n\'a simplement **jamais appris** à marcher en laisse détendue.' },
+        advice: { label: 'Conseil pratique (slide 3)',  placeholder: 'Ex : Travaillez le **renforcement positif** dès les premiers pas, dans un environnement calme.' }
+      },
+      downloadLabels: ['Slide 1 (idée reçue)', 'Slide 2 (réalité)', 'Slide 3 (conseil)'],
+      downloadFiles:  ['1-idee-recue.png', '2-realite.png', '3-conseil.png'],
+      captionLabels:  ['Légende slide 1 — Idée reçue', 'Légende slide 2 — La réalité', 'Légende slide 3 — Conseil pratique'],
+      captionPrefixes: ['❌ Idée reçue', '✅ La réalité', '🐾 En pratique'],
+      regenLabels: {
+        myth: 'idée reçue (slide 1)', truth: 'réalité (slide 2)', advice: 'conseil pratique (slide 3)',
+        hashtags1: 'hashtags du slide 1', hashtags2: 'hashtags du slide 2', hashtags3: 'hashtags du slide 3'
+      },
+      buildPrompt: topic => topic
+        ? `Crée un post Instagram qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`
+        : 'Choisis une idée reçue fréquente et pertinente sur le comportement canin (adaptée à la pratique de Thomas, y compris éventuellement sur les chiens de protection de troupeau) et crée un post Instagram qui la déconstruit.',
+      buildRegenPrompt: (label, topic, contextStr) =>
+        `Régénère uniquement le bloc "${label}" pour ce post Instagram${topic ? ` sur : "${topic}"` : ''}, en restant cohérent avec le reste du post.${contextStr}`,
+      schemaProps: {
+        myth:      { type: 'string', description: "L'idée reçue, en 1 à 2 phrases courtes et percutantes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques** pour le surligner, plusieurs si le sens le justifie, sinon un seul suffit." },
+        truth:     { type: 'string', description: "La réalité qui déconstruit l'idée reçue, en 1 à 2 phrases (30 mots maximum), avec une brève explication du pourquoi. Entoure chaque mot ou groupe de mots clé de **double astérisques**, autant que nécessaire pour faire ressortir les points essentiels, sans en abuser." },
+        advice:    { type: 'string', description: "Un conseil pratique et actionnable, en 1 à 2 phrases courtes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**, plusieurs si le sens le justifie." },
+        hashtags1: { type: 'string', description: "3 hashtags pour le slide 1 (idée reçue), séparés par des espaces, en français." },
+        hashtags2: { type: 'string', description: "3 hashtags pour le slide 2 (réalité), séparés par des espaces, différents du slide 1." },
+        hashtags3: { type: 'string', description: "3 hashtags pour le slide 3 (conseil pratique), séparés par des espaces, différents des slides précédents." }
+      }
+    },
+    'pro-tips': {
+      aiTopicPlaceholder: 'Ex : fortes chaleurs et activités de flair — laisse vide pour une suggestion',
+      slides: [
+        { theme: 'light',  badgeLabel: 'Pro Tip'     },
+        { theme: 'dark',   badgeLabel: 'Pourquoi'    },
+        { theme: 'orange', badgeLabel: 'En pratique' }
+      ],
+      fields: {
+        myth:   { label: 'Le tip (slide 1)',          placeholder: 'Ex : **Forte chaleur** + flair en extérieur = danger pour ton chien.' },
+        truth:  { label: 'Pourquoi (slide 2)',         placeholder: 'Ex : Quand il flair, il **n\'halète plus** et ne peut plus réguler sa température.' },
+        advice: { label: 'Action concrète (slide 3)',  placeholder: 'Ex : Par temps chaud, travaille le **flair à l\'intérieur** ou tôt le matin.' }
+      },
+      downloadLabels: ['Slide 1 (pro tip)', 'Slide 2 (pourquoi)', 'Slide 3 (pratique)'],
+      downloadFiles:  ['1-pro-tip.png', '2-pourquoi.png', '3-pratique.png'],
+      captionLabels:  ['Légende slide 1 — Pro Tip', 'Légende slide 2 — Pourquoi', 'Légende slide 3 — En pratique'],
+      captionPrefixes: ['💡 Pro Tip', '🔬 Pourquoi', '✅ En pratique'],
+      regenLabels: {
+        myth: 'tip (slide 1)', truth: 'explication pourquoi (slide 2)', advice: 'action concrète (slide 3)',
+        hashtags1: 'hashtags du slide 1', hashtags2: 'hashtags du slide 2', hashtags3: 'hashtags du slide 3'
+      },
+      buildPrompt: topic => topic
+        ? `Crée un post Instagram "Pro Tips" sur ce conseil canin : "${topic}". Structure attendue : tip percutant / explication scientifique ou éthologique / action concrète.`
+        : 'Choisis un conseil pratique et pertinent sur le comportement ou le bien-être canin (adapté à la pratique de Thomas, y compris sur les chiens de protection de troupeau) et crée un post Instagram "Pro Tips" : tip percutant / explication scientifique ou éthologique / action concrète.',
+      buildRegenPrompt: (label, topic, contextStr) =>
+        `Régénère uniquement le bloc "${label}" pour ce post Instagram "Pro Tips"${topic ? ` sur : "${topic}"` : ''}, en restant cohérent avec le reste du post.${contextStr}`,
+      schemaProps: {
+        myth:      { type: 'string', description: "Le tip principal : une affirmation courte et percutante (20 mots maximum) qui annonce le conseil. Commence par l'enjeu (ex : \"Forte chaleur + flair en extérieur = danger pour ton chien.\"). Entoure chaque mot ou groupe de mots important de **double astérisques**." },
+        truth:     { type: 'string', description: "L'explication scientifique ou éthologique du pourquoi, en 1 à 2 phrases (30 mots maximum). Donne le mécanisme concret (ex : \"Quand il flair, il n'halète plus et ne peut plus réguler sa température corporelle.\"). Entoure les mots clés de **double astérisques**." },
+        advice:    { type: 'string', description: "L'action concrète et immédiatement applicable, en 1 à 2 phrases courtes (20 mots maximum). Commence par un verbe d'action (ex : \"Par temps chaud, fais ton travail de flair à l'intérieur ou tôt le matin.\"). Entoure les mots importants de **double astérisques**." },
+        hashtags1: { type: 'string', description: "3 hashtags pour le slide 1 (le tip), séparés par des espaces, en français." },
+        hashtags2: { type: 'string', description: "3 hashtags pour le slide 2 (le pourquoi), séparés par des espaces, différents du slide 1." },
+        hashtags3: { type: 'string', description: "3 hashtags pour le slide 3 (l'action concrète), séparés par des espaces, différents des slides précédents." }
+      }
+    }
+  };
+
+  let currentType = 'idee-recue';
+
+  function switchPostType(type) {
+    currentType = type;
+    const cfg = POST_TYPE_CONFIG[type];
+
+    document.querySelectorAll('.type-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.type === type);
+    });
+
+    cfg.slides.forEach((slide, i) => {
+      const slideEl = $('slide' + (i + 1));
+      slideEl.className = 'slide ' + slide.theme;
+      $('badge-label-' + (i + 1)).textContent = slide.badgeLabel;
+    });
+
+    ['myth', 'truth', 'advice'].forEach(field => {
+      $('label-' + field).textContent = cfg.fields[field].label;
+      $(field).placeholder = cfg.fields[field].placeholder;
+    });
+
+    cfg.downloadLabels.forEach((label, i) => {
+      $('dl-btn-' + (i + 1)).textContent = '⬇ ' + label;
+    });
+
+    cfg.captionLabels.forEach((label, i) => {
+      $('caption-label-' + (i + 1)).textContent = label;
+    });
+
+    $('ai-topic').placeholder = cfg.aiTopicPlaceholder;
+    buildSlides();
+  }
+
   const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPT) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Pour tout contenu portant sur les CPT, appuie-toi exclusivement sur les sources suivantes : http://hogandesvents.nutritionverte.com/articles.html et https://www.cistole.com/etudes-recherche. Tu rédiges du contenu pour des posts Instagram au format \"idée reçue / réalité / conseil pratique\". Le ton doit être percutant et direct, façon accroche publicitaire, mais peut développer en une ou deux phrases pour apporter un minimum de contexte ou d'explication : chaque champ doit rester lisible d'un coup d'œil sur une image carrée. Utilise systématiquement la syntaxe **mot** pour mettre en valeur les mots clés : surligne plusieurs mots ou groupes de mots si plusieurs éléments sont essentiels au message, pas seulement le premier venu. Adresse-toi toujours aux propriétaires en tutoiement (\"tu\", \"ton\", \"te\", \"t'\"), jamais en vouvoiement. N'utilise jamais le tiret cadratin (—) : remplace-le par une virgule, des deux-points ou reformule la phrase.";
 
   async function callAnthropicAPI(apiKey, userPrompt, schema, maxTokens = 1024) {
@@ -503,55 +624,39 @@
   }
 
   async function generateWithAI(apiKey, topic){
+    const cfg = POST_TYPE_CONFIG[currentType];
     const schema = {
       type: 'object',
-      properties: {
-        myth: { type: 'string', description: "L'idée reçue, en 1 à 2 phrases courtes et percutantes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques** pour le surligner, plusieurs si le sens le justifie, sinon un seul suffit." },
-        truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue, en 1 à 2 phrases (30 mots maximum), avec une brève explication du pourquoi. Entoure chaque mot ou groupe de mots clé de **double astérisques**, autant que nécessaire pour faire ressortir les points essentiels, sans en abuser." },
-        advice: { type: 'string', description: "Un conseil pratique et actionnable, en 1 à 2 phrases courtes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**, plusieurs si le sens le justifie." },
-        hashtags1: { type: 'string', description: "3 hashtags pour le slide 1 (idée reçue), séparés par des espaces, en français." },
-        hashtags2: { type: 'string', description: "3 hashtags pour le slide 2 (réalité), séparés par des espaces, différents du slide 1." },
-        hashtags3: { type: 'string', description: "3 hashtags pour le slide 3 (conseil pratique), séparés par des espaces, différents des slides précédents." }
-      },
+      properties: cfg.schemaProps,
       required: ['myth', 'truth', 'advice', 'hashtags1', 'hashtags2', 'hashtags3'],
       additionalProperties: false
     };
-
-    const userPrompt = topic
-      ? `Crée un post Instagram qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`
-      : 'Choisis une idée reçue fréquente et pertinente sur le comportement canin (adaptée à la pratique de Thomas, y compris éventuellement sur les chiens de protection de troupeau) et crée un post Instagram qui la déconstruit.';
-
+    const userPrompt = cfg.buildPrompt(topic);
     return callAnthropicAPI(apiKey, userPrompt, schema);
   }
 
   async function generateSingleField(apiKey, fieldId) {
-    const fieldMeta = {
-      myth:      { label: 'idée reçue (slide 1)',       desc: "L'idée reçue, en 1 à 2 phrases courtes et percutantes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**, plusieurs si le sens le justifie." },
-      truth:     { label: 'réalité (slide 2)',           desc: "La réalité qui déconstruit l'idée reçue, en 1 à 2 phrases (30 mots maximum), avec une brève explication. Entoure chaque mot ou groupe de mots clé de **double astérisques**, autant que nécessaire." },
-      advice:    { label: 'conseil pratique (slide 3)',  desc: "Un conseil pratique et actionnable, en 1 à 2 phrases courtes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**." },
-      hashtags1: { label: 'hashtags du slide 1',         desc: "Exactement 3 hashtags pertinents pour le slide de l'idée reçue, séparés par des espaces, en français." },
-      hashtags2: { label: 'hashtags du slide 2',         desc: "Exactement 3 hashtags pertinents pour le slide de la réalité, séparés par des espaces, différents des hashtags du slide 1." },
-      hashtags3: { label: 'hashtags du slide 3',         desc: "Exactement 3 hashtags pertinents pour le slide du conseil pratique, séparés par des espaces, différents des hashtags des slides précédents." }
-    };
-    const meta = fieldMeta[fieldId];
+    const cfg = POST_TYPE_CONFIG[currentType];
+    const label = cfg.regenLabels[fieldId];
+    const desc  = cfg.schemaProps[fieldId].description;
     const schema = {
       type: 'object',
-      properties: { [fieldId]: { type: 'string', description: meta.desc } },
+      properties: { [fieldId]: { type: 'string', description: desc } },
       required: [fieldId],
       additionalProperties: false
     };
 
     const ctx = [];
-    if ($('myth').value.trim())      ctx.push(`Idée reçue : "${$('myth').value.trim()}"`);
-    if ($('truth').value.trim())     ctx.push(`Réalité : "${$('truth').value.trim()}"`);
-    if ($('advice').value.trim())    ctx.push(`Conseil : "${$('advice').value.trim()}"`);
+    if ($('myth').value.trim())      ctx.push(`Slide 1 : "${$('myth').value.trim()}"`);
+    if ($('truth').value.trim())     ctx.push(`Slide 2 : "${$('truth').value.trim()}"`);
+    if ($('advice').value.trim())    ctx.push(`Slide 3 : "${$('advice').value.trim()}"`);
     if ($('hashtags1').value.trim()) ctx.push(`Hashtags slide 1 : "${$('hashtags1').value.trim()}"`);
     if ($('hashtags2').value.trim()) ctx.push(`Hashtags slide 2 : "${$('hashtags2').value.trim()}"`);
     if ($('hashtags3').value.trim()) ctx.push(`Hashtags slide 3 : "${$('hashtags3').value.trim()}"`);
 
     const topic = $('ai-topic').value.trim();
     const contextStr = ctx.length ? `\n\nContexte du post :\n${ctx.join('\n')}` : '';
-    const userPrompt = `Régénère uniquement le bloc "${meta.label}" pour ce post Instagram${topic ? ` sur : "${topic}"` : ''}, en restant cohérent avec le reste du post.${contextStr}`;
+    const userPrompt = cfg.buildRegenPrompt(label, topic, contextStr);
 
     return callAnthropicAPI(apiKey, userPrompt, schema, 512);
   }
@@ -653,6 +758,11 @@
     bgLayers.forEach(layer => { layer.style.backgroundImage = 'none'; });
     bgPhotoInput.value = '';
     bgRemoveBtn.style.display = 'none';
+  });
+
+  // ── Sélecteur de type de post ──
+  document.querySelectorAll('.type-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchPostType(btn.dataset.type));
   });
 
   document.fonts.ready.then(buildSlides);
