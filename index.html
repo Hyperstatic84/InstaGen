@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Générateur de posts Instagram · Thomas Le Blanc</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#f97316">
+<meta name="theme-color" content="#0d1821">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="InstaGen">
@@ -24,11 +24,12 @@
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
   body{
     font-family:'Outfit',system-ui,sans-serif;
-    background:#eef1f5;
-    color:var(--nature-800);
+    background:#0d1821;
+    color:#e2e8f0;
     padding:32px 36px 60px;
+    color-scheme:dark;
   }
-  h1{font-size:21px;font-weight:700;margin-bottom:4px;}
+  h1{font-size:21px;font-weight:700;margin-bottom:4px;color:#f1f5f9;}
   .sub{color:#64748b;font-size:13px;margin-bottom:28px;max-width:640px;line-height:1.5;}
 
   .layout{
@@ -45,28 +46,28 @@
   .right-col{grid-area:right;min-width:0;}
 
   .panel{
-    background:#fff;
+    background:#172031;
     border-radius:10px;
     padding:22px 24px;
-    box-shadow:0 2px 12px rgba(20,40,70,.07);
+    box-shadow:0 2px 16px rgba(0,0,0,.4);
     width:100%;
   }
-  .panel h2{font-size:14px;margin-bottom:16px;letter-spacing:.02em;}
+  .panel h2{font-size:14px;margin-bottom:16px;letter-spacing:.02em;color:#cbd5e1;}
 
-  .ai-panel{border:1.5px solid #fed7aa;background:#fff8f1;margin-bottom:20px;}
-  .ai-panel h2{color:var(--orange-600);}
+  .ai-panel{border:1.5px solid rgba(249,115,22,.4);background:rgba(249,115,22,.08);margin-bottom:20px;}
+  .ai-panel h2{color:var(--orange);}
   .ai-status{font-size:12px;margin-top:10px;min-height:14px;}
-  .ai-status.success{color:#16a34a;font-weight:600;}
-  .ai-status.error{color:#dc2626;font-weight:600;}
+  .ai-status.success{color:#22c55e;font-weight:600;}
+  .ai-status.error{color:#f87171;font-weight:600;}
 
   .field{margin-bottom:16px;}
   .field label{
     display:flex;align-items:center;justify-content:space-between;
-    font-size:11px;font-weight:600;color:#475569;
+    font-size:11px;font-weight:600;color:#64748b;
     margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;
   }
   .regen-btn{
-    flex-shrink:0;background:none;border:1px solid #d8dee6;border-radius:5px;
+    flex-shrink:0;background:none;border:1px solid #2d3f55;border-radius:5px;
     font-size:12px;padding:2px 7px;cursor:pointer;color:#64748b;
     font-family:inherit;font-weight:600;letter-spacing:0;text-transform:none;
     transition:background .15s,border-color .15s,color .15s;line-height:1.4;
@@ -75,8 +76,9 @@
   .regen-btn:disabled{opacity:.45;cursor:wait;}
   .field textarea, .field input[type="text"], .field input[type="password"]{
     width:100%;min-height:72px;resize:vertical;
-    border:1px solid #d8dee6;border-radius:6px;padding:9px 11px;
-    font-family:inherit;font-size:13px;line-height:1.45;color:var(--nature-800);
+    border:1px solid #2d3f55;border-radius:6px;padding:9px 11px;
+    font-family:inherit;font-size:13px;line-height:1.45;color:#e2e8f0;
+    background:#0d1821;
   }
   .field input[type="text"], .field input[type="password"]{min-height:auto;height:38px;}
   .field textarea:focus, .field input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 2px rgba(249,115,22,.18);}
@@ -161,7 +163,7 @@
 
   .type-selector{display:flex;gap:8px;margin-bottom:24px;}
   .type-btn{
-    background:#fff;color:#475569;border:1.5px solid #d8dee6;border-radius:8px;
+    background:#172031;color:#94a3b8;border:1.5px solid #2d3f55;border-radius:8px;
     padding:9px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
     transition:background .15s,border-color .15s,color .15s;
   }
@@ -169,14 +171,15 @@
   .type-btn:hover:not(.active){border-color:var(--orange);color:var(--orange);}
 
   .captions-wrap{display:flex;flex-direction:column;gap:10px;max-width:640px;}
-  .caption-block{background:#fff;border-radius:10px;padding:16px 20px;box-shadow:0 2px 12px rgba(20,40,70,.07);}
+  .caption-block{background:#172031;border-radius:10px;padding:16px 20px;box-shadow:0 2px 16px rgba(0,0,0,.4);}
   .caption-block-label{font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
   .caption-block textarea{
     width:100%;min-height:100px;font-family:inherit;font-size:12.5px;line-height:1.55;
-    padding:10px 12px;border:1px solid #d8dee6;border-radius:6px;color:var(--nature-800);resize:vertical;
+    padding:10px 12px;border:1px solid #2d3f55;border-radius:6px;color:#e2e8f0;resize:vertical;
+    background:#0d1821;
   }
   .caption-actions{display:flex;gap:10px;margin-top:10px;}
-  .copied{font-size:12px;color:#16a34a;font-weight:600;align-self:center;opacity:0;transition:opacity .2s;}
+  .copied{font-size:12px;color:#22c55e;font-weight:600;align-self:center;opacity:0;transition:opacity .2s;}
   .copied.show{opacity:1;}
 
   @media (max-width:860px){

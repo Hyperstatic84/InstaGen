@@ -4,9 +4,9 @@
   "description": "Génère des posts carrousel Instagram (idées reçues, petits conseils) pour comportementaliste canin.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#eef1f5",
-  "theme_color": "#f97316",
-  "orientation": "any",
+  "background_color": "#0d1821",
+  "theme_color": "#0d1821",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon.svg",
