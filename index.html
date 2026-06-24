@@ -259,6 +259,13 @@
           <textarea id="hashtags3" maxlength="150" placeholder="3 hashtags max">#thomasleblanc #hautegaronne #ariege</textarea>
         </div>
 
+        <hr style="border:none;border-top:1px solid #2d3f55;margin:4px 0 16px;">
+        <div class="field">
+          <label><span>Hashtag audience — méthodes traditionnelles</span><button type="button" class="regen-btn" data-field="hashtag_audience" title="Régénérer ce hashtag via IA">↻ Régénérer</button></label>
+          <input type="text" id="hashtag_audience" maxlength="60" placeholder="#dominancecanine">
+          <div style="font-size:10.5px;color:#64748b;margin-top:5px;line-height:1.4;">Cibler les propriétaires habitués aux méthodes coercitives ou à la théorie de la dominance. Ce hashtag sera ajouté automatiquement aux 3 légendes.</div>
+        </div>
+
         <div class="field">
           <label>Photo de fond (filigrane)</label>
           <input type="file" id="bg-photo" accept="image/*">
@@ -443,14 +450,16 @@
     const ht1 = $('hashtags1').value.trim();
     const ht2 = $('hashtags2').value.trim();
     const ht3 = $('hashtags3').value.trim();
+    const htA = $('hashtag_audience').value.trim();
     const cta = `\n\nUne question sur le comportement de ton chien ? Je t'accompagne en Haute-Garonne & Ariège.\n🔗 thomasleblanc.fr`;
     const [p1, p2, p3] = cfg.captionPrefixes;
-    $('caption1').value = `${p1} : ${stripHighlight(myth)}${cta}${ht1 ? '\n\n' + ht1 : ''}`;
-    $('caption2').value = `${p2} : ${stripHighlight(truth)}${cta}${ht2 ? '\n\n' + ht2 : ''}`;
-    $('caption3').value = `${p3} : ${stripHighlight(advice)}${cta}${ht3 ? '\n\n' + ht3 : ''}`;
+    const htBlock = ht => { const parts = [ht, htA].filter(Boolean).join(' '); return parts ? '\n\n' + parts : ''; };
+    $('caption1').value = `${p1} : ${stripHighlight(myth)}${cta}${htBlock(ht1)}`;
+    $('caption2').value = `${p2} : ${stripHighlight(truth)}${cta}${htBlock(ht2)}`;
+    $('caption3').value = `${p3} : ${stripHighlight(advice)}${cta}${htBlock(ht3)}`;
   }
 
-  ['myth','truth','advice','hashtags1','hashtags2','hashtags3'].forEach(id => $(id).addEventListener('input', buildSlides));
+  ['myth','truth','advice','hashtags1','hashtags2','hashtags3','hashtag_audience'].forEach(id => $(id).addEventListener('input', buildSlides));
   ['hashtags1','hashtags2','hashtags3'].forEach((id, i) => {
     $(id).addEventListener('input', () => updateHashtagCount(id, `ht${i+1}-count`));
     updateHashtagCount(id, `ht${i+1}-count`);
@@ -517,7 +526,8 @@
       captionPrefixes: ['❌ Idée reçue', '✅ La réalité', '🐾 En pratique'],
       regenLabels: {
         myth: 'idée reçue (slide 1)', truth: 'réalité (slide 2)', advice: 'conseil pratique (slide 3)',
-        hashtags1: 'hashtags du slide 1', hashtags2: 'hashtags du slide 2', hashtags3: 'hashtags du slide 3'
+        hashtags1: 'hashtags du slide 1', hashtags2: 'hashtags du slide 2', hashtags3: 'hashtags du slide 3',
+        hashtag_audience: 'hashtag audience méthodes coercitives'
       },
       buildPrompt: topic => topic
         ? `Crée un post Instagram qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`
@@ -530,7 +540,8 @@
         advice:    { type: 'string', description: "Un conseil pratique et actionnable, en 1 à 2 phrases courtes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**, plusieurs si le sens le justifie." },
         hashtags1: { type: 'string', description: "3 hashtags pour le slide 1 (idée reçue), séparés par des espaces, en français." },
         hashtags2: { type: 'string', description: "3 hashtags pour le slide 2 (réalité), séparés par des espaces, différents du slide 1." },
-        hashtags3: { type: 'string', description: "3 hashtags pour le slide 3 (conseil pratique), séparés par des espaces, différents des slides précédents." }
+        hashtags3: { type: 'string', description: "3 hashtags pour le slide 3 (conseil pratique), séparés par des espaces, différents des slides précédents." },
+        hashtag_audience: { type: 'string', description: "1 seul hashtag (commençant par #, sans espace dans le tag) utilisé par les propriétaires ou éducateurs adeptes des méthodes coercitives ou de la théorie de la dominance (ex : #dominancecanine, #chiendominant, #meute, #dressagechien, #alphachien, #collieretrangleur). Ce hashtag permettra aux posts de Thomas d'apparaître dans le fil de cette audience et de lui proposer une alternative bienveillante. Un seul hashtag, bien choisi." }
       }
     },
     'pro-tips': {
@@ -551,7 +562,8 @@
       captionPrefixes: ['💡 Le savais-tu ?', '🔬 Pourquoi', '✅ En pratique'],
       regenLabels: {
         myth: 'tip (slide 1)', truth: 'explication pourquoi (slide 2)', advice: 'action concrète (slide 3)',
-        hashtags1: 'hashtags du slide 1', hashtags2: 'hashtags du slide 2', hashtags3: 'hashtags du slide 3'
+        hashtags1: 'hashtags du slide 1', hashtags2: 'hashtags du slide 2', hashtags3: 'hashtags du slide 3',
+        hashtag_audience: 'hashtag audience méthodes coercitives'
       },
       buildPrompt: topic => topic
         ? `Crée un post Instagram "Pro Tips" sur ce conseil canin : "${topic}". Structure attendue : tip percutant / explication scientifique ou éthologique / action concrète.`
@@ -564,7 +576,8 @@
         advice:    { type: 'string', description: "L'action concrète et immédiatement applicable, en 1 à 2 phrases courtes (20 mots maximum). Commence par un verbe d'action (ex : \"Par temps chaud, fais ton travail de flair à l'intérieur ou tôt le matin.\"). Entoure les mots importants de **double astérisques**." },
         hashtags1: { type: 'string', description: "3 hashtags pour le slide 1 (le tip), séparés par des espaces, en français." },
         hashtags2: { type: 'string', description: "3 hashtags pour le slide 2 (le pourquoi), séparés par des espaces, différents du slide 1." },
-        hashtags3: { type: 'string', description: "3 hashtags pour le slide 3 (l'action concrète), séparés par des espaces, différents des slides précédents." }
+        hashtags3: { type: 'string', description: "3 hashtags pour le slide 3 (l'action concrète), séparés par des espaces, différents des slides précédents." },
+        hashtag_audience: { type: 'string', description: "1 seul hashtag (commençant par #, sans espace dans le tag) utilisé par les propriétaires ou éducateurs adeptes des méthodes coercitives ou de la théorie de la dominance (ex : #dominancecanine, #chiendominant, #meute, #dressagechien, #alphachien, #collieretrangleur). Ce hashtag permettra aux posts de Thomas d'apparaître dans le fil de cette audience et de lui proposer une alternative bienveillante. Un seul hashtag, bien choisi." }
       }
     }
   };
@@ -637,7 +650,7 @@
     const schema = {
       type: 'object',
       properties: cfg.schemaProps,
-      required: ['myth', 'truth', 'advice', 'hashtags1', 'hashtags2', 'hashtags3'],
+      required: ['myth', 'truth', 'advice', 'hashtags1', 'hashtags2', 'hashtags3', 'hashtag_audience'],
       additionalProperties: false
     };
     const userPrompt = cfg.buildPrompt(topic);
@@ -662,6 +675,8 @@
     if ($('hashtags1').value.trim()) ctx.push(`Hashtags slide 1 : "${$('hashtags1').value.trim()}"`);
     if ($('hashtags2').value.trim()) ctx.push(`Hashtags slide 2 : "${$('hashtags2').value.trim()}"`);
     if ($('hashtags3').value.trim()) ctx.push(`Hashtags slide 3 : "${$('hashtags3').value.trim()}"`);
+    if ($('hashtag_audience').value.trim()) ctx.push(`Hashtag audience : "${$('hashtag_audience').value.trim()}"`);
+
 
     const topic = $('ai-topic').value.trim();
     const contextStr = ctx.length ? `\n\nContexte du post :\n${ctx.join('\n')}` : '';
@@ -696,6 +711,7 @@
       if (result.hashtags1) $('hashtags1').value = result.hashtags1;
       if (result.hashtags2) $('hashtags2').value = result.hashtags2;
       if (result.hashtags3) $('hashtags3').value = result.hashtags3;
+      if (result.hashtag_audience) $('hashtag_audience').value = result.hashtag_audience;
       ['hashtags1','hashtags2','hashtags3'].forEach((id,i) => updateHashtagCount(id,`ht${i+1}-count`));
       buildSlides();
       statusEl.textContent = 'Contenu généré ✓';
