@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Générateur de posts Instagram</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0d1821">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="InstaGen">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
+<style>
+  :root{
+    --nature-50:#EEF7FF;
+    --nature-800:#28394A;
+    --nature-900:#1E2D3D;
+    --orange:#f97316;
+    --orange-600:#ea580c;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Outfit',system-ui,sans-serif;
+    background:#0d1821;
+    color:#e2e8f0;
+    padding:32px 36px 60px;
+    color-scheme:dark;
+  }
+  h1{font-size:21px;font-weight:700;margin-bottom:4px;color:#f1f5f9;}
+  .sub{color:#64748b;font-size:13px;margin-bottom:20px;max-width:640px;line-height:1.5;}
+
+  /* ── Panneau configuration ── */
+  .config-panel{
+    background:#172031;border:1.5px solid #2d3f55;border-radius:10px;
+    margin-bottom:24px;box-shadow:0 2px 16px rgba(0,0,0,.4);
+  }
+  .config-panel summary{
+    font-size:13px;font-weight:600;color:#94a3b8;
+    padding:14px 20px;cursor:pointer;
+    display:flex;align-items:center;gap:8px;
+    list-style:none;user-select:none;border-radius:10px;
+  }
+  .config-panel summary::-webkit-details-marker{display:none;}
+  .config-panel[open] summary{
+    border-bottom:1px solid #2d3f55;border-radius:10px 10px 0 0;color:#cbd5e1;
+  }
+  .config-inner{
+    display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;padding:20px;
+  }
+  .config-field label{
+    display:block;font-size:11px;font-weight:600;
+    color:#64748b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;
+  }
+  .config-field input[type="text"],.config-field input[type="url"]{
+    width:100%;height:36px;background:#0d1821;border:1px solid #2d3f55;
+    border-radius:6px;padding:0 10px;font-family:inherit;font-size:13px;color:#e2e8f0;
+  }
+  .config-field input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 2px rgba(249,115,22,.18);}
+  .config-field.full{grid-column:1/-1;}
+  .color-row{display:flex;align-items:center;gap:10px;}
+  .color-row input[type="color"]{
+    width:38px;height:36px;background:#0d1821;border:1px solid #2d3f55;
+    border-radius:6px;padding:2px;cursor:pointer;flex-shrink:0;
+  }
+  .color-hex{
+    width:90px;height:36px;background:#0d1821;border:1px solid #2d3f55;
+    border-radius:6px;padding:0 10px;font-family:inherit;font-size:13px;color:#e2e8f0;
+  }
+  .logo-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .logo-preview{
+    height:36px;width:auto;max-width:120px;object-fit:contain;
+    border-radius:4px;border:1px solid #2d3f55;background:#0d1821;display:none;padding:2px;
+  }
+  .config-hint{font-size:10.5px;color:#64748b;line-height:1.5;grid-column:1/-1;}
+  .config-btn{
+    background:#253347;color:#94a3b8;border:none;border-radius:6px;
+    padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;
+  }
+  .config-btn:hover{background:#2d3f55;color:#e2e8f0;}
+
+  /* ── Sélecteur de type ── */
+  .type-selector{display:flex;gap:8px;margin-bottom:24px;}
+  .type-btn{
+    background:#172031;color:#94a3b8;border:1.5px solid #2d3f55;border-radius:8px;
+    padding:9px 22px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  .type-btn.active{background:var(--orange);border-color:var(--orange);color:#fff;}
+  .type-btn:hover:not(.active){border-color:var(--orange);color:var(--orange);}
+
+  /* ── Layout ── */
+  .layout{
+    display:grid;
+    grid-template-columns:360px 1fr;
+    grid-template-areas:"ai right" "content right";
+    gap:30px;align-items:start;
+  }
+  .ai-panel{grid-area:ai;}
+  .content-panel{grid-area:content;}
+  .right-col{grid-area:right;min-width:0;}
+
+  .panel{
+    background:#172031;border-radius:10px;padding:22px 24px;
+    box-shadow:0 2px 16px rgba(0,0,0,.4);width:100%;
+  }
+  .panel h2{font-size:14px;margin-bottom:16px;letter-spacing:.02em;color:#cbd5e1;}
+
+  .ai-panel{border:1.5px solid rgba(249,115,22,.4);background:rgba(249,115,22,.08);margin-bottom:20px;}
+  .ai-panel h2{color:var(--orange);}
+  .ai-status{font-size:12px;margin-top:10px;min-height:14px;}
+  .ai-status.success{color:#22c55e;font-weight:600;}
+  .ai-status.error{color:#f87171;font-weight:600;}
+
+  .field{margin-bottom:16px;}
+  .field label{
+    display:flex;align-items:center;justify-content:space-between;
+    font-size:11px;font-weight:600;color:#64748b;
+    margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;
+  }
+  .regen-btn{
+    flex-shrink:0;background:none;border:1px solid #2d3f55;border-radius:5px;
+    font-size:12px;padding:2px 7px;cursor:pointer;color:#64748b;
+    font-family:inherit;font-weight:600;letter-spacing:0;text-transform:none;
+    transition:background .15s,border-color .15s,color .15s;line-height:1.4;
+  }
+  .regen-btn:hover:not(:disabled){background:var(--orange);border-color:var(--orange);color:#fff;}
+  .regen-btn:disabled{opacity:.45;cursor:wait;}
+  .field textarea,.field input[type="text"],.field input[type="password"]{
+    width:100%;min-height:72px;resize:vertical;
+    border:1px solid #2d3f55;border-radius:6px;padding:9px 11px;
+    font-family:inherit;font-size:13px;line-height:1.45;color:#e2e8f0;background:#0d1821;
+  }
+  .field input[type="text"],.field input[type="password"]{min-height:auto;height:38px;}
+  .field textarea:focus,.field input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 2px rgba(249,115,22,.18);}
+  .count{font-size:10.5px;color:#64748b;margin-top:4px;text-align:right;}
+  .count.warn{color:var(--orange-600);font-weight:600;}
+
+  /* ── Slides ── */
+  .carousel{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:8px;}
+  .slide-wrap{
+    width:300px;height:300px;overflow:hidden;border-radius:8px;
+    box-shadow:0 6px 22px rgba(0,0,0,.5);position:relative;
+  }
+  .scaler{width:1080px;height:1080px;transform:scale(0.27778);transform-origin:top left;}
+  .slide{
+    width:1080px;height:1080px;display:flex;flex-direction:column;
+    font-family:'Outfit',sans-serif;position:relative;overflow:hidden;padding:90px 90px 30px;
+  }
+  .slide.light{background:linear-gradient(to bottom,var(--nature-50),#fff);color:var(--nature-800);}
+  .slide.dark{background:var(--nature-900);color:#fff;}
+  .slide.orange{background:var(--orange);color:#fff;}
+  .slide.orange .badge-num{background:#fff;color:#14528F;}
+  .slide.orange .badge-label{color:#fff;}
+  .slide.orange .hl{color:var(--nature-900);}
+  .slide.orange .slide-footer{border-top-color:rgba(40,57,74,.2);}
+  .slide.orange .quote-watermark{color:#fff;opacity:.18;}
+
+  .slide-badge{display:flex;align-items:center;gap:24px;margin-bottom:56px;}
+  .badge-num{
+    width:92px;height:92px;background:var(--orange);border-radius:22px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:44px;font-weight:800;
+  }
+  .badge-label{font-size:42px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+  .slide.light .badge-label{color:#0E3C6B;}
+  .slide.dark .badge-label{color:var(--orange);}
+  .slide.light .badge-num{background:#0E3C6B;}
+
+  .slide-headline{
+    font-size:80px;font-weight:800;line-height:1.18;flex:1;min-height:0;overflow:hidden;
+    white-space:pre-wrap;word-break:break-word;position:relative;z-index:1;
+  }
+  .hl{color:var(--orange);}
+
+  .quote-watermark{
+    position:absolute;top:-100px;left:-100px;
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:1440px;font-weight:700;line-height:1;
+    color:var(--orange);opacity:.13;pointer-events:none;
+  }
+  .slide.dark .quote-watermark{opacity:.16;}
+  .slide.light .quote-watermark{color:#0E3C6B;}
+
+  .slide-bg-layer{
+    position:absolute;inset:0;background-size:cover;background-position:center;
+    opacity:.16;filter:grayscale(45%);
+  }
+  .slide.dark .slide-bg-layer{opacity:.24;}
+  .slide-badge,.slide-footer{position:relative;z-index:1;}
+
+  .slide-footer{
+    display:flex;align-items:center;justify-content:center;
+    margin-top:30px;padding-top:30px;border-top:2px solid rgba(40,57,74,.08);
+    height:150px;flex-shrink:0;
+  }
+  .slide.dark .slide-footer{border-top-color:rgba(255,255,255,.15);}
+  .slide-logo{height:100%;width:auto;object-fit:contain;display:none;}
+  .slide-brand-name{font-size:68px;font-weight:800;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+  /* ── Boutons & légendes ── */
+  .downloads{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px;}
+  button{
+    background:#253347;color:#fff;border:none;border-radius:7px;
+    padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
+  }
+  button.alt{background:var(--orange);}
+  button:disabled{opacity:.6;cursor:default;}
+  button:hover:not(:disabled){opacity:.88;}
+  button:active:not(:disabled){transform:translateY(1px);}
+
+  .ht-count{font-size:10px;color:#64748b;font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px;}
+  .ht-count.warn{color:#f87171;font-weight:700;}
+
+  .captions-wrap{display:flex;flex-direction:column;gap:10px;max-width:640px;}
+  .caption-block{background:#172031;border-radius:10px;padding:16px 20px;box-shadow:0 2px 16px rgba(0,0,0,.4);}
+  .caption-block-label{font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+  .caption-block textarea{
+    width:100%;min-height:100px;font-family:inherit;font-size:12.5px;line-height:1.55;
+    padding:10px 12px;border:1px solid #2d3f55;border-radius:6px;color:#e2e8f0;resize:vertical;background:#0d1821;
+  }
+  .caption-actions{display:flex;gap:10px;margin-top:10px;}
+  .copied{font-size:12px;color:#22c55e;font-weight:600;align-self:center;opacity:0;transition:opacity .2s;}
+  .copied.show{opacity:1;}
+
+  @media(max-width:860px){
+    body{padding:20px 16px 50px;}
+    .layout{grid-template-columns:1fr;grid-template-areas:"content" "right" "ai";gap:20px;}
+    .config-inner{grid-template-columns:1fr;}
+    .carousel{justify-content:center;}
+    .captions-wrap{max-width:100%;}
+  }
+</style>
+</head>
+<body>
+
+<h1>Générateur de posts carrousel Instagram</h1>
+<p class="sub">Génère le contenu via l'IA ou remplis les champs manuellement. L'aperçu et la légende se mettent à jour automatiquement. Télécharge chaque slide en PNG 1080×1080.</p>
+
+<!-- ── Panneau de configuration ── -->
+<details class="config-panel" id="config-panel">
+  <summary>⚙️ Ma marque &amp; personnalisation</summary>
+  <div class="config-inner">
+    <div class="config-field">
+      <label>Nom complet</label>
+      <input type="text" id="cfg-name" placeholder="Marie Dupont" maxlength="60">
+    </div>
+    <div class="config-field">
+      <label>Spécialité</label>
+      <input type="text" id="cfg-specialty" placeholder="comportementaliste canin diplômée CEACHA" maxlength="120">
+    </div>
+    <div class="config-field">
+      <label>Région / Zone</label>
+      <input type="text" id="cfg-region" placeholder="Bretagne" maxlength="80">
+    </div>
+    <div class="config-field">
+      <label>Site web</label>
+      <input type="url" id="cfg-website" placeholder="monsite.fr" maxlength="100">
+    </div>
+    <div class="config-field">
+      <label>Couleur de marque</label>
+      <div class="color-row">
+        <input type="color" id="cfg-color" value="#f97316">
+        <input type="text" id="cfg-color-hex" class="color-hex" placeholder="#f97316" maxlength="7">
+      </div>
+    </div>
+    <div class="config-field">
+      <label>Logo (pied de slide)</label>
+      <div class="logo-row">
+        <img class="logo-preview" id="cfg-logo-preview" alt="logo">
+        <input type="file" id="cfg-logo" accept="image/*">
+        <button type="button" class="config-btn" id="cfg-logo-remove" style="display:none;">✕ Retirer</button>
+      </div>
+    </div>
+    <p class="config-hint">Ces informations sont sauvegardées localement dans ton navigateur (jamais envoyées nulle part). Elles personnalisent le prompt IA, les légendes et l'affichage des slides. Remplis-les une seule fois.</p>
+  </div>
+</details>
+
+<!-- ── Sélecteur de type ── -->
+<div class="type-selector">
+  <button class="type-btn active" data-type="idee-recue">Idée reçue</button>
+  <button class="type-btn" data-type="pro-tips">💡 Le savais-tu ?</button>
+</div>
+
+<div class="layout">
+
+  <div class="panel ai-panel">
+    <h2>✨ Générer le contenu avec l'IA</h2>
+    <div class="field">
+      <label>Clé API Anthropic</label>
+      <input type="password" id="api-key" placeholder="sk-ant-...">
+      <div style="font-size:10.5px;color:#64748b;margin-top:5px;line-height:1.4;">Ta clé reste dans ton navigateur — elle n'est envoyée qu'à l'API Anthropic. Coût : quelques centimes par génération.</div>
+    </div>
+    <div class="field">
+      <label>Sujet (optionnel)</label>
+      <input type="text" id="ai-topic" placeholder="Laisse vide pour une suggestion automatique">
+    </div>
+    <button class="alt" id="ai-generate" style="width:100%">✨ Générer via IA</button>
+    <div class="ai-status" id="ai-status"></div>
+  </div>
+
+  <div class="panel content-panel">
+    <h2>Contenu du post</h2>
+
+    <div class="field">
+      <label><span id="label-myth">Idée reçue (slide 1)</span><button type="button" class="regen-btn" data-field="myth">↻ Régénérer</button></label>
+      <textarea id="myth" maxlength="180" placeholder="Ex : Tirer en laisse = vouloir **dominer** son maître."></textarea>
+      <div class="count" id="myth-count"></div>
+    </div>
+    <div class="field">
+      <label><span id="label-truth">La réalité (slide 2)</span><button type="button" class="regen-btn" data-field="truth">↻ Régénérer</button></label>
+      <textarea id="truth" maxlength="240" placeholder="Ex : **Faux.** Il n'a simplement **jamais appris** à marcher en laisse détendue."></textarea>
+      <div class="count" id="truth-count"></div>
+    </div>
+    <div class="field">
+      <label><span id="label-advice">Conseil pratique (slide 3)</span><button type="button" class="regen-btn" data-field="advice">↻ Régénérer</button></label>
+      <textarea id="advice" maxlength="180" placeholder="Ex : Travaillez le **renforcement positif** dès les premiers pas."></textarea>
+      <div class="count" id="advice-count"></div>
+    </div>
+    <p style="font-size:10.5px;color:#64748b;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Entoure les mots importants de <strong>**double astérisques**</strong> pour les surligner dans ta couleur de marque sur les slides.</p>
+
+    <div class="field">
+      <label>Hashtags slide 1<span class="ht-count" id="ht1-count"></span><button type="button" class="regen-btn" data-field="hashtags1">↻ Régénérer</button></label>
+      <textarea id="hashtags1" maxlength="150" placeholder="3 hashtags max"></textarea>
+    </div>
+    <div class="field">
+      <label>Hashtags slide 2<span class="ht-count" id="ht2-count"></span><button type="button" class="regen-btn" data-field="hashtags2">↻ Régénérer</button></label>
+      <textarea id="hashtags2" maxlength="150" placeholder="3 hashtags max"></textarea>
+    </div>
+    <div class="field">
+      <label>Hashtags slide 3<span class="ht-count" id="ht3-count"></span><button type="button" class="regen-btn" data-field="hashtags3">↻ Régénérer</button></label>
+      <textarea id="hashtags3" maxlength="150" placeholder="3 hashtags max"></textarea>
+    </div>
+
+    <hr style="border:none;border-top:1px solid #2d3f55;margin:4px 0 16px;">
+    <div class="field">
+      <label><span>Hashtag audience — méthodes traditionnelles</span><button type="button" class="regen-btn" data-field="hashtag_audience">↻ Régénérer</button></label>
+      <input type="text" id="hashtag_audience" maxlength="60" placeholder="#dominancecanine">
+      <div style="font-size:10.5px;color:#64748b;margin-top:5px;line-height:1.4;">Cibler les propriétaires adeptes des méthodes coercitives. Ajouté automatiquement aux 3 légendes.</div>
+    </div>
+
+    <div class="field">
+      <label>Photo de fond (filigrane)</label>
+      <input type="file" id="bg-photo" accept="image/*">
+      <button type="button" id="bg-remove" style="margin-top:8px;background:#334155;display:none;">Retirer la photo</button>
+    </div>
+  </div>
+
+  <div class="right-col">
+    <div class="carousel">
+
+      <div class="slide-wrap"><div class="scaler">
+        <div class="slide orange" id="slide1">
+          <div class="slide-bg-layer" id="bg1"></div>
+          <div class="quote-watermark">"</div>
+          <div class="slide-badge">
+            <span class="badge-num">1</span>
+            <span class="badge-label" id="badge-label-1">Idée reçue</span>
+          </div>
+          <div class="slide-headline" id="s1-text"></div>
+          <div class="slide-footer">
+            <img class="slide-logo" id="slide-logo-1" alt="logo">
+            <span class="slide-brand-name" id="slide-name-1"></span>
+          </div>
+        </div>
+      </div></div>
+
+      <div class="slide-wrap"><div class="scaler">
+        <div class="slide dark" id="slide2">
+          <div class="slide-bg-layer" id="bg2"></div>
+          <div class="quote-watermark">"</div>
+          <div class="slide-badge">
+            <span class="badge-num">2</span>
+            <span class="badge-label" id="badge-label-2">La réalité</span>
+          </div>
+          <div class="slide-headline" id="s2-text"></div>
+          <div class="slide-footer">
+            <img class="slide-logo" id="slide-logo-2" alt="logo">
+            <span class="slide-brand-name" id="slide-name-2"></span>
+          </div>
+        </div>
+      </div></div>
+
+      <div class="slide-wrap"><div class="scaler">
+        <div class="slide light" id="slide3">
+          <div class="slide-bg-layer" id="bg3"></div>
+          <div class="quote-watermark">"</div>
+          <div class="slide-badge">
+            <span class="badge-num">3</span>
+            <span class="badge-label" id="badge-label-3">En pratique</span>
+          </div>
+          <div class="slide-headline" id="s3-text"></div>
+          <div class="slide-footer">
+            <img class="slide-logo" id="slide-logo-3" alt="logo">
+            <span class="slide-brand-name" id="slide-name-3"></span>
+          </div>
+        </div>
+      </div></div>
+
+    </div>
+
+    <div class="downloads">
+      <button id="dl-btn-1" onclick="downloadSlide('slide1',POST_TYPE_CONFIG[currentType].downloadFiles[0])">⬇ Slide 1 (idée reçue)</button>
+      <button id="dl-btn-2" onclick="downloadSlide('slide2',POST_TYPE_CONFIG[currentType].downloadFiles[1])">⬇ Slide 2 (réalité)</button>
+      <button id="dl-btn-3" onclick="downloadSlide('slide3',POST_TYPE_CONFIG[currentType].downloadFiles[2])">⬇ Slide 3 (conseil)</button>
+    </div>
+
+    <div class="captions-wrap">
+      <div class="caption-block">
+        <div class="caption-block-label" id="caption-label-1">Légende slide 1 — Idée reçue</div>
+        <textarea id="caption1" readonly></textarea>
+        <div class="caption-actions">
+          <button class="alt" onclick="copyCaption('caption1','copied-msg1')">Copier</button>
+          <span class="copied" id="copied-msg1">Copié ✓</span>
+        </div>
+      </div>
+      <div class="caption-block">
+        <div class="caption-block-label" id="caption-label-2">Légende slide 2 — La réalité</div>
+        <textarea id="caption2" readonly></textarea>
+        <div class="caption-actions">
+          <button class="alt" onclick="copyCaption('caption2','copied-msg2')">Copier</button>
+          <span class="copied" id="copied-msg2">Copié ✓</span>
+        </div>
+      </div>
+      <div class="caption-block">
+        <div class="caption-block-label" id="caption-label-3">Légende slide 3 — Conseil pratique</div>
+        <textarea id="caption3" readonly></textarea>
+        <div class="caption-actions">
+          <button class="alt" onclick="copyCaption('caption3','copied-msg3')">Copier</button>
+          <span class="copied" id="copied-msg3">Copié ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+
+  // ── Configuration de marque ──
+  const CFG_KEY = 'instagen_config';
+
+  function loadConfig(){ try{ return JSON.parse(localStorage.getItem(CFG_KEY))||{}; }catch{ return {}; } }
+
+  function saveConfig(){
+    localStorage.setItem(CFG_KEY, JSON.stringify({
+      name:      $('cfg-name').value.trim(),
+      specialty: $('cfg-specialty').value.trim(),
+      region:    $('cfg-region').value.trim(),
+      website:   $('cfg-website').value.trim(),
+      color:     $('cfg-color').value
+    }));
+  }
+
+  function applyColor(hex){
+    document.documentElement.style.setProperty('--orange', hex);
+    document.documentElement.style.setProperty('--orange-600', hex);
+  }
+
+  function applyLogoToSlides(src){
+    [1,2,3].forEach(i => {
+      const img  = $('slide-logo-' + i);
+      const name = $('slide-name-' + i);
+      if(src){ img.src=src; img.style.display='block'; name.style.display='none'; }
+      else   { img.src='';  img.style.display='none';  name.style.display='block'; }
+    });
+  }
+
+  function updateSlideNames(){
+    const name = $('cfg-name').value.trim() || 'Votre nom';
+    [1,2,3].forEach(i => { $('slide-name-' + i).textContent = name; });
+  }
+
+  function initConfig(){
+    const cfg = loadConfig();
+    if(cfg.name)      $('cfg-name').value      = cfg.name;
+    if(cfg.specialty) $('cfg-specialty').value = cfg.specialty;
+    if(cfg.region)    $('cfg-region').value    = cfg.region;
+    if(cfg.website)   $('cfg-website').value   = cfg.website;
+    if(cfg.color){
+      $('cfg-color').value     = cfg.color;
+      $('cfg-color-hex').value = cfg.color;
+      applyColor(cfg.color);
+    }
+    const logo = localStorage.getItem('instagen_logo');
+    if(logo){
+      applyLogoToSlides(logo);
+      $('cfg-logo-preview').src = logo;
+      $('cfg-logo-preview').style.display = 'block';
+      $('cfg-logo-remove').style.display  = 'inline-block';
+    }
+    // Ouvre le panneau si pas encore configuré
+    if(!cfg.name) $('config-panel').setAttribute('open','');
+  }
+
+  ['cfg-name','cfg-specialty','cfg-region','cfg-website'].forEach(id => {
+    $(id).addEventListener('input', () => { saveConfig(); updateSlideNames(); buildSlides(); });
+  });
+
+  $('cfg-color').addEventListener('input', () => {
+    const hex = $('cfg-color').value;
+    $('cfg-color-hex').value = hex;
+    applyColor(hex);
+    saveConfig();
+  });
+
+  $('cfg-color-hex').addEventListener('input', () => {
+    const hex = $('cfg-color-hex').value;
+    if(/^#[0-9a-fA-F]{6}$/.test(hex)){
+      $('cfg-color').value = hex;
+      applyColor(hex);
+      saveConfig();
+    }
+  });
+
+  $('cfg-logo').addEventListener('change', () => {
+    const file = $('cfg-logo').files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const src = reader.result;
+      localStorage.setItem('instagen_logo', src);
+      applyLogoToSlides(src);
+      $('cfg-logo-preview').src = src;
+      $('cfg-logo-preview').style.display = 'block';
+      $('cfg-logo-remove').style.display  = 'inline-block';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  $('cfg-logo-remove').addEventListener('click', () => {
+    localStorage.removeItem('instagen_logo');
+    applyLogoToSlides(null);
+    $('cfg-logo').value = '';
+    $('cfg-logo-preview').style.display = 'none';
+    $('cfg-logo-remove').style.display  = 'none';
+    updateSlideNames();
+  });
+
+  // ── Utilitaires ──
+  function updateCount(fieldId, countId, max){
+    const len = $(fieldId).value.length;
+    const el  = $(countId);
+    el.textContent = len + ' / ' + max;
+    el.classList.toggle('warn', len > max * 0.85);
+  }
+
+  function escapeHtml(str){ return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function renderHighlighted(str){ return escapeHtml(str).replace(/\*\*(.+?)\*\*/g,'<span class="hl">$1</span>'); }
+  function stripHighlight(str){ return str.replace(/\*\*/g,''); }
+
+  const HEADLINE_MAX_SIZE = 80, HEADLINE_MIN_SIZE = 38;
+  function fitHeadline(el){
+    el.style.fontSize = HEADLINE_MAX_SIZE + 'px';
+    let size = HEADLINE_MAX_SIZE;
+    while(el.scrollHeight > el.clientHeight && size > HEADLINE_MIN_SIZE){ size -= 2; el.style.fontSize = size+'px'; }
+  }
+
+  function buildCTA(){
+    const name    = $('cfg-name').value.trim();
+    const region  = $('cfg-region').value.trim();
+    const website = $('cfg-website').value.trim();
+    const line1 = name
+      ? `Une question ? ${name} t'accompagne${region ? ' en ' + region : ''}.`
+      : `Une question sur le comportement de ton chien ?`;
+    const line2 = website ? `🔗 ${website}` : '';
+    return '\n\n' + [line1, line2].filter(Boolean).join('\n');
+  }
+
+  function buildSlides(){
+    const myth   = $('myth').value.trim()   || '—';
+    const truth  = $('truth').value.trim()  || '—';
+    const advice = $('advice').value.trim() || '—';
+
+    const s1 = $('s1-text'), s2 = $('s2-text'), s3 = $('s3-text');
+    s1.innerHTML = renderHighlighted(myth);
+    s2.innerHTML = renderHighlighted(truth);
+    s3.innerHTML = renderHighlighted(advice);
+    [s1,s2,s3].forEach(fitHeadline);
+
+    updateCount('myth','myth-count',180);
+    updateCount('truth','truth-count',240);
+    updateCount('advice','advice-count',180);
+
+    updateSlideNames();
+    updateCaptions(myth, truth, advice);
+  }
+
+  function countHashtags(str){ return (str.match(/#\S+/g)||[]).length; }
+  function updateHashtagCount(inputId, countId){
+    const n = countHashtags($(inputId).value);
+    const el = $(countId);
+    el.textContent = `${n}/5`;
+    el.classList.toggle('warn', n > 3);
+  }
+
+  function updateCaptions(myth, truth, advice){
+    const cfg = POST_TYPE_CONFIG[currentType];
+    const ht1 = $('hashtags1').value.trim();
+    const ht2 = $('hashtags2').value.trim();
+    const ht3 = $('hashtags3').value.trim();
+    const htA = $('hashtag_audience').value.trim();
+    const cta = buildCTA();
+    const [p1,p2,p3] = cfg.captionPrefixes;
+    const htBlock = ht => { const parts=[ht,htA].filter(Boolean).join(' '); return parts ? '\n\n'+parts : ''; };
+    $('caption1').value = `${p1} : ${stripHighlight(myth)}${cta}${htBlock(ht1)}`;
+    $('caption2').value = `${p2} : ${stripHighlight(truth)}${cta}${htBlock(ht2)}`;
+    $('caption3').value = `${p3} : ${stripHighlight(advice)}${cta}${htBlock(ht3)}`;
+  }
+
+  ['myth','truth','advice','hashtags1','hashtags2','hashtags3','hashtag_audience'].forEach(id => $(id).addEventListener('input', buildSlides));
+  ['hashtags1','hashtags2','hashtags3'].forEach((id,i) => {
+    $(id).addEventListener('input', () => updateHashtagCount(id,`ht${i+1}-count`));
+    updateHashtagCount(id,`ht${i+1}-count`);
+  });
+
+  function downloadSlide(slideId, filename){
+    const original = $(slideId);
+    const clone = original.cloneNode(true);
+    clone.style.cssText = 'position:fixed;top:0;left:-99999px;transform:none;';
+    clone.removeAttribute('id');
+    document.body.appendChild(clone);
+    html2canvas(clone,{scale:1,useCORS:true,width:1080,height:1080,windowWidth:1080,windowHeight:1080})
+      .then(canvas => {
+        document.body.removeChild(clone);
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      })
+      .catch(err => { document.body.removeChild(clone); alert("Erreur : "+err.message); });
+  }
+
+  function copyCaption(captionId, msgId){
+    $(captionId).select();
+    document.execCommand('copy');
+    const msg = $(msgId);
+    msg.classList.add('show');
+    setTimeout(() => msg.classList.remove('show'), 1500);
+  }
+
+  // ── Configuration par type de post ──
+  const POST_TYPE_CONFIG = {
+    'idee-recue': {
+      aiTopicPlaceholder: 'Ex : le collier étrangleur — laisse vide pour une suggestion',
+      slides: [
+        { theme:'orange', badgeLabel:'Idée reçue'  },
+        { theme:'dark',   badgeLabel:'La réalité'  },
+        { theme:'light',  badgeLabel:'En pratique' }
+      ],
+      fields: {
+        myth:   { label:'Idée reçue (slide 1)',      placeholder:'Ex : Tirer en laisse = vouloir **dominer** son maître.' },
+        truth:  { label:'La réalité (slide 2)',       placeholder:'Ex : **Faux.** Il n\'a jamais appris à marcher en laisse détendue.' },
+        advice: { label:'Conseil pratique (slide 3)', placeholder:'Ex : Travaillez le **renforcement positif** dès les premiers pas.' }
+      },
+      downloadLabels: ['Slide 1 (idée reçue)','Slide 2 (réalité)','Slide 3 (conseil)'],
+      downloadFiles:  ['1-idee-recue.png','2-realite.png','3-conseil.png'],
+      captionLabels:  ['Légende slide 1 — Idée reçue','Légende slide 2 — La réalité','Légende slide 3 — Conseil pratique'],
+      captionPrefixes: ['❌ Idée reçue','✅ La réalité','🐾 En pratique'],
+      regenLabels: {
+        myth:'idée reçue (slide 1)', truth:'réalité (slide 2)', advice:'conseil pratique (slide 3)',
+        hashtags1:'hashtags du slide 1', hashtags2:'hashtags du slide 2', hashtags3:'hashtags du slide 3',
+        hashtag_audience:'hashtag audience méthodes coercitives'
+      },
+      buildPrompt: topic => topic
+        ? `Crée un post Instagram qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`
+        : 'Choisis une idée reçue fréquente sur le comportement canin et crée un post Instagram qui la déconstruit.',
+      buildRegenPrompt: (label,topic,ctx) => `Régénère uniquement le bloc "${label}" pour ce post Instagram${topic?` sur : "${topic}"`:''}${ctx}.`,
+      schemaProps: {
+        myth:      { type:'string', description:"L'idée reçue, 1-2 phrases percutantes (20 mots max). Entoure les mots importants de **double astérisques**." },
+        truth:     { type:'string', description:"La réalité, 1-2 phrases (30 mots max) avec explication. Entoure les mots clés de **double astérisques**." },
+        advice:    { type:'string', description:"Un conseil actionnable, 1-2 phrases courtes (20 mots max). Entoure les mots importants de **double astérisques**." },
+        hashtags1: { type:'string', description:"3 hashtags pour le slide 1, séparés par des espaces, en français." },
+        hashtags2: { type:'string', description:"3 hashtags pour le slide 2, séparés par des espaces, différents du slide 1." },
+        hashtags3: { type:'string', description:"3 hashtags pour le slide 3, séparés par des espaces, différents des slides précédents." },
+        hashtag_audience: { type:'string', description:"1 seul hashtag ciblant les propriétaires adeptes des méthodes coercitives ou de la dominance (ex : #dominancecanine, #chiendominant, #dressagechien). Un seul hashtag." }
+      }
+    },
+    'pro-tips': {
+      aiTopicPlaceholder: 'Ex : fortes chaleurs et activités de flair — laisse vide pour une suggestion',
+      slides: [
+        { theme:'light',  badgeLabel:'Le savais-tu ?' },
+        { theme:'dark',   badgeLabel:'Pourquoi'       },
+        { theme:'orange', badgeLabel:'En pratique'    }
+      ],
+      fields: {
+        myth:   { label:'Le tip (slide 1)',          placeholder:'Ex : **Forte chaleur** + flair en extérieur = danger pour ton chien.' },
+        truth:  { label:'Pourquoi (slide 2)',         placeholder:'Ex : Quand il flair, il **n\'halète plus** et ne peut plus réguler sa température.' },
+        advice: { label:'Action concrète (slide 3)',  placeholder:'Ex : Par temps chaud, fais ton **flair à l\'intérieur** ou tôt le matin.' }
+      },
+      downloadLabels: ['Slide 1 (le savais-tu)','Slide 2 (pourquoi)','Slide 3 (pratique)'],
+      downloadFiles:  ['1-le-savais-tu.png','2-pourquoi.png','3-pratique.png'],
+      captionLabels:  ['Légende slide 1 — Le savais-tu ?','Légende slide 2 — Pourquoi','Légende slide 3 — En pratique'],
+      captionPrefixes: ['💡 Le savais-tu ?','🔬 Pourquoi','✅ En pratique'],
+      regenLabels: {
+        myth:'tip (slide 1)', truth:'explication pourquoi (slide 2)', advice:'action concrète (slide 3)',
+        hashtags1:'hashtags du slide 1', hashtags2:'hashtags du slide 2', hashtags3:'hashtags du slide 3',
+        hashtag_audience:'hashtag audience méthodes coercitives'
+      },
+      buildPrompt: topic => topic
+        ? `Crée un post Instagram "Le savais-tu ?" sur ce conseil canin : "${topic}". Structure : tip percutant / explication scientifique ou éthologique / action concrète.`
+        : 'Choisis un conseil pratique sur le bien-être canin et crée un post Instagram "Le savais-tu ?" : tip percutant / explication / action concrète.',
+      buildRegenPrompt: (label,topic,ctx) => `Régénère uniquement le bloc "${label}" pour ce post "Le savais-tu ?"${topic?` sur : "${topic}"`:''}${ctx}.`,
+      schemaProps: {
+        myth:      { type:'string', description:"Le tip principal, 1 phrase percutante (20 mots max). Entoure les mots importants de **double astérisques**." },
+        truth:     { type:'string', description:"L'explication scientifique/éthologique, 1-2 phrases (30 mots max). Entoure les mots clés de **double astérisques**." },
+        advice:    { type:'string', description:"L'action concrète, 1-2 phrases courtes (20 mots max). Entoure les mots importants de **double astérisques**." },
+        hashtags1: { type:'string', description:"3 hashtags pour le slide 1, séparés par des espaces, en français." },
+        hashtags2: { type:'string', description:"3 hashtags pour le slide 2, séparés par des espaces, différents du slide 1." },
+        hashtags3: { type:'string', description:"3 hashtags pour le slide 3, séparés par des espaces, différents des slides précédents." },
+        hashtag_audience: { type:'string', description:"1 seul hashtag ciblant les propriétaires adeptes des méthodes coercitives ou de la dominance. Un seul hashtag." }
+      }
+    }
+  };
+
+  let currentType = 'idee-recue';
+
+  function switchPostType(type){
+    currentType = type;
+    const cfg = POST_TYPE_CONFIG[type];
+    document.querySelectorAll('.type-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.type===type));
+    cfg.slides.forEach((slide,i) => {
+      $('slide'+(i+1)).className = 'slide '+slide.theme;
+      $('badge-label-'+(i+1)).textContent = slide.badgeLabel;
+    });
+    ['myth','truth','advice'].forEach(f => {
+      $('label-'+f).textContent  = cfg.fields[f].label;
+      $(f).placeholder           = cfg.fields[f].placeholder;
+    });
+    cfg.downloadLabels.forEach((l,i) => $('dl-btn-'+(i+1)).textContent = '⬇ '+l);
+    cfg.captionLabels.forEach((l,i)  => $('caption-label-'+(i+1)).textContent = l);
+    $('ai-topic').placeholder = cfg.aiTopicPlaceholder;
+    buildSlides();
+  }
+
+  // ── API Anthropic ──
+  const apiKeyInput = $('api-key');
+  const savedKey = localStorage.getItem('anthropic_api_key');
+  if(savedKey) apiKeyInput.value = savedKey;
+  apiKeyInput.addEventListener('change', () => {
+    if(apiKeyInput.value.trim()) localStorage.setItem('anthropic_api_key', apiKeyInput.value.trim());
+  });
+
+  function buildSystemPrompt(){
+    const name      = $('cfg-name').value.trim()      || 'un professionnel canin';
+    const specialty = $('cfg-specialty').value.trim() || 'comportementaliste canin';
+    const region    = $('cfg-region').value.trim();
+    return `Tu es l'assistant de contenu pour ${name}, ${specialty}${region ? ', basé(e) en '+region : ''}. Il/Elle travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Tu rédiges du contenu pour des posts Instagram carrousel à 3 slides. Le ton doit être percutant et direct, façon accroche publicitaire, mais peut développer en une ou deux phrases pour apporter un minimum de contexte : chaque champ doit rester lisible d'un coup d'œil sur une image carrée. Utilise systématiquement la syntaxe **mot** pour mettre en valeur les mots clés. Adresse-toi toujours aux propriétaires en tutoiement ("tu", "ton", "te", "t'"), jamais en vouvoiement. N'utilise jamais le tiret cadratin (—) : remplace-le par une virgule ou des deux-points.`;
+  }
+
+  async function callAnthropicAPI(apiKey, userPrompt, schema, maxTokens=1024){
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'content-type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({
+        model:'claude-opus-4-8',
+        max_tokens:maxTokens,
+        system:buildSystemPrompt(),
+        messages:[{role:'user',content:userPrompt}],
+        output_config:{format:{type:'json_schema',schema:schema}}
+      })
+    });
+    if(!res.ok){
+      let msg = `Erreur API (${res.status})`;
+      try{ const e=await res.json(); if(e?.error?.message) msg=e.error.message; }catch(_){}
+      throw new Error(msg);
+    }
+    const data = await res.json();
+    const block = data.content.find(b=>b.type==='text');
+    if(!block) throw new Error('Réponse inattendue du modèle.');
+    return JSON.parse(block.text);
+  }
+
+  async function generateWithAI(apiKey, topic){
+    const cfg = POST_TYPE_CONFIG[currentType];
+    const schema = {
+      type:'object', properties:cfg.schemaProps,
+      required:['myth','truth','advice','hashtags1','hashtags2','hashtags3','hashtag_audience'],
+      additionalProperties:false
+    };
+    return callAnthropicAPI(apiKey, cfg.buildPrompt(topic), schema);
+  }
+
+  async function generateSingleField(apiKey, fieldId){
+    const cfg   = POST_TYPE_CONFIG[currentType];
+    const label = cfg.regenLabels[fieldId];
+    const desc  = cfg.schemaProps[fieldId].description;
+    const schema = {
+      type:'object', properties:{[fieldId]:{type:'string',description:desc}},
+      required:[fieldId], additionalProperties:false
+    };
+    const ctx = [];
+    if($('myth').value.trim())           ctx.push(`Slide 1 : "${$('myth').value.trim()}"`);
+    if($('truth').value.trim())          ctx.push(`Slide 2 : "${$('truth').value.trim()}"`);
+    if($('advice').value.trim())         ctx.push(`Slide 3 : "${$('advice').value.trim()}"`);
+    if($('hashtags1').value.trim())      ctx.push(`Hashtags slide 1 : "${$('hashtags1').value.trim()}"`);
+    if($('hashtags2').value.trim())      ctx.push(`Hashtags slide 2 : "${$('hashtags2').value.trim()}"`);
+    if($('hashtags3').value.trim())      ctx.push(`Hashtags slide 3 : "${$('hashtags3').value.trim()}"`);
+    if($('hashtag_audience').value.trim()) ctx.push(`Hashtag audience : "${$('hashtag_audience').value.trim()}"`);
+    const topic      = $('ai-topic').value.trim();
+    const contextStr = ctx.length ? `\n\nContexte du post :\n${ctx.join('\n')}` : '';
+    return callAnthropicAPI(apiKey, cfg.buildRegenPrompt(label, topic, contextStr), schema, 512);
+  }
+
+  $('ai-generate').addEventListener('click', async () => {
+    const apiKey   = apiKeyInput.value.trim();
+    const statusEl = $('ai-status');
+    const btn      = $('ai-generate');
+    if(!apiKey){ statusEl.textContent='Renseigne ta clé API Anthropic ci-dessus.'; statusEl.className='ai-status error'; return; }
+    localStorage.setItem('anthropic_api_key', apiKey);
+    btn.disabled=true; btn.textContent='Génération en cours...';
+    statusEl.textContent=''; statusEl.className='ai-status';
+    try{
+      const result = await generateWithAI(apiKey, $('ai-topic').value.trim());
+      $('myth').value=$('truth').value=$('advice').value='';
+      $('myth').value   = result.myth   || '';
+      $('truth').value  = result.truth  || '';
+      $('advice').value = result.advice || '';
+      if(result.hashtags1)        $('hashtags1').value       = result.hashtags1;
+      if(result.hashtags2)        $('hashtags2').value       = result.hashtags2;
+      if(result.hashtags3)        $('hashtags3').value       = result.hashtags3;
+      if(result.hashtag_audience) $('hashtag_audience').value= result.hashtag_audience;
+      ['hashtags1','hashtags2','hashtags3'].forEach((id,i)=>updateHashtagCount(id,`ht${i+1}-count`));
+      buildSlides();
+      statusEl.textContent='Contenu généré ✓'; statusEl.className='ai-status success';
+    }catch(err){
+      statusEl.textContent='Erreur : '+err.message; statusEl.className='ai-status error';
+    }finally{
+      btn.disabled=false; btn.textContent='✨ Générer via IA';
+    }
+  });
+
+  document.querySelectorAll('.regen-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const apiKey   = apiKeyInput.value.trim();
+      const statusEl = $('ai-status');
+      if(!apiKey){ statusEl.textContent='Renseigne ta clé API Anthropic dans le panneau IA.'; statusEl.className='ai-status error'; return; }
+      const fieldId  = btn.dataset.field;
+      const origText = btn.textContent;
+      btn.disabled=true; btn.textContent='...';
+      statusEl.textContent=''; statusEl.className='ai-status';
+      try{
+        const result = await generateSingleField(apiKey, fieldId);
+        if(result[fieldId]){
+          $(fieldId).value = result[fieldId];
+          if(fieldId.startsWith('hashtags')) updateHashtagCount(fieldId,`ht${fieldId.slice(-1)}-count`);
+          buildSlides();
+        }
+        statusEl.textContent='Bloc régénéré ✓'; statusEl.className='ai-status success';
+      }catch(err){
+        statusEl.textContent='Erreur : '+err.message; statusEl.className='ai-status error';
+      }finally{
+        btn.disabled=false; btn.textContent=origText;
+      }
+    });
+  });
+
+  // ── Photo de fond ──
+  const bgLayers = ['bg1','bg2','bg3'].map($);
+  $('bg-photo').addEventListener('change', () => {
+    const file = $('bg-photo').files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      bgLayers.forEach(l => l.style.backgroundImage=`url(${reader.result})`);
+      $('bg-remove').style.display='inline-block';
+    };
+    reader.readAsDataURL(file);
+  });
+  $('bg-remove').addEventListener('click', () => {
+    bgLayers.forEach(l => l.style.backgroundImage='none');
+    $('bg-photo').value='';
+    $('bg-remove').style.display='none';
+  });
+
+  // ── Sélecteur de type ──
+  document.querySelectorAll('.type-btn').forEach(btn => btn.addEventListener('click', () => switchPostType(btn.dataset.type)));
+
+  // ── Init ──
+  initConfig();
+  document.fonts.ready.then(buildSlides);
+  buildSlides();
+</script>
+
+<script>
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+</script>
+</body>
+</html>

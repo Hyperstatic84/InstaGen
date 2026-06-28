@@ -1,0 +1,18 @@
+{
+  "name": "Générateur de posts Instagram",
+  "short_name": "InstaGen",
+  "description": "Génère des posts carrousel Instagram pour les professionnels canins.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0d1821",
+  "theme_color": "#0d1821",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
