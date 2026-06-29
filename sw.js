@@ -1,4 +1,4 @@
-const CACHE = 'instagen-v3';
+const CACHE = 'instagen-v5';
 const PRECACHE = ['./', './index.html', './icon.svg', './manifest.json'];
 
 self.addEventListener('install', e => {
