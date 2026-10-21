@@ -238,19 +238,19 @@
         </div>
 
         <div class="field">
-          <div class="field-head"><label for="bridge">Transition 🔍 (texte fixe)</label><button type="button" class="regen-btn" data-field="bridge" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
+          <div class="field-head"><label for="bridge">Transition 🔍 (texte)</label><button type="button" class="regen-btn" data-field="bridge" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
           <textarea id="bridge" placeholder="Ex : Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui.">Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui.</textarea>
           <div class="count" id="bridge-count"></div>
           <div class="field-status"></div>
         </div>
 
         <div class="field">
-          <div class="field-head"><label for="closing">Présentation 📍 (texte fixe)</label><button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
+          <div class="field-head"><label for="closing">Présentation 📍 (texte)</label><button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
           <textarea id="closing" placeholder="Ex : Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque binôme humain-chien...">Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque binôme humain-chien avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action.</textarea>
           <div class="count" id="closing-count"></div>
           <div class="field-status"></div>
         </div>
-        <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Dans l'idée reçue, entoure un ou plusieurs mots/groupes de mots de <strong>**double astérisques**</strong> pour les surligner sur le visuel. Google n'affiche pas de gras : les astérisques sont retirés du texte du post. La taille du texte du visuel s'adapte automatiquement à la longueur. La transition et la présentation sont fixes : l'IA ne les réécrit pas, et tes versions sont gardées dans ce navigateur. ↻ propose une variante si tu en veux une.</p>
+        <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Dans l'idée reçue, entoure un ou plusieurs mots/groupes de mots de <strong>**double astérisques**</strong> pour les surligner sur le visuel. Google n'affiche pas de gras : les astérisques sont retirés du texte du post. La taille du texte du visuel s'adapte automatiquement à la longueur.</p>
 
       </div>
 
@@ -490,22 +490,9 @@
     updateCount('closing','closing-count',220);
 
     updatePost();
-    saveFixedTexts();
   }
 
   ['myth','truth','bridge','closing'].forEach(id => $(id).addEventListener('input', buildAll));
-
-  // ── Transition et présentation : textes fixes, gardés d'un post à l'autre ──
-  const FIXED_IDS = ['bridge', 'closing'];
-  const FIXED_KEY = 'googlegen_fixed_texts';
-  try {
-    const saved = JSON.parse(localStorage.getItem(FIXED_KEY)) || {};
-    FIXED_IDS.forEach(id => { if (typeof saved[id] === 'string' && saved[id].trim()) $(id).value = saved[id]; });
-  } catch (_) {}
-
-  function saveFixedTexts(){
-    try { localStorage.setItem(FIXED_KEY, JSON.stringify(Object.fromEntries(FIXED_IDS.map(id => [id, $(id).value])))); } catch (_) {}
-  }
 
   function downloadVisual(){
     const clone = $('slide').cloneNode(true);
@@ -580,8 +567,8 @@
     "Jamais de numéro de téléphone, d'URL, de nom de domaine ni de hashtag, pas de mots entièrement en majuscules, et pas d'appel à contacter : le bouton du post s'en charge."
   ].join('\n');
 
-  // La génération complète ne produit que l'idée reçue et la réalité : la transition et la présentation sont fixes
-  const GENERATED_IDS = ['myth', 'truth'];
+  // La génération complète produit les quatre parties du post
+  const GENERATED_IDS = ['myth', 'truth', 'bridge', 'closing'];
   const FIELD_LABELS = {
     myth:    'idée reçue (visuel + accroche)',
     truth:   'réalité',
@@ -667,16 +654,15 @@
   async function generateWithAI(apiKey, topic){
     let request;
     if (topic) {
-      request = `Rédige l'idée reçue et la réalité d'un post Google Business qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`;
+      request = `Rédige un post Google Business qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`;
     } else {
       const domain = TOPIC_DOMAINS[Math.floor(Math.random() * TOPIC_DOMAINS.length)];
       const history = loadHistory();
-      request = `Choisis une idée reçue répandue et pertinente sur le comportement canin, dans ce domaine : ${domain}. Elle doit correspondre à la pratique de Thomas. Rédige ensuite l'idée reçue et la réalité d'un post Google Business qui la déconstruit.`
+      request = `Choisis une idée reçue répandue et pertinente sur le comportement canin, dans ce domaine : ${domain}. Elle doit correspondre à la pratique de Thomas. Rédige ensuite un post Google Business qui la déconstruit.`
         + (history.length ? `\n\nCes idées reçues ont déjà été traitées, choisis-en une autre :\n${history.map(h => '- ' + h).join('\n')}` : '');
     }
-    const fixedTexts = `\n\nLa transition et la présentation sont fixes et suivront la réalité telles quelles : la réalité doit s'y enchaîner naturellement.\nTransition : "${$('bridge').value.trim()}"\nPrésentation : "${$('closing').value.trim()}"`;
 
-    return callAnthropicAPI(apiKey, request + fixedTexts, schemaFor(GENERATED_IDS));
+    return callAnthropicAPI(apiKey, request, schemaFor(GENERATED_IDS));
   }
 
   async function generateSingleField(apiKey, fieldId) {
