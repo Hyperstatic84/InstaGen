@@ -30,12 +30,14 @@
     grid-template-columns:360px 1fr;
     grid-template-areas:
       "ai      right"
-      "content right";
+      "content right"
+      "style   right";
     gap:30px;
     align-items:start;
   }
   .ai-panel{grid-area:ai;}
   .content-panel{grid-area:content;}
+  .style-panel{grid-area:style;}
   .right-col{grid-area:right;min-width:0;}
 
   .panel{
@@ -85,6 +87,21 @@
   .field-status.success{color:#16a34a;font-weight:600;}
   .field-status.error{color:#dc2626;font-weight:600;}
 
+  .style-section{font-size:12px;font-weight:700;margin:6px 0 10px;}
+  .style-row{display:grid;grid-template-columns:1fr 96px;gap:12px;}
+  .color-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:18px;}
+  .color-item{display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer;}
+  .color-item input[type="color"]{
+    width:34px;height:28px;flex-shrink:0;cursor:pointer;
+    border:1px solid #d8dee6;border-radius:6px;padding:2px;background:#fff;
+  }
+  .field input[type="range"]{width:100%;accent-color:var(--orange);}
+  .field select{
+    width:100%;height:38px;border:1px solid #d8dee6;border-radius:6px;padding:0 9px;
+    font-family:inherit;font-size:13px;color:var(--nature-800);background:#fff;
+  }
+  .range-val{float:right;text-transform:none;letter-spacing:0;color:#94a3b8;}
+
   .format-switch{
     display:inline-flex;flex-wrap:wrap;gap:3px;margin-bottom:14px;
     background:#fff;border-radius:8px;padding:3px;box-shadow:0 2px 12px rgba(20,40,70,.07);
@@ -102,18 +119,21 @@
     width:1080px;height:1080px;display:flex;flex-direction:column;
     font-family:'Outfit',sans-serif;position:relative;overflow:hidden;
     padding:90px 90px 30px;
-    background:var(--orange);color:#ffffff;
+    /* Couleurs du visuel, modifiables depuis « Personnaliser le visuel » */
+    --v-bg:#f97316;--v-text:#ffffff;--v-hl:#1e2d3d;--v-quote:#ffffff;
+    --v-badge-bg:#ffffff;--v-badge-fg:#14528f;--v-line:rgba(30,45,61,.2);
+    background:var(--v-bg);color:var(--v-text);
   }
   .slide.landscape{width:1200px;height:900px;padding:64px 90px 24px;}
 
   .slide-badge{display:flex;align-items:center;gap:24px;margin-bottom:56px;}
   .slide.landscape .slide-badge{margin-bottom:36px;}
   .badge-num{
-    width:92px;height:92px;background:#fff;border-radius:22px;flex-shrink:0;
-    display:flex;align-items:center;justify-content:center;
-    color:#14528F;font-size:52px;font-weight:800;
+    width:92px;height:92px;background:var(--v-badge-bg);border-radius:22px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;
+    color:var(--v-badge-fg);font-size:52px;font-weight:800;
   }
-  .badge-label{font-size:42px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#ffffff;}
+  .badge-label{font-size:42px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--v-text);}
 
   .slide-headline{
     font-size:96px;font-weight:800;line-height:1.18;
@@ -121,24 +141,24 @@
     white-space:pre-wrap;word-break:break-word;
     position:relative;z-index:1;
   }
-  .hl{color:var(--nature-900);}
+  .hl{color:var(--v-hl);}
 
   .quote-watermark{
     position:absolute;top:-100px;left:-100px;
     font-family:Georgia,'Times New Roman',serif;
     font-size:1440px;font-weight:700;line-height:1;
-    color:#ffffff;opacity:.18;
+    color:var(--v-quote);opacity:.18;
     pointer-events:none;
   }
 
   .slide-bg-layer{
     position:absolute;inset:0;
     background-size:cover;background-position:center;
-    opacity:.16;filter:grayscale(45%);
+    opacity:.16;
   }
   .slide-badge, .slide-footer{position:relative;z-index:1;}
 
-  .slide-footer{display:flex;align-items:center;justify-content:center;margin-top:30px;padding-top:30px;border-top:2px solid rgba(40,57,74,.2);height:150px;flex-shrink:0;}
+  .slide-footer{display:flex;align-items:center;justify-content:center;margin-top:30px;padding-top:30px;border-top:2px solid var(--v-line);height:150px;flex-shrink:0;}
   .slide.landscape .slide-footer{height:120px;margin-top:20px;padding-top:24px;}
   .slide-logo{height:100%;width:auto;}
 
@@ -178,6 +198,7 @@
       grid-template-areas:
         "content"
         "right"
+        "style"
         "ai";
       gap:20px;
     }
@@ -242,12 +263,63 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
         </div>
         <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Dans l'idée reçue, entoure un ou plusieurs mots/groupes de mots de <strong>**double astérisques**</strong> pour les surligner sur le visuel. Google n'affiche pas de gras : les astérisques sont retirés du texte du post. La taille du texte du visuel s'adapte automatiquement à la longueur.</p>
 
+      </div>
+
+      <div class="panel style-panel">
+        <h2>🎨 Personnaliser le visuel</h2>
+
+        <div class="style-section">Textes du visuel</div>
+        <div class="style-row">
+          <div class="field">
+            <label for="v-label">Étiquette</label>
+            <input type="text" id="v-label" maxlength="30">
+          </div>
+          <div class="field">
+            <label for="v-symbol">Badge</label>
+            <input type="text" id="v-symbol" maxlength="8">
+          </div>
+        </div>
+
+        <div class="style-section">Couleurs</div>
+        <div class="color-grid">
+          <label class="color-item"><input type="color" data-color="bg"> Fond</label>
+          <label class="color-item"><input type="color" data-color="text"> Texte</label>
+          <label class="color-item"><input type="color" data-color="hl"> Mots surlignés</label>
+          <label class="color-item"><input type="color" data-color="quote"> Guillemet</label>
+          <label class="color-item"><input type="color" data-color="badgeBg"> Fond du badge</label>
+          <label class="color-item"><input type="color" data-color="badgeFg"> Symbole du badge</label>
+          <label class="color-item"><input type="color" data-color="logoBg"> Logo : carrés</label>
+          <label class="color-item"><input type="color" data-color="logoFg"> Logo : pictos</label>
+        </div>
+
+        <div class="style-section">Photo en filigrane</div>
         <div class="field">
-          <label for="bg-photo">Photo de fond (filigrane)</label>
+          <label for="bg-photo">Photo de fond</label>
           <input type="file" id="bg-photo" accept="image/*">
           <div class="hint" style="font-size:10.5px;color:#94a3b8;margin-top:5px;line-height:1.4;">Choisis une photo en rapport avec le sujet du post (un chien en laisse, un patou, etc.) : elle s'applique en filigrane discret sur le visuel. Reste en local, jamais envoyée nulle part.</div>
           <button type="button" id="bg-remove" style="margin-top:8px;background:#94a3b8;display:none;">Retirer la photo</button>
         </div>
+        <div class="field">
+          <label for="v-photo-opacity">Intensité<span class="range-val" id="v-photo-opacity-val"></span></label>
+          <input type="range" id="v-photo-opacity" min="0" max="60" step="1">
+        </div>
+        <div class="field">
+          <label for="v-photo-gray">Noir et blanc<span class="range-val" id="v-photo-gray-val"></span></label>
+          <input type="range" id="v-photo-gray" min="0" max="100" step="5">
+        </div>
+        <div class="field">
+          <label for="v-photo-pos">Cadrage</label>
+          <select id="v-photo-pos">
+            <option value="center">Centre</option>
+            <option value="top">Haut</option>
+            <option value="bottom">Bas</option>
+            <option value="left">Gauche</option>
+            <option value="right">Droite</option>
+          </select>
+        </div>
+
+        <button type="button" id="style-reset" style="background:#94a3b8;">↺ Revenir au design d'origine</button>
+        <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:8px;">Ces réglages restent enregistrés dans ce navigateur. La photo, elle, est à rechoisir à chaque visite.</p>
       </div>
 
     <div class="right-col">
@@ -263,13 +335,13 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
             <div class="slide-bg-layer" id="bg-layer"></div>
             <div class="quote-watermark">“</div>
             <div class="slide-badge">
-              <span class="badge-num">?</span>
-              <span class="badge-label">Idée reçue</span>
+              <span class="badge-num" id="badge-num">?</span>
+              <span class="badge-label" id="badge-label">Idée reçue</span>
             </div>
             <div class="slide-headline" id="headline"></div>
             <div class="slide-footer">
               <svg class="slide-logo" viewBox="0 0 1125.18 406.57" xmlns="http://www.w3.org/2000/svg">
-                <defs><style>.cls-1{fill:#fff;}.cls-2{fill:#1E2D3D;}</style></defs>
+                <defs><style id="logo-style">.cls-1{fill:#fff;}.cls-2{fill:#1E2D3D;}</style></defs>
                 <g><rect class="cls-2" x="408.4" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><g><path class="cls-1" d="M581.51,287.21c-7.86-2.87-16.86-5.75-25-4.31-5.84,1.05-11.4,2.68-16.96,4.6-10.54,3.64-21.36,6.9-32.29,4.41-3.64-.86-6.99-2.49-9.39-5.36-5.75-6.9-3.16-19.26.38-27.3,8.62-19.64,23.85-36.12,42.73-46.37,5.17-2.78,10.54-4.79,16.38-5.56,13.8-1.82,27.02,5.36,37.75,13.7,10.73,8.33,20.21,19.06,27.02,31.33,2.97,5.27,5.17,10.63,6.23,16.57,1.53,7.86.96,17.05-6.51,20.79-7.47,3.74-17.72,4.02-25.77,2.11-4.98-1.25-9.68-2.87-14.47-4.6h-.1Z"/><path class="cls-1" d="M608.24,173.11c-9.01,10.25-23.18,13.03-32.48,3.07-2.3-2.49-4.22-5.27-5.46-8.53-2.3-6.13-3.07-12.74-2.11-19.26,1.63-12.07,7.28-24.05,17.44-30.94,5.36-3.74,12.07-4.79,18.3-3.07,3.26.96,5.84,2.87,8.14,5.27,3.35,3.45,5.56,7.66,6.71,12.36,2.59,10.73.86,21.46-3.93,31.42-1.72,3.54-4.02,6.61-6.61,9.58v.1Z"/><path class="cls-1" d="M547.5,176.36c-8.14,8.53-20.41,7.38-29.03-.1s-13.22-18.01-14.66-29.41c-1.15-9.29,1.05-20.5,7.76-27.21,2.49-2.49,5.17-4.5,8.62-5.36,13.03-3.26,23.38,5.56,29.6,16.57,2.01,3.54,3.26,7.19,4.31,11.11,2.3,8.62,2.3,17.63-.86,25.87-1.25,3.35-3.26,6.13-5.56,8.62l-.19-.1Z"/><path class="cls-1" d="M510.33,226.85c-6.71,9.01-19.93,7.76-28.74.96-9.77-7.57-15.81-19.06-16.96-31.52-.57-6.42.57-12.45,3.93-17.92,2.49-4.22,6.32-7.09,11.21-7.86,6.9-1.15,13.6.96,19.06,5.36,6.23,5.08,10.92,11.5,13.8,18.97,4.02,10.63,4.79,22.51-2.3,32Z"/><path class="cls-1" d="M642.06,227.62c-8.81,6.99-22.13,8.33-28.93-.77-4.31-5.75-5.84-12.74-5.17-19.93,1.34-13.03,8.24-25.58,19.26-32.86,8.24-5.46,20.69-5.75,26.73,2.87,3.26,4.69,4.98,10.06,4.98,15.9,0,13.51-6.32,26.35-16.86,34.68v.1Z"/></g></g>
                 <g><rect class="cls-2" x="50" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1" d="M197.8,142.5l5.58,7.69,5.58-7.69c9.29-12.86,24.24-20.48,40.11-20.48,27.32,0,49.48,22.16,49.48,49.48v.97c0,41.71-52.01,90.15-79.14,110.85-4.61,3.49-10.26,5.24-16.02,5.24s-11.45-1.71-16.02-5.24c-27.14-20.71-79.14-69.14-79.14-110.85v-.97c0-27.32,22.16-49.48,49.48-49.48,15.87,0,30.82,7.62,40.11,20.48Z"/></g>
                 <g><rect class="cls-2" x="766.79" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1" d="M921.74,120.39c-29.9,0-53.84,13.62-71.27,29.83-17.32,16.1-28.9,35.3-34.42,48.51-1.22,2.92-1.22,6.18,0,9.1,5.51,13.21,17.1,32.45,34.42,48.51,17.43,16.17,41.37,29.83,71.27,29.83s53.84-13.62,71.27-29.83c17.32-16.1,28.9-35.3,34.42-48.51,1.22-2.92,1.22-6.18,0-9.1-5.51-13.21-17.1-32.45-34.42-48.51-17.43-16.17-41.37-29.83-71.27-29.83ZM868.45,203.28c0-29.42,23.87-53.29,53.29-53.29s53.29,23.87,53.29,53.29-23.87,53.29-53.29,53.29-53.29-23.87-53.29-53.29ZM921.74,179.6c0,13.06-10.62,23.68-23.68,23.68-4.26,0-8.25-1.11-11.73-3.11-.37,4.03-.04,8.18,1.07,12.29,5.07,18.95,24.57,30.2,43.52,25.13,18.95-5.07,30.2-24.57,25.13-43.52-4.51-16.91-20.54-27.68-37.41-26.2,1.96,3.44,3.11,7.44,3.11,11.73Z"/></g>
@@ -636,27 +708,163 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
   });
 
   // ── Photo de fond en filigrane ──
+  // Le noir et blanc est appliqué aux pixels de la photo : html2canvas ignore le filtre CSS grayscale à l'export
   const bgPhotoInput = $('bg-photo');
   const bgRemoveBtn = $('bg-remove');
   const bgLayer = $('bg-layer');
+  let photoImage = null;
+  let photoType = 'image/jpeg';
+  let photoRenderPending = false;
+
+  function renderPhoto(){
+    if (!photoImage) { bgLayer.style.backgroundImage = 'none'; return; }
+    const scale = Math.min(1, 1600 / Math.max(photoImage.naturalWidth, photoImage.naturalHeight));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(photoImage.naturalWidth * scale);
+    canvas.height = Math.round(photoImage.naturalHeight * scale);
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(photoImage, 0, 0, canvas.width, canvas.height);
+    const amount = visualStyle.photo.gray / 100;
+    if (amount > 0) {
+      const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const d = pixels.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const lum = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+        d[i]     += (lum - d[i]) * amount;
+        d[i + 1] += (lum - d[i + 1]) * amount;
+        d[i + 2] += (lum - d[i + 2]) * amount;
+      }
+      ctx.putImageData(pixels, 0, 0);
+    }
+    // PNG garde la transparence d'un détourage ; JPEG reste léger pour une photo classique
+    bgLayer.style.backgroundImage = `url(${photoType === 'image/png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.9)})`;
+  }
+
+  function schedulePhotoRender(){
+    if (photoRenderPending) return;
+    photoRenderPending = true;
+    requestAnimationFrame(() => { photoRenderPending = false; renderPhoto(); });
+  }
 
   bgPhotoInput.addEventListener('change', () => {
     const file = bgPhotoInput.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      bgLayer.style.backgroundImage = `url(${reader.result})`;
-      bgRemoveBtn.style.display = 'inline-block';
+      const img = new Image();
+      img.onload = () => {
+        photoImage = img;
+        photoType = file.type;
+        renderPhoto();
+        bgRemoveBtn.style.display = 'inline-block';
+      };
+      img.src = reader.result;
     };
     reader.readAsDataURL(file);
   });
 
   bgRemoveBtn.addEventListener('click', () => {
-    bgLayer.style.backgroundImage = 'none';
+    photoImage = null;
+    renderPhoto();
     bgPhotoInput.value = '';
     bgRemoveBtn.style.display = 'none';
   });
 
+  // ── Personnalisation du visuel (textes, couleurs, photo), mémorisée dans ce navigateur ──
+  const STYLE_KEY = 'googlegen_style';
+  const DEFAULT_STYLE = {
+    label: 'Idée reçue',
+    symbol: '?',
+    colors: { bg: '#f97316', text: '#ffffff', hl: '#1e2d3d', quote: '#ffffff', badgeBg: '#ffffff', badgeFg: '#14528f', logoBg: '#1e2d3d', logoFg: '#ffffff' },
+    photo: { opacity: 16, gray: 45, position: 'center' }
+  };
+  const HEX_RE = /^#[0-9a-f]{6}$/i;
+  const PHOTO_POSITIONS = ['center', 'top', 'bottom', 'left', 'right'];
+
+  function copyStyle(style){ return JSON.parse(JSON.stringify(style)); }
+
+  function loadStyle(){
+    const style = copyStyle(DEFAULT_STYLE);
+    try {
+      const saved = JSON.parse(localStorage.getItem(STYLE_KEY));
+      if (saved) {
+        if (typeof saved.label === 'string') style.label = saved.label;
+        if (typeof saved.symbol === 'string') style.symbol = saved.symbol;
+        Object.keys(style.colors).forEach(k => { if (HEX_RE.test(saved.colors?.[k])) style.colors[k] = saved.colors[k]; });
+        const p = saved.photo || {};
+        if (Number.isFinite(p.opacity)) style.photo.opacity = Math.min(60, Math.max(0, p.opacity));
+        if (Number.isFinite(p.gray)) style.photo.gray = Math.min(100, Math.max(0, p.gray));
+        if (PHOTO_POSITIONS.includes(p.position)) style.photo.position = p.position;
+      }
+    } catch (_) {}
+    return style;
+  }
+
+  function saveStyle(){
+    try { localStorage.setItem(STYLE_KEY, JSON.stringify(visualStyle)); } catch (_) {}
+  }
+
+  let visualStyle = loadStyle();
+
+  function hexToRgba(hex, alpha){
+    const n = parseInt(hex.slice(1), 16);
+    return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${alpha})`;
+  }
+
+  function applyStyle(){
+    const { colors, photo } = visualStyle;
+    const slide = $('slide');
+    slide.style.setProperty('--v-bg', colors.bg);
+    slide.style.setProperty('--v-text', colors.text);
+    slide.style.setProperty('--v-hl', colors.hl);
+    slide.style.setProperty('--v-quote', colors.quote);
+    slide.style.setProperty('--v-badge-bg', colors.badgeBg);
+    slide.style.setProperty('--v-badge-fg', colors.badgeFg);
+    slide.style.setProperty('--v-line', hexToRgba(colors.logoBg, .2));
+    // À l'export, le logo SVG est dessiné comme une image : ses couleurs doivent être dans sa propre feuille de style
+    $('logo-style').textContent = `.cls-1{fill:${colors.logoFg};}.cls-2{fill:${colors.logoBg};}`;
+    $('badge-label').textContent = visualStyle.label;
+    $('badge-num').textContent = visualStyle.symbol;
+    bgLayer.style.opacity = photo.opacity / 100;
+    bgLayer.style.backgroundPosition = photo.position;
+    $('v-photo-opacity-val').textContent = photo.opacity + ' %';
+    $('v-photo-gray-val').textContent = photo.gray + ' %';
+    // Une étiquette longue peut passer sur deux lignes : on réajuste la taille de l'idée reçue
+    fitHeadline($('headline'));
+  }
+
+  function syncStyleControls(){
+    $('v-label').value = visualStyle.label;
+    $('v-symbol').value = visualStyle.symbol;
+    document.querySelectorAll('[data-color]').forEach(input => { input.value = visualStyle.colors[input.dataset.color]; });
+    $('v-photo-opacity').value = visualStyle.photo.opacity;
+    $('v-photo-gray').value = visualStyle.photo.gray;
+    $('v-photo-pos').value = visualStyle.photo.position;
+  }
+
+  function onStyleChange(){
+    applyStyle();
+    saveStyle();
+  }
+
+  $('v-label').addEventListener('input', e => { visualStyle.label = e.target.value; onStyleChange(); });
+  $('v-symbol').addEventListener('input', e => { visualStyle.symbol = e.target.value; onStyleChange(); });
+  document.querySelectorAll('[data-color]').forEach(input => input.addEventListener('input', () => {
+    visualStyle.colors[input.dataset.color] = input.value;
+    onStyleChange();
+  }));
+  $('v-photo-opacity').addEventListener('input', e => { visualStyle.photo.opacity = Number(e.target.value); onStyleChange(); });
+  $('v-photo-gray').addEventListener('input', e => { visualStyle.photo.gray = Number(e.target.value); onStyleChange(); schedulePhotoRender(); });
+  $('v-photo-pos').addEventListener('change', e => { visualStyle.photo.position = e.target.value; onStyleChange(); });
+  $('style-reset').addEventListener('click', () => {
+    visualStyle = copyStyle(DEFAULT_STYLE);
+    syncStyleControls();
+    onStyleChange();
+    renderPhoto();
+  });
+
+  syncStyleControls();
+  applyStyle();
   setFormat('square');
   document.fonts.ready.then(buildAll);
   buildAll();
