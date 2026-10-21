@@ -246,7 +246,7 @@
 
         <div class="field">
           <div class="field-head"><label for="closing">Présentation 📍 (texte)</label><button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
-          <textarea id="closing" placeholder="Ex : Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque chien et son humain...">Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque chien et son humain avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action.</textarea>
+          <textarea id="closing" placeholder="Ex : Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque binôme humain-chien...">Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque binôme humain-chien avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action.</textarea>
           <div class="count" id="closing-count"></div>
           <div class="field-status"></div>
         </div>
@@ -556,7 +556,7 @@
     "Pas de formule racoleuse ou moqueuse (« Faux ! », « Spoiler alert », « Tu as tout faux », « Erreur ! »), pas de dramatisation, pas de points d'exclamation à répétition.",
     "L'observation n'est jamais présentée comme du laisser-faire ou de l'inaction : elle est le point de départ de la compréhension.",
     "Approche à mettre en avant : éthologie et sciences du comportement, vision systémique et holistique (le chien, son environnement, sa relation avec son humain), avec un vocabulaire précis qui parle à tous, hommes comme femmes.",
-    "Vocabulaire : on parle du chien et de son humain (« le chien et son humain », « son humain », « les humains »). N'emploie jamais « propriétaire » ni « maître », y compris dans l'idée reçue : la notion de propriété et celle de maître, aujourd'hui galvaudée, ne correspondent pas à la relation que Thomas défend.",
+    "Vocabulaire : on parle du chien et de son humain (« le chien et son humain », « son humain », « le binôme humain-chien », « les humains »). N'emploie jamais « propriétaire » ni « maître », y compris dans l'idée reçue : la notion de propriété et celle de maître, aujourd'hui galvaudée, ne correspondent pas à la relation que Thomas défend.",
     "",
     "LANGUE",
     "Français naturel et idiomatique, comme un Français l'écrirait spontanément, jamais comme une traduction de l'anglais. Pas de calques : « ce qui se joue », « faire sens », « impacter », « adresser un problème », « être en charge de », « en termes de », « réaliser » au sens de se rendre compte, « opportunité » au sens d'occasion. Préfère des verbes concrets aux noms abstraits.",
@@ -578,7 +578,7 @@
     myth: { type: 'string', description: "Partie 1, l'idée reçue : une seule phrase courte (20 mots maximum, 140 caractères maximum), sans guillemets, toujours cadrée (question, marqueur « Penser que… », « Croire que… », « Non, … », ou contradiction dans la même phrase), jamais une affirmation brute. Entoure de **double astérisques** le ou les mots clés à surligner sur le visuel." },
     truth: { type: 'string', description: "Partie 2, la réalité : un seul paragraphe de 3 à 4 phrases, idéalement 400 à 600 caractères et jamais plus de 700. Commence par déconstruire précisément l'idée reçue en reprenant ses termes exacts, puis explique le mécanisme en jeu, simplement et sans tout dire. N'ouvre jamais par une réfutation sèche (« Faux. », « Pas du tout ! »). Aucun conseil, aucune solution. Sans astérisques." },
     bridge: { type: 'string', description: "Partie 3, la transition : une ou deux phrases brèves (20 mots maximum, 140 caractères maximum). Référence : « Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui. » Reste très proche de cette référence (même idée, même registre) ; seule une légère variation de formulation est permise d'un post à l'autre. Ne parle pas de Thomas. Sans astérisques." },
-    closing: { type: 'string', description: "Partie 4, la présentation de Thomas, à la première personne, en une phrase (30 mots maximum, 200 caractères maximum). Référence : « Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque chien et son humain avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action. » Elle commence toujours par « Comportementaliste canin en Haute-Garonne et en Ariège » ; la suite reste très proche de la référence, avec seulement une légère variation de formulation d'un post à l'autre, sans changer de sens ni de registre. Sans astérisques." }
+    closing: { type: 'string', description: "Partie 4, la présentation de Thomas, à la première personne, en une phrase (30 mots maximum, 200 caractères maximum). Référence : « Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque binôme humain-chien avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action. » Elle commence toujours par « Comportementaliste canin en Haute-Garonne et en Ariège » ; la suite reste très proche de la référence, avec seulement une légère variation de formulation d'un post à l'autre, sans changer de sens ni de registre. Sans astérisques." }
   };
 
   function schemaFor(ids){
