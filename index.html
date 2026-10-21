@@ -55,10 +55,12 @@
 
   .field{margin-bottom:16px;}
   .field label{
-    display:flex;align-items:center;justify-content:space-between;
+    display:block;
     font-size:11px;font-weight:600;color:#475569;
     margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;
   }
+  .field-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}
+  .field-head label{margin-bottom:0;}
   .regen-btn{
     flex-shrink:0;background:none;border:1px solid #d8dee6;border-radius:5px;
     font-size:12px;padding:2px 7px;cursor:pointer;color:#64748b;
@@ -79,6 +81,9 @@
   .count{font-size:10.5px;color:#94a3b8;margin-top:4px;text-align:right;}
   .count.warn{color:var(--orange-600);font-weight:600;}
   .count.over{color:#dc2626;font-weight:700;}
+  .field-status{font-size:11px;margin-top:2px;}
+  .field-status.success{color:#16a34a;font-weight:600;}
+  .field-status.error{color:#dc2626;font-weight:600;}
 
   .format-switch{
     display:inline-flex;flex-wrap:wrap;gap:3px;margin-bottom:14px;
@@ -191,12 +196,12 @@
       <div class="panel ai-panel">
         <h2>✨ Générer le contenu avec l'IA</h2>
         <div class="field">
-          <label>Clé API Anthropic</label>
+          <label for="api-key">Clé API Anthropic</label>
           <input type="password" id="api-key" placeholder="sk-ant-...">
           <div class="hint" style="font-size:10.5px;color:#94a3b8;margin-top:5px;line-height:1.4;">Ta clé reste uniquement dans ton navigateur (stockée en local) et n'est envoyée qu'à l'API Anthropic. Ne partage jamais ce fichier une fois ta clé enregistrée.</div>
         </div>
         <div class="field">
-          <label>Sujet (optionnel)</label>
+          <label for="ai-topic">Sujet (optionnel)</label>
           <input type="text" id="ai-topic" placeholder="Ex : le collier étrangleur — laisse vide pour une suggestion">
         </div>
         <button class="alt" id="ai-generate" style="width:100%">✨ Générer via IA</button>
@@ -207,34 +212,38 @@
         <h2>Contenu du post</h2>
 
         <div class="field">
-          <label>Idée reçue (visuel + accroche)<button type="button" class="regen-btn" data-field="myth" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
-          <textarea id="myth" maxlength="160" placeholder="Ex : Tirer en laisse = vouloir **dominer**.">Tirer en laisse = vouloir **dominer** son maître.</textarea>
+          <div class="field-head"><label for="myth">Idée reçue (visuel + accroche)</label><button type="button" class="regen-btn" data-field="myth" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
+          <textarea id="myth" placeholder="Ex : Tirer en laisse = vouloir **dominer**.">Tirer en laisse = vouloir **dominer** son maître.</textarea>
           <div class="count" id="myth-count"></div>
+          <div class="field-status"></div>
         </div>
 
         <div class="field">
-          <label>La réalité (texte)<button type="button" class="regen-btn" data-field="truth" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
-          <textarea id="truth" maxlength="500" placeholder="Ex : Faux. Il n'a jamais appris à marcher en laisse détendue.">Faux. Ton chien n'a simplement jamais appris à marcher en laisse détendue. Ce n'est pas une question de hiérarchie : tirer lui permet d'avancer vers ce qui l'intéresse, alors il recommence.</textarea>
+          <div class="field-head"><label for="truth">La réalité (texte)</label><button type="button" class="regen-btn" data-field="truth" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
+          <textarea id="truth" placeholder="Ex : Faux. Il n'a jamais appris à marcher en laisse détendue.">Faux. Ton chien n'a simplement jamais appris à marcher en laisse détendue. Ce n'est pas une question de hiérarchie : tirer lui permet d'avancer vers ce qui l'intéresse, alors il recommence.</textarea>
           <div class="count" id="truth-count"></div>
+          <div class="field-status"></div>
         </div>
 
         <div class="field">
-          <label>En pratique (une action par ligne)<button type="button" class="regen-btn" data-field="actions" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
-          <textarea id="actions" maxlength="450" placeholder="Une action concrète par ligne, les puces s'ajoutent toutes seules">Récompense-le dès que la laisse est détendue, même pour quelques pas.
+          <div class="field-head"><label for="actions">En pratique (une action par ligne)</label><button type="button" class="regen-btn" data-field="actions" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
+          <textarea id="actions" placeholder="Une action concrète par ligne, les puces s'ajoutent toutes seules">Récompense-le dès que la laisse est détendue, même pour quelques pas.
 Arrête-toi dès que la laisse se tend, repars quand elle se relâche.
 Commence dans un endroit calme avant d'affronter la ville.</textarea>
           <div class="count" id="actions-count"></div>
+          <div class="field-status"></div>
         </div>
 
         <div class="field">
-          <label>Conclusion (texte)<button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
-          <textarea id="closing" maxlength="300" placeholder="Ex : Comportementaliste canin en Haute-Garonne et en Ariège, je t'accompagne...">Comportementaliste canin en Haute-Garonne et en Ariège, je t'accompagne avec des méthodes douces et bienveillantes. Écris-moi via le bouton ci-dessous.</textarea>
+          <div class="field-head"><label for="closing">Conclusion (texte)</label><button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
+          <textarea id="closing" placeholder="Ex : Comportementaliste canin en Haute-Garonne et en Ariège, je t'accompagne...">Comportementaliste canin en Haute-Garonne et en Ariège, je t'accompagne avec des méthodes douces et bienveillantes. Contacte-moi via le bouton ci-dessous.</textarea>
           <div class="count" id="closing-count"></div>
+          <div class="field-status"></div>
         </div>
         <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Dans l'idée reçue, entoure un ou plusieurs mots/groupes de mots de <strong>**double astérisques**</strong> pour les surligner sur le visuel. Google n'affiche pas de gras : les astérisques sont retirés du texte du post. La taille du texte du visuel s'adapte automatiquement à la longueur.</p>
 
         <div class="field">
-          <label>Photo de fond (filigrane)</label>
+          <label for="bg-photo">Photo de fond (filigrane)</label>
           <input type="file" id="bg-photo" accept="image/*">
           <div class="hint" style="font-size:10.5px;color:#94a3b8;margin-top:5px;line-height:1.4;">Choisis une photo en rapport avec le sujet du post (un chien en laisse, un patou, etc.) : elle s'applique en filigrane discret sur le visuel. Reste en local, jamais envoyée nulle part.</div>
           <button type="button" id="bg-remove" style="margin-top:8px;background:#94a3b8;display:none;">Retirer la photo</button>
@@ -314,7 +323,8 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
     const len = $(fieldId).value.length;
     const el = $(countId);
     el.textContent = len + ' / ' + max;
-    el.classList.toggle('warn', len > max * 0.85);
+    el.classList.toggle('warn', len > max * 0.85 && len <= max);
+    el.classList.toggle('over', len > max);
   }
 
   function escapeHtml(str){
@@ -363,7 +373,7 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
   }
 
   document.querySelectorAll('.fmt-btn').forEach(b => b.addEventListener('click', () => setFormat(b.dataset.format)));
-  window.addEventListener('resize', layoutPreview);
+  window.addEventListener('resize', () => { layoutPreview(); autosizePostText(); });
 
   // ── Texte du post Google ──
   function actionLines(){
@@ -373,7 +383,10 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
   }
 
   function buildPostText(){
-    const myth = stripHighlight($('myth').value).trim().replace(/^[«"“\s]+|[»"”\s]+$/g, '');
+    let myth = stripHighlight($('myth').value).trim();
+    // Retire seulement une paire de guillemets englobant toute l'idée reçue (pas ceux d'un mot cité)
+    const quoted = myth.match(/^[«"“]\s*([^«»"“”]+?)\s*[»"”]$/);
+    if (quoted) myth = quoted[1];
     const truth = stripHighlight($('truth').value).trim();
     const actions = actionLines();
     const closing = stripHighlight($('closing').value).trim();
@@ -382,15 +395,23 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
     if (truth) parts.push(`✅ LA RÉALITÉ\n${truth}`);
     if (actions.length) parts.push(`🐾 EN PRATIQUE\n${actions.map(a => '• ' + a).join('\n')}`);
     if (closing) parts.push(`📍 ${closing}`);
-    return parts.join('\n\n');
+    // Espaces insécables de la typographie française : aucun « : ; ? ! » ne se retrouve seul en début de ligne
+    return parts.join('\n\n').replace(/« /g, '«\u00A0').replace(/ ([:;?!»])/g, '\u00A0$1');
   }
 
   const PHONE_RE = /(?:\+33\s?|\b0)[1-9](?:[\s.-]?\d{2}){4}\b/;
   const LINK_RE = /https?:\/\/|\bwww\.|\b[a-z0-9-]+\.(?:fr|com|net|org|eu|info|io)\b/i;
 
+  function autosizePostText(){
+    const ta = $('post-text');
+    ta.style.height = 'auto';
+    ta.style.height = (ta.scrollHeight + ta.offsetHeight - ta.clientHeight) + 'px';
+  }
+
   function updatePost(){
     const text = buildPostText();
     $('post-text').value = text;
+    autosizePostText();
 
     const len = text.length;
     const countEl = $('post-count');
@@ -402,7 +423,7 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
     if (len > POST_MAX) warnings.push(`Le texte dépasse la limite Google de ${POST_MAX.toLocaleString('fr-FR')} caractères : raccourcis un bloc.`);
     if (PHONE_RE.test(text)) warnings.push("Numéro de téléphone détecté : Google peut refuser le post. Utilise plutôt le bouton « Appeler ».");
     if (LINK_RE.test(text)) warnings.push("Lien détecté : il ne sera pas cliquable et peut faire refuser le post. Mets-le dans le bouton « En savoir plus ».");
-    if (/#\w/.test(text)) warnings.push("Hashtag détecté : ça ne sert à rien sur Google, tu peux l'enlever.");
+    if (/#\p{L}/u.test(text)) warnings.push("Hashtag détecté : ça ne sert à rien sur Google, tu peux l'enlever.");
     $('post-warnings').innerHTML = warnings.map(w => `<div>⚠ ${escapeHtml(w)}</div>`).join('');
   }
 
@@ -475,8 +496,8 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
   const FIELD_SCHEMAS = {
     myth: { type: 'string', description: "L'idée reçue, affichée seule sur le visuel et reprise en accroche du texte : 1 à 2 phrases courtes et percutantes (20 mots maximum, 140 caractères maximum), formulée comme une croyance répandue, sans guillemets. Entoure chaque mot ou groupe de mots important de **double astérisques** pour le surligner, plusieurs si le sens le justifie, sinon un seul suffit." },
     truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue : 2 à 4 phrases (70 mots maximum, 450 caractères maximum). Commence par une réfutation nette (par exemple « Faux. » ou « Pas vraiment. »), puis explique simplement pourquoi, en décrivant ce qui se passe réellement chez le chien. Sans astérisques." },
-    actions: { type: 'array', items: { type: 'string' }, description: "2 à 4 actions concrètes que le propriétaire peut appliquer dès aujourd'hui, une par élément du tableau. Chacune tient en une phrase courte (20 mots maximum) et commence par un verbe à l'impératif en tutoiement. Sans puce, sans numéro, sans astérisques." },
-    closing: { type: 'string', description: "La conclusion du post, écrite à la première personne (c'est Thomas qui parle), en 1 à 2 phrases (40 mots maximum, 250 caractères maximum). Elle est différente à chaque post et reliée au sujet : elle présente l'accompagnement de Thomas en mentionnant naturellement « comportementaliste canin » et la Haute-Garonne et/ou l'Ariège, puis invite à le contacter via le bouton du post. Jamais de numéro de téléphone, d'URL ni de nom de domaine. Sans astérisques." }
+    actions: { type: 'array', items: { type: 'string' }, description: "2 à 4 actions concrètes que le propriétaire peut appliquer dès aujourd'hui, une par élément du tableau. Chacune tient en une phrase courte (15 mots maximum, 100 caractères maximum) et commence par un verbe à l'impératif en tutoiement ; 400 caractères maximum au total. Sans puce, sans numéro, sans astérisques." },
+    closing: { type: 'string', description: "La conclusion du post, écrite à la première personne (c'est Thomas qui parle), en 1 à 2 phrases (40 mots maximum, 250 caractères maximum). Elle est différente à chaque post et reliée au sujet : elle présente l'accompagnement de Thomas en mentionnant naturellement « comportementaliste canin » et la Haute-Garonne et/ou l'Ariège, puis invite à le contacter via le bouton du post, avec un verbe neutre comme « contacter » : n'écris ni « écris-moi » ni « appelle-moi », car on ne sait pas quel bouton sera choisi. Jamais de numéro de téléphone, d'URL ni de nom de domaine. Sans astérisques." }
   };
 
   function schemaFor(ids){
@@ -583,10 +604,11 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
   document.querySelectorAll('.regen-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const apiKey = apiKeyInput.value.trim();
-      const statusEl = $('ai-status');
+      // Le retour s'affiche sous le champ : sur mobile, le panneau IA est tout en bas de la page
+      const statusEl = btn.closest('.field').querySelector('.field-status');
       if (!apiKey) {
-        statusEl.textContent = 'Renseigne ta clé API Anthropic dans le panneau IA.';
-        statusEl.className = 'ai-status error';
+        statusEl.textContent = "Renseigne ta clé API Anthropic dans le panneau « Générer le contenu avec l'IA ».";
+        statusEl.className = 'field-status error';
         return;
       }
       const fieldId = btn.dataset.field;
@@ -594,7 +616,7 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
       btn.disabled = true;
       btn.textContent = '...';
       statusEl.textContent = '';
-      statusEl.className = 'ai-status';
+      statusEl.className = 'field-status';
       try {
         const result = await generateSingleField(apiKey, fieldId);
         if (result[fieldId]) {
@@ -602,10 +624,10 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
           buildAll();
         }
         statusEl.textContent = 'Bloc régénéré ✓';
-        statusEl.className = 'ai-status success';
+        statusEl.className = 'field-status success';
       } catch (err) {
         statusEl.textContent = 'Erreur : ' + err.message;
-        statusEl.className = 'ai-status error';
+        statusEl.className = 'field-status error';
       } finally {
         btn.disabled = false;
         btn.textContent = origText;
