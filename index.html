@@ -225,7 +225,7 @@
 
         <div class="field">
           <div class="field-head"><label for="myth">Idée reçue (visuel + accroche)</label><button type="button" class="regen-btn" data-field="myth" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
-          <textarea id="myth" placeholder="Ex : Un chien qui tire en laisse veut te **dominer** ?">Un chien qui tire en laisse cherche à **dominer** son maître ?</textarea>
+          <textarea id="myth" placeholder="Ex : Un chien qui tire en laisse cherche à **dominer** ?">Un chien qui tire en laisse cherche à **dominer** ?</textarea>
           <div class="count" id="myth-count"></div>
           <div class="field-status"></div>
         </div>
@@ -246,7 +246,7 @@
 
         <div class="field">
           <div class="field-head"><label for="closing">Présentation 📍 (texte)</label><button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
-          <textarea id="closing" placeholder="Ex : Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chiens et propriétaires...">Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chiens et propriétaires avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action.</textarea>
+          <textarea id="closing" placeholder="Ex : Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque chien et son humain...">Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque chien et son humain avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action.</textarea>
           <div class="count" id="closing-count"></div>
           <div class="field-status"></div>
         </div>
@@ -445,6 +445,8 @@
   // Registre mièvre à éviter : la com reste sobre et scientifique
   const SUGARY_RE = /m[ée]thodes?\s+douces?|tout en douceur|toutou|loulou/i;
   // Tournures calquées de l'anglais : le texte doit sonner français
+  // On parle du chien et de son humain, jamais de « propriétaire » ni de « maître »
+  const OWNER_RE = /(?<!\p{L})(?:propriétaires?|ma[iî]tres?(?:ses?)?)(?!\p{L})/iu;
   const CALQUE_RE = /ce qui se joue|(?:faire|fait|fais|faisait|font)\s+sens(?!\p{L})|impact(?:er|e|es|ent|é|ée|és|ées|ant)(?!\p{L})|adresser\s+(?:un|le|ce|les|des)\s+probl[èe]me|en termes de/iu;
 
   function autosizePostText(){
@@ -470,6 +472,7 @@
     if (LINK_RE.test(text)) warnings.push("Lien détecté : il ne sera pas cliquable et peut faire refuser le post. Mets-le dans le bouton « En savoir plus ».");
     if (/#\p{L}/u.test(text)) warnings.push("Hashtag détecté : ça ne sert à rien sur Google, tu peux l'enlever.");
     if (CLICKBAIT_RE.test(text)) warnings.push("Formule racoleuse détectée (« Faux », « Spoiler », « Tu as tout faux »…) : préfère une explication calme et directe.");
+    if (OWNER_RE.test(text)) warnings.push("« Propriétaire » ou « maître » détecté : préfère « humain » (le chien et son humain).");
     if (CALQUE_RE.test(text)) warnings.push("Tournure calquée de l'anglais détectée (« ce qui se joue », « faire sens », « impacter »…) : reformule en français naturel.");
     if (SUGARY_RE.test(text)) warnings.push("Vocabulaire mièvre détecté (« méthode douce », « toutou »…) : préfère un vocabulaire sobre et factuel.");
     $('post-warnings').innerHTML = warnings.map(w => `<div>⚠ ${escapeHtml(w)}</div>`).join('');
@@ -533,13 +536,13 @@
 
   // Consigne unique, pensée comme un tout : les quatre parties du post forment un seul raisonnement
   const systemPrompt = [
-    "Tu rédiges les posts de la fiche Google Business Profile de Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), en Haute-Garonne et en Ariège, spécialisé dans les chiens de protection de troupeau (CPT). Son approche est éthologique et scientifique : renforcement positif, aucune méthode coercitive, aucun jugement envers les propriétaires. Pour tout contenu portant sur les CPT, appuie-toi exclusivement sur ces sources : http://hogandesvents.nutritionverte.com/articles.html et https://www.cistole.com/etudes-recherche.",
+    "Tu rédiges les posts de la fiche Google Business Profile de Thomas Le Blanc, comportementaliste canin titulaire du diplôme de conseiller en éthologie appliquée à la relation humain-chien (CEACHA, Humanimalis), en Haute-Garonne et en Ariège, spécialisé dans les chiens de protection de troupeau (CPT). Son approche est éthologique et scientifique : renforcement positif, aucune méthode coercitive, aucun jugement envers les humains des chiens. Pour tout contenu portant sur les CPT, appuie-toi exclusivement sur ces sources : http://hogandesvents.nutritionverte.com/articles.html et https://www.cistole.com/etudes-recherche.",
     "",
     "OBJECTIF",
-    "Ces posts font vivre la fiche et la font ressortir dans les recherches locales. Ils sont lus vite, surtout sur mobile, par des propriétaires qui cherchent un professionnel près de chez eux. Chaque post déconstruit une idée reçue et explique le comportement réel du chien : c'est de l'éducation préventive, qui montre une expertise. Ce n'est ni un cours magistral ni un catalogue de solutions. Le post explique, il ne prescrit pas : aucun conseil pratique, aucune astuce, aucune solution toute faite, car chaque chien est unique et l'accompagnement de Thomas est toujours construit sur mesure.",
+    "Ces posts font vivre la fiche et la font ressortir dans les recherches locales. Ils sont lus vite, surtout sur mobile, par des personnes qui vivent avec un chien et cherchent un professionnel près de chez elles. Chaque post déconstruit une idée reçue et explique le comportement réel du chien : c'est de l'éducation préventive, qui montre une expertise. Ce n'est ni un cours magistral ni un catalogue de solutions. Le post explique, il ne prescrit pas : aucun conseil pratique, aucune astuce, aucune solution toute faite, car chaque chien est unique et l'accompagnement de Thomas est toujours construit sur mesure.",
     "",
     "STRUCTURE : un seul raisonnement en quatre parties qui s'enchaînent",
-    "1. L'idée reçue, affichée seule sur le visuel et reprise en tête du texte. C'est la croyance répandue, toujours cadrée, jamais énoncée comme une affirmation brute : sous forme de question (« Un chien qui tire en laisse cherche à dominer son maître ? »), précédée d'un marqueur explicite (« Penser que… », « Croire que… », « Non, … ») ou contredite dans la même phrase.",
+    "1. L'idée reçue, affichée seule sur le visuel et reprise en tête du texte. C'est la croyance répandue, toujours cadrée, jamais énoncée comme une affirmation brute : sous forme de question (« Un chien qui tire en laisse cherche à dominer ? »), précédée d'un marqueur explicite (« Penser que… », « Croire que… », « Non, … ») ou contredite dans la même phrase.",
     "2. La réalité. Elle déconstruit précisément cette idée reçue en reprenant ses termes exacts : si l'idée reçue parle de dominance, la réalité parle de dominance, jamais d'un terme voisin de sens différent (hiérarchie, autorité…). Elle explique ensuite le mécanisme en jeu (réflexe, émotion, physiologie, apprentissage) comme un petit cours d'éthologie, factuel et neutre, en allant à l'essentiel.",
     "3. La transition. Elle ouvre sur le fait que chaque chien réagit et s'exprime à sa manière, et que le regarder vivre en dit long sur lui. Elle prépare la présentation sans parler de Thomas.",
     "4. La présentation de Thomas, à la première personne. Elle situe son approche, fondée sur l'éthologie, où la compréhension précède l'action.",
@@ -548,11 +551,12 @@
     "TON ET POSITIONNEMENT",
     "Cadre strictement professionnel : sobre, calme, neutre, scientifique et pédagogique. La bienveillance passe par le respect et l'absence de jugement, pas par l'affect.",
     "Aucune adresse directe au lecteur, ni tutoiement ni vouvoiement : le style reste impersonnel.",
-    "Jamais donneur de leçons, condescendant ni culpabilisant. N'attribue jamais le comportement du chien à une faute ou à un manque du propriétaire, et n'écris rien qui sous-entende que le lecteur ignore quelque chose ou n'en est pas capable (« il suffit de… », « encore faut-il… »).",
+    "Jamais donneur de leçons, condescendant ni culpabilisant. N'attribue jamais le comportement du chien à une faute ou à un manque de son humain, et n'écris rien qui sous-entende que le lecteur ignore quelque chose ou n'en est pas capable (« il suffit de… », « encore faut-il… »).",
     "Ni mièvre (« méthode douce », « tout en douceur », « amour », « tendresse », « toutou », effusions de bons sentiments), ni viril, autoritaire ou coercitif (« se faire respecter », « montrer qui est le chef »), sauf pour citer une idée reçue à déconstruire.",
     "Pas de formule racoleuse ou moqueuse (« Faux ! », « Spoiler alert », « Tu as tout faux », « Erreur ! »), pas de dramatisation, pas de points d'exclamation à répétition.",
     "L'observation n'est jamais présentée comme du laisser-faire ou de l'inaction : elle est le point de départ de la compréhension.",
-    "Approche à mettre en avant : éthologie et sciences du comportement, vision systémique et holistique (le chien, son environnement, sa relation avec son humain), avec un vocabulaire précis qui parle à tous les propriétaires, hommes comme femmes.",
+    "Approche à mettre en avant : éthologie et sciences du comportement, vision systémique et holistique (le chien, son environnement, sa relation avec son humain), avec un vocabulaire précis qui parle à tous, hommes comme femmes.",
+    "Vocabulaire : on parle du chien et de son humain (« le chien et son humain », « son humain », « les humains »). N'emploie jamais « propriétaire » ni « maître », y compris dans l'idée reçue : la notion de propriété et celle de maître, aujourd'hui galvaudée, ne correspondent pas à la relation que Thomas défend.",
     "",
     "LANGUE",
     "Français naturel et idiomatique, comme un Français l'écrirait spontanément, jamais comme une traduction de l'anglais. Pas de calques : « ce qui se joue », « faire sens », « impacter », « adresser un problème », « être en charge de », « en termes de », « réaliser » au sens de se rendre compte, « opportunité » au sens d'occasion. Préfère des verbes concrets aux noms abstraits.",
@@ -574,7 +578,7 @@
     myth: { type: 'string', description: "Partie 1, l'idée reçue : une seule phrase courte (20 mots maximum, 140 caractères maximum), sans guillemets, toujours cadrée (question, marqueur « Penser que… », « Croire que… », « Non, … », ou contradiction dans la même phrase), jamais une affirmation brute. Entoure de **double astérisques** le ou les mots clés à surligner sur le visuel." },
     truth: { type: 'string', description: "Partie 2, la réalité : un seul paragraphe de 3 à 4 phrases, idéalement 400 à 600 caractères et jamais plus de 700. Commence par déconstruire précisément l'idée reçue en reprenant ses termes exacts, puis explique le mécanisme en jeu, simplement et sans tout dire. N'ouvre jamais par une réfutation sèche (« Faux. », « Pas du tout ! »). Aucun conseil, aucune solution. Sans astérisques." },
     bridge: { type: 'string', description: "Partie 3, la transition : une ou deux phrases brèves (20 mots maximum, 140 caractères maximum). Référence : « Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui. » Reste très proche de cette référence (même idée, même registre) ; seule une légère variation de formulation est permise d'un post à l'autre. Ne parle pas de Thomas. Sans astérisques." },
-    closing: { type: 'string', description: "Partie 4, la présentation de Thomas, à la première personne, en une phrase (30 mots maximum, 200 caractères maximum). Référence : « Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chiens et propriétaires avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action. » Elle commence toujours par « Comportementaliste canin en Haute-Garonne et en Ariège » ; la suite reste très proche de la référence, avec seulement une légère variation de formulation d'un post à l'autre, sans changer de sens ni de registre. Sans astérisques." }
+    closing: { type: 'string', description: "Partie 4, la présentation de Thomas, à la première personne, en une phrase (30 mots maximum, 200 caractères maximum). Référence : « Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque chien et son humain avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action. » Elle commence toujours par « Comportementaliste canin en Haute-Garonne et en Ariège » ; la suite reste très proche de la référence, avec seulement une légère variation de formulation d'un post à l'autre, sans changer de sens ni de registre. Sans astérisques." }
   };
 
   function schemaFor(ids){
