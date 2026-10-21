@@ -122,7 +122,7 @@
     font-family:'Outfit',sans-serif;position:relative;overflow:hidden;
     padding:90px 90px 30px;
     /* Couleurs du visuel, modifiables depuis « Personnaliser le visuel » */
-    --v-bg:#f97316;--v-text:#ffffff;--v-hl:#1e2d3d;--v-quote:#ffffff;
+    --v-bg:#f97316;--v-text:#1e2d3d;--v-hl:#ffffff;--v-quote:#ffffff;
     --v-badge-bg:#ffffff;--v-badge-fg:#14528f;--v-line:rgba(30,45,61,.2);
     background:var(--v-bg);color:var(--v-text);
   }
@@ -235,14 +235,14 @@
 
         <div class="field">
           <div class="field-head"><label for="myth">Idée reçue (visuel + accroche)</label><button type="button" class="regen-btn" data-field="myth" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
-          <textarea id="myth" placeholder="Ex : Tirer en laisse = vouloir **dominer**.">Tirer en laisse = vouloir **dominer** son maître.</textarea>
+          <textarea id="myth" placeholder="Ex : Un chien qui tire en laisse veut te **dominer** ?">Un chien qui tire en laisse cherche à **dominer** son maître ?</textarea>
           <div class="count" id="myth-count"></div>
           <div class="field-status"></div>
         </div>
 
         <div class="field">
           <div class="field-head"><label for="truth">La réalité (texte)</label><button type="button" class="regen-btn" data-field="truth" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
-          <textarea id="truth" placeholder="Ex : Faux. Il n'a jamais appris à marcher en laisse détendue.">Faux. Ton chien n'a simplement jamais appris à marcher en laisse détendue. Ce n'est pas une question de hiérarchie : tirer lui permet d'avancer vers ce qui l'intéresse, alors il recommence.</textarea>
+          <textarea id="truth" placeholder="Ex : Il n'a jamais appris à marcher en laisse détendue : tirer lui permet d'avancer.">Tirer en laisse n'a rien à voir avec la hiérarchie. Ton chien n'a simplement jamais appris à marcher en laisse détendue : tirer lui permet d'avancer vers ce qui l'intéresse, et comme ça fonctionne, il recommence.</textarea>
           <div class="count" id="truth-count"></div>
           <div class="field-status"></div>
         </div>
@@ -468,12 +468,18 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
     if (truth) parts.push(`✅ LA RÉALITÉ\n${truth}`);
     if (actions.length) parts.push(`🐾 EN PRATIQUE\n${actions.map(a => '• ' + a).join('\n')}`);
     if (closing) parts.push(`📍 ${closing}`);
-    // Espaces insécables de la typographie française : aucun « : ; ? ! » ne se retrouve seul en début de ligne
-    return parts.join('\n\n').replace(/« /g, '«\u00A0').replace(/ ([:;?!»])/g, '\u00A0$1');
+    return frenchSpaces(parts.join('\n\n'));
+  }
+
+  // Espaces insécables de la typographie française : aucun « : ; ? ! » ne se retrouve seul en début de ligne
+  function frenchSpaces(str){
+    return str.replace(/« /g, '«\u00A0').replace(/ ([:;?!»])/g, '\u00A0$1');
   }
 
   const PHONE_RE = /(?:\+33\s?|\b0)[1-9](?:[\s.-]?\d{2}){4}\b/;
   const LINK_RE = /https?:\/\/|\bwww\.|\b[a-z0-9-]+\.(?:fr|com|net|org|eu|info|io)\b/i;
+  // « Faux. » / « Faux ! » en début de phrase, « spoiler », « tout faux » : le ton doit rester calme et pédagogique
+  const CLICKBAIT_RE = /(?:^|[\n.!?…«»]\s*)faux\s*[.!,:;]|spoiler|tout faux/i;
 
   function autosizePostText(){
     const ta = $('post-text');
@@ -497,13 +503,14 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
     if (PHONE_RE.test(text)) warnings.push("Numéro de téléphone détecté : Google peut refuser le post. Utilise plutôt le bouton « Appeler ».");
     if (LINK_RE.test(text)) warnings.push("Lien détecté : il ne sera pas cliquable et peut faire refuser le post. Mets-le dans le bouton « En savoir plus ».");
     if (/#\p{L}/u.test(text)) warnings.push("Hashtag détecté : ça ne sert à rien sur Google, tu peux l'enlever.");
+    if (CLICKBAIT_RE.test(text)) warnings.push("Formule racoleuse détectée (« Faux », « Spoiler », « Tu as tout faux »…) : préfère une explication calme et directe.");
     $('post-warnings').innerHTML = warnings.map(w => `<div>⚠ ${escapeHtml(w)}</div>`).join('');
   }
 
   function buildAll(){
     const myth = $('myth').value.trim() || '—';
     const headline = $('headline');
-    headline.innerHTML = renderHighlighted(myth);
+    headline.innerHTML = renderHighlighted(frenchSpaces(myth));
     fitHeadline(headline);
 
     updateCount('myth','myth-count',160);
@@ -557,7 +564,7 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
     if (apiKeyInput.value.trim()) localStorage.setItem('anthropic_api_key', apiKeyInput.value.trim());
   });
 
-  const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPT) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Pour tout contenu portant sur les CPT, appuie-toi exclusivement sur les sources suivantes : http://hogandesvents.nutritionverte.com/articles.html et https://www.cistole.com/etudes-recherche. Tu rédiges des posts pour sa fiche Google Business Profile, au format \"idée reçue / réalité / en pratique\". Ces posts servent à faire vivre la fiche et à la faire ressortir dans les recherches locales : ils sont lus surtout sur mobile, par des propriétaires qui cherchent de l'aide près de chez eux. Le visuel du post n'affiche que l'idée reçue ; la réalité, les actions concrètes et la conclusion sont dans le texte, qui doit donc se suffire à lui-même. L'idée reçue doit être percutante et directe, façon accroche publicitaire ; la réalité et les actions doivent être claires, concrètes et utiles, sans jargon. Adresse-toi toujours aux propriétaires en tutoiement (\"tu\", \"ton\", \"te\", \"t'\"), jamais en vouvoiement. Règles Google à respecter : jamais de numéro de téléphone, jamais d'URL ni de nom de domaine, jamais de hashtag, pas de mots entièrement en majuscules. N'ajoute ni emoji ni puce : la mise en forme du texte est ajoutée automatiquement. La syntaxe **mot** sert uniquement à surligner des mots sur le visuel : utilise-la dans l'idée reçue et nulle part ailleurs. N'utilise jamais le tiret cadratin (—) : remplace-le par une virgule, des deux-points ou reformule la phrase.";
+  const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPT) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Pour tout contenu portant sur les CPT, appuie-toi exclusivement sur les sources suivantes : http://hogandesvents.nutritionverte.com/articles.html et https://www.cistole.com/etudes-recherche. Tu rédiges des posts pour sa fiche Google Business Profile, au format \"idée reçue / réalité / en pratique\". Ces posts servent à faire vivre la fiche et à la faire ressortir dans les recherches locales : ils sont lus surtout sur mobile, par des propriétaires qui cherchent de l'aide près de chez eux. Le visuel du post n'affiche que l'idée reçue ; la réalité, les actions concrètes et la conclusion sont dans le texte, qui doit donc se suffire à lui-même. Ton : calme, scientifique, pédagogique et bienveillant, sans dramatisation ni sensationnalisme. L'idée reçue n'est jamais énoncée comme une affirmation brute au premier degré : elle est toujours cadrée, soit sous forme de question (« Un chien qui tire en laisse cherche à dominer son maître ? »), soit précédée d'un marqueur explicite (« Penser que… », « Croire que… », « Non, … »), soit contredite immédiatement dans l'accroche elle-même (« Tirer en laisse n'a rien à voir avec la dominance. »). On passe ensuite directement de l'idée reçue à l'explication comportementale. Bannis absolument les formules racoleuses ou moqueuses comme « Faux ! », « Spoiler alert », « Tu as tout faux », « Erreur ! » ou les points d'exclamation à répétition. La réalité et les actions doivent être claires, concrètes et utiles, sans jargon. Adresse-toi toujours aux propriétaires en tutoiement (\"tu\", \"ton\", \"te\", \"t'\"), jamais en vouvoiement. Règles Google à respecter : jamais de numéro de téléphone, jamais d'URL ni de nom de domaine, jamais de hashtag, pas de mots entièrement en majuscules. N'ajoute ni emoji ni puce : la mise en forme du texte est ajoutée automatiquement. La syntaxe **mot** sert uniquement à surligner des mots sur le visuel : utilise-la dans l'idée reçue et nulle part ailleurs. N'utilise jamais le tiret cadratin (—) : remplace-le par une virgule, des deux-points ou reformule la phrase.";
 
   const FIELD_IDS = ['myth', 'truth', 'actions', 'closing'];
   const FIELD_LABELS = {
@@ -567,8 +574,8 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
     closing: 'conclusion'
   };
   const FIELD_SCHEMAS = {
-    myth: { type: 'string', description: "L'idée reçue, affichée seule sur le visuel et reprise en accroche du texte : 1 à 2 phrases courtes et percutantes (20 mots maximum, 140 caractères maximum), formulée comme une croyance répandue, sans guillemets. Entoure chaque mot ou groupe de mots important de **double astérisques** pour le surligner, plusieurs si le sens le justifie, sinon un seul suffit." },
-    truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue : 2 à 4 phrases (70 mots maximum, 450 caractères maximum). Commence par une réfutation nette (par exemple « Faux. » ou « Pas vraiment. »), puis explique simplement pourquoi, en décrivant ce qui se passe réellement chez le chien. Sans astérisques." },
+    myth: { type: 'string', description: "L'idée reçue, affichée seule sur le visuel et reprise en accroche du texte : 1 à 2 phrases courtes (20 mots maximum, 140 caractères maximum), sans guillemets. Jamais une affirmation brute : formule la croyance en question, ou introduis-la par un marqueur explicite (« Penser que… », « Croire que… », « Non, … »), ou contredis-la dans la même accroche. Ton calme, sans formule racoleuse. Entoure chaque mot ou groupe de mots important de **double astérisques** pour le surligner, plusieurs si le sens le justifie, sinon un seul suffit." },
+    truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue : 2 à 4 phrases (70 mots maximum, 450 caractères maximum). Entre directement dans l'explication comportementale, sur un ton calme et scientifique : décris simplement ce qui se passe réellement chez le chien et pourquoi. N'ouvre jamais par une réfutation sèche ou racoleuse (« Faux. », « Pas du tout ! », « Spoiler alert »). Sans astérisques." },
     actions: { type: 'array', items: { type: 'string' }, description: "2 à 4 actions concrètes que le propriétaire peut appliquer dès aujourd'hui, une par élément du tableau. Chacune tient en une phrase courte (15 mots maximum, 100 caractères maximum) et commence par un verbe à l'impératif en tutoiement ; 400 caractères maximum au total. Sans puce, sans numéro, sans astérisques." },
     closing: { type: 'string', description: "La conclusion du post, écrite à la première personne (c'est Thomas qui parle), en 1 à 2 phrases (40 mots maximum, 250 caractères maximum). Elle est différente à chaque post et reliée au sujet : elle présente l'accompagnement de Thomas en mentionnant naturellement « comportementaliste canin » et la Haute-Garonne et/ou l'Ariège, puis invite à le contacter via le bouton du post, avec un verbe neutre comme « contacter » : n'écris ni « écris-moi » ni « appelle-moi », car on ne sait pas quel bouton sera choisi. Jamais de numéro de téléphone, d'URL ni de nom de domaine. Sans astérisques." }
   };
@@ -780,7 +787,7 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
   const DEFAULT_STYLE = {
     label: 'Idée reçue',
     symbol: '?',
-    colors: { bg: '#f97316', text: '#ffffff', hl: '#1e2d3d', quote: '#ffffff', badgeBg: '#ffffff', badgeFg: '#14528f', logoBg: '#1e2d3d', logoFg: '#ffffff' },
+    colors: { bg: '#f97316', text: '#1e2d3d', hl: '#ffffff', quote: '#ffffff', badgeBg: '#ffffff', badgeFg: '#14528f', logoBg: '#1e2d3d', logoFg: '#ffffff' },
     photo: { opacity: 16, gray: 45, position: 'center' }
   };
   const HEX_RE = /^#[0-9a-f]{6}$/i;
