@@ -118,7 +118,7 @@
     padding:56px 80px 40px;
     /* Couleurs et tailles du visuel, modifiables depuis « Personnaliser le visuel » */
     --v-bg:#f97316;--v-text:#1e2d3d;--v-hl:#ffffff;--v-quote:#ffffff;
-    --v-badge-bg:#ffffff;--v-badge-fg:#14528f;--v-line:rgba(30,45,61,.2);
+    --v-badge-bg:#ffffff;--v-badge-fg:#14528f;
     --v-badge-size:110px;--v-label-size:50px;
     background:var(--v-bg);color:var(--v-text);
   }
@@ -159,7 +159,8 @@
   }
   .slide-badge, .slide-footer{position:relative;z-index:1;}
 
-  .slide-footer{display:flex;align-items:center;justify-content:center;margin-top:24px;padding-top:28px;border-top:2px solid var(--v-line);height:140px;flex-shrink:0;}
+  /* Les pictos signent le visuel, alignés à droite, sans trait de séparation */
+  .slide-footer{display:flex;align-items:center;justify-content:flex-end;margin-top:24px;height:112px;flex-shrink:0;}
   .slide-logo{height:100%;width:auto;}
 
   .downloads{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
@@ -891,10 +892,6 @@
 
   let visualStyle = loadStyle();
 
-  function hexToRgba(hex, alpha){
-    const n = parseInt(hex.slice(1), 16);
-    return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${alpha})`;
-  }
 
   function applyStyle(){
     const { colors, photo, sizes } = visualStyle;
@@ -909,7 +906,6 @@
     slide.style.setProperty('--v-quote', colors.quote);
     slide.style.setProperty('--v-badge-bg', colors.badgeBg);
     slide.style.setProperty('--v-badge-fg', colors.badgeFg);
-    slide.style.setProperty('--v-line', hexToRgba(colors.logoBg, .2));
     // À l'export, le logo SVG est dessiné comme une image : ses couleurs doivent être dans sa propre feuille de style
     $('logo-style').textContent = `.cls-1{fill:${colors.logoFg};}.cls-2{fill:${colors.logoBg};}`;
     $('badge-label').textContent = visualStyle.label;
