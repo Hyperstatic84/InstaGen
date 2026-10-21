@@ -503,7 +503,7 @@
     headline.innerHTML = renderHighlighted(frenchSpaces(myth));
     fitHeadline(headline);
 
-    updateCount('myth','myth-count',160);
+    updateCount('myth','myth-count',100);
     updateCount('truth','truth-count',450);
     updateCount('bridge','bridge-count',160);
     updateCount('closing','closing-count',220);
@@ -597,7 +597,7 @@
     closing: 'présentation de Thomas'
   };
   const FIELD_SCHEMAS = {
-    myth: { type: 'string', description: "Partie 1, l'idée reçue : une seule phrase courte (20 mots maximum, 140 caractères maximum), sans guillemets, qui énonce la croyance introduite par « On croit souvent que… », « Beaucoup pensent que… » ou « On entend souvent que… » (varie le marqueur d'un post à l'autre). Jamais de question, jamais d'affirmation brute, jamais « Croire que… » ou « Penser que… » seul en début de phrase. Entoure de **double astérisques** le ou les mots clés à surligner sur le visuel." },
+    myth: { type: 'string', description: "Partie 1, l'idée reçue : une seule phrase courte et une seule idée (15 mots environ, 100 caractères maximum, sans ajout du type « et qu'il faut… »), sans guillemets, qui énonce la croyance introduite par « On croit souvent que… », « Beaucoup pensent que… » ou « On entend souvent que… » (varie le marqueur d'un post à l'autre). Jamais de question, jamais d'affirmation brute, jamais « Croire que… » ou « Penser que… » seul en début de phrase. Entoure de **double astérisques** le ou les mots clés à surligner sur le visuel." },
     truth: { type: 'string', description: "Partie 2, la réalité : un seul paragraphe de 2 à 3 phrases courtes (25 mots maximum chacune), idéalement 300 à 400 caractères et jamais plus de 450. La première phrase déconstruit l'idée reçue en peu de mots, avec son mot clé (dominance, content…), sans recopier toute la phrase de l'idée reçue. Explique ensuite le mécanisme principal, et lui seul : pas d'énumération, pas de détail secondaire, pas d'étude citée. Aucun conseil, aucune solution. N'ouvre jamais par une réfutation sèche (« Faux. », « Pas du tout ! »). Sans astérisques." },
     bridge: { type: 'string', description: "Partie 3, la transition : une ou deux phrases brèves (20 mots maximum, 140 caractères maximum). Référence : « Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui. » Reste très proche de cette référence (même idée, même registre) ; seule une légère variation de formulation est permise d'un post à l'autre. Ne parle pas de Thomas. Sans astérisques." },
     closing: { type: 'string', description: "Partie 4, la présentation de Thomas, à la première personne, en une phrase (30 mots maximum, 200 caractères maximum). Référence : « Comportementaliste canin à Toulouse et alentours, j'accompagne chaque binôme humain-chien avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action. » Elle commence toujours par « Comportementaliste canin à Toulouse et alentours » ; la suite reste très proche de la référence, avec seulement une légère variation de formulation d'un post à l'autre, sans changer de sens ni de registre. Sans astérisques." }
