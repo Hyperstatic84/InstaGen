@@ -30,14 +30,12 @@
     grid-template-columns:360px 1fr;
     grid-template-areas:
       "ai      right"
-      "content right"
-      "style   right";
+      "content right";
     gap:30px;
     align-items:start;
   }
   .ai-panel{grid-area:ai;}
   .content-panel{grid-area:content;}
-  .style-panel{grid-area:style;}
   .right-col{grid-area:right;min-width:0;}
 
   .panel{
@@ -87,9 +85,13 @@
   .field-status.success{color:#16a34a;font-weight:600;}
   .field-status.error{color:#dc2626;font-weight:600;}
 
+  .style-panel{max-width:640px;margin-bottom:20px;}
+  .style-panel summary{cursor:pointer;font-size:14px;font-weight:700;letter-spacing:.02em;}
+  .style-panel summary span{font-size:12.5px;font-weight:400;color:#64748b;letter-spacing:0;}
+  .style-panel[open] summary{margin-bottom:16px;}
   .style-section{font-size:12px;font-weight:700;margin:6px 0 10px;}
   .style-row{display:grid;grid-template-columns:1fr 96px;gap:12px;}
-  .color-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:18px;}
+  .color-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px 12px;margin-bottom:18px;}
   .color-item{display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer;}
   .color-item input[type="color"]{
     width:34px;height:28px;flex-shrink:0;cursor:pointer;
@@ -129,8 +131,8 @@
   .slide-badge{display:flex;align-items:center;gap:24px;margin-bottom:56px;}
   .slide.landscape .slide-badge{margin-bottom:36px;}
   .badge-num{
-    width:92px;height:92px;background:var(--v-badge-bg);border-radius:22px;flex-shrink:0;
-    display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap;
+    min-width:92px;height:92px;padding:0 22px;background:var(--v-badge-bg);border-radius:22px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;white-space:nowrap;
     color:var(--v-badge-fg);font-size:52px;font-weight:800;
   }
   .badge-label{font-size:42px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--v-text);}
@@ -162,7 +164,7 @@
   .slide.landscape .slide-footer{height:120px;margin-top:20px;padding-top:24px;}
   .slide-logo{height:100%;width:auto;}
 
-  .downloads{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px;}
+  .downloads{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
   button{
     background:var(--nature-800);color:#fff;border:none;border-radius:7px;
     padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
@@ -198,12 +200,11 @@
       grid-template-areas:
         "content"
         "right"
-        "style"
         "ai";
       gap:20px;
     }
     .preview-wrap{margin-left:auto;margin-right:auto;}
-    .captions-wrap{max-width:100%;}
+    .captions-wrap, .style-panel{max-width:100%;}
   }
 </style>
 </head>
@@ -265,8 +266,41 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
 
       </div>
 
-      <div class="panel style-panel">
-        <h2>🎨 Personnaliser le visuel</h2>
+    <div class="right-col">
+
+      <div class="format-switch" role="group" aria-label="Format du visuel">
+        <button type="button" class="fmt-btn active" data-format="square">Carré · 1080×1080</button>
+        <button type="button" class="fmt-btn" data-format="landscape">Paysage 4:3 · 1200×900</button>
+      </div>
+
+      <div class="preview-wrap" id="preview-wrap">
+        <div class="scaler" id="scaler">
+          <div class="slide" id="slide">
+            <div class="slide-bg-layer" id="bg-layer"></div>
+            <div class="quote-watermark">“</div>
+            <div class="slide-badge">
+              <span class="badge-num" id="badge-num">?</span>
+              <span class="badge-label" id="badge-label">Idée reçue</span>
+            </div>
+            <div class="slide-headline" id="headline"></div>
+            <div class="slide-footer">
+              <svg class="slide-logo" viewBox="0 0 1125.18 406.57" xmlns="http://www.w3.org/2000/svg">
+                <defs><style id="logo-style">.cls-1{fill:#fff;}.cls-2{fill:#1E2D3D;}</style></defs>
+                <g><rect class="cls-2" x="408.4" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><g><path class="cls-1" d="M581.51,287.21c-7.86-2.87-16.86-5.75-25-4.31-5.84,1.05-11.4,2.68-16.96,4.6-10.54,3.64-21.36,6.9-32.29,4.41-3.64-.86-6.99-2.49-9.39-5.36-5.75-6.9-3.16-19.26.38-27.3,8.62-19.64,23.85-36.12,42.73-46.37,5.17-2.78,10.54-4.79,16.38-5.56,13.8-1.82,27.02,5.36,37.75,13.7,10.73,8.33,20.21,19.06,27.02,31.33,2.97,5.27,5.17,10.63,6.23,16.57,1.53,7.86.96,17.05-6.51,20.79-7.47,3.74-17.72,4.02-25.77,2.11-4.98-1.25-9.68-2.87-14.47-4.6h-.1Z"/><path class="cls-1" d="M608.24,173.11c-9.01,10.25-23.18,13.03-32.48,3.07-2.3-2.49-4.22-5.27-5.46-8.53-2.3-6.13-3.07-12.74-2.11-19.26,1.63-12.07,7.28-24.05,17.44-30.94,5.36-3.74,12.07-4.79,18.3-3.07,3.26.96,5.84,2.87,8.14,5.27,3.35,3.45,5.56,7.66,6.71,12.36,2.59,10.73.86,21.46-3.93,31.42-1.72,3.54-4.02,6.61-6.61,9.58v.1Z"/><path class="cls-1" d="M547.5,176.36c-8.14,8.53-20.41,7.38-29.03-.1s-13.22-18.01-14.66-29.41c-1.15-9.29,1.05-20.5,7.76-27.21,2.49-2.49,5.17-4.5,8.62-5.36,13.03-3.26,23.38,5.56,29.6,16.57,2.01,3.54,3.26,7.19,4.31,11.11,2.3,8.62,2.3,17.63-.86,25.87-1.25,3.35-3.26,6.13-5.56,8.62l-.19-.1Z"/><path class="cls-1" d="M510.33,226.85c-6.71,9.01-19.93,7.76-28.74.96-9.77-7.57-15.81-19.06-16.96-31.52-.57-6.42.57-12.45,3.93-17.92,2.49-4.22,6.32-7.09,11.21-7.86,6.9-1.15,13.6.96,19.06,5.36,6.23,5.08,10.92,11.5,13.8,18.97,4.02,10.63,4.79,22.51-2.3,32Z"/><path class="cls-1" d="M642.06,227.62c-8.81,6.99-22.13,8.33-28.93-.77-4.31-5.75-5.84-12.74-5.17-19.93,1.34-13.03,8.24-25.58,19.26-32.86,8.24-5.46,20.69-5.75,26.73,2.87,3.26,4.69,4.98,10.06,4.98,15.9,0,13.51-6.32,26.35-16.86,34.68v.1Z"/></g></g>
+                <g><rect class="cls-2" x="50" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1" d="M197.8,142.5l5.58,7.69,5.58-7.69c9.29-12.86,24.24-20.48,40.11-20.48,27.32,0,49.48,22.16,49.48,49.48v.97c0,41.71-52.01,90.15-79.14,110.85-4.61,3.49-10.26,5.24-16.02,5.24s-11.45-1.71-16.02-5.24c-27.14-20.71-79.14-69.14-79.14-110.85v-.97c0-27.32,22.16-49.48,49.48-49.48,15.87,0,30.82,7.62,40.11,20.48Z"/></g>
+                <g><rect class="cls-2" x="766.79" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1" d="M921.74,120.39c-29.9,0-53.84,13.62-71.27,29.83-17.32,16.1-28.9,35.3-34.42,48.51-1.22,2.92-1.22,6.18,0,9.1,5.51,13.21,17.1,32.45,34.42,48.51,17.43,16.17,41.37,29.83,71.27,29.83s53.84-13.62,71.27-29.83c17.32-16.1,28.9-35.3,34.42-48.51,1.22-2.92,1.22-6.18,0-9.1-5.51-13.21-17.1-32.45-34.42-48.51-17.43-16.17-41.37-29.83-71.27-29.83ZM868.45,203.28c0-29.42,23.87-53.29,53.29-53.29s53.29,23.87,53.29,53.29-23.87,53.29-53.29,53.29-53.29-23.87-53.29-53.29ZM921.74,179.6c0,13.06-10.62,23.68-23.68,23.68-4.26,0-8.25-1.11-11.73-3.11-.37,4.03-.04,8.18,1.07,12.29,5.07,18.95,24.57,30.2,43.52,25.13,18.95-5.07,30.2-24.57,25.13-43.52-4.51-16.91-20.54-27.68-37.41-26.2,1.96,3.44,3.11,7.44,3.11,11.73Z"/></g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="downloads">
+        <button id="dl-btn" onclick="downloadVisual()">⬇ Télécharger le visuel (PNG 1080×1080)</button>
+      </div>
+
+      <details class="panel style-panel" id="style-panel">
+        <summary>🎨 Personnaliser le visuel <span>· textes, couleurs, photo</span></summary>
 
         <div class="style-section">Textes du visuel</div>
         <div class="style-row">
@@ -320,40 +354,7 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
 
         <button type="button" id="style-reset" style="background:#94a3b8;">↺ Revenir au design d'origine</button>
         <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:8px;">Ces réglages restent enregistrés dans ce navigateur. La photo, elle, est à rechoisir à chaque visite.</p>
-      </div>
-
-    <div class="right-col">
-
-      <div class="format-switch" role="group" aria-label="Format du visuel">
-        <button type="button" class="fmt-btn active" data-format="square">Carré · 1080×1080</button>
-        <button type="button" class="fmt-btn" data-format="landscape">Paysage 4:3 · 1200×900</button>
-      </div>
-
-      <div class="preview-wrap" id="preview-wrap">
-        <div class="scaler" id="scaler">
-          <div class="slide" id="slide">
-            <div class="slide-bg-layer" id="bg-layer"></div>
-            <div class="quote-watermark">“</div>
-            <div class="slide-badge">
-              <span class="badge-num" id="badge-num">?</span>
-              <span class="badge-label" id="badge-label">Idée reçue</span>
-            </div>
-            <div class="slide-headline" id="headline"></div>
-            <div class="slide-footer">
-              <svg class="slide-logo" viewBox="0 0 1125.18 406.57" xmlns="http://www.w3.org/2000/svg">
-                <defs><style id="logo-style">.cls-1{fill:#fff;}.cls-2{fill:#1E2D3D;}</style></defs>
-                <g><rect class="cls-2" x="408.4" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><g><path class="cls-1" d="M581.51,287.21c-7.86-2.87-16.86-5.75-25-4.31-5.84,1.05-11.4,2.68-16.96,4.6-10.54,3.64-21.36,6.9-32.29,4.41-3.64-.86-6.99-2.49-9.39-5.36-5.75-6.9-3.16-19.26.38-27.3,8.62-19.64,23.85-36.12,42.73-46.37,5.17-2.78,10.54-4.79,16.38-5.56,13.8-1.82,27.02,5.36,37.75,13.7,10.73,8.33,20.21,19.06,27.02,31.33,2.97,5.27,5.17,10.63,6.23,16.57,1.53,7.86.96,17.05-6.51,20.79-7.47,3.74-17.72,4.02-25.77,2.11-4.98-1.25-9.68-2.87-14.47-4.6h-.1Z"/><path class="cls-1" d="M608.24,173.11c-9.01,10.25-23.18,13.03-32.48,3.07-2.3-2.49-4.22-5.27-5.46-8.53-2.3-6.13-3.07-12.74-2.11-19.26,1.63-12.07,7.28-24.05,17.44-30.94,5.36-3.74,12.07-4.79,18.3-3.07,3.26.96,5.84,2.87,8.14,5.27,3.35,3.45,5.56,7.66,6.71,12.36,2.59,10.73.86,21.46-3.93,31.42-1.72,3.54-4.02,6.61-6.61,9.58v.1Z"/><path class="cls-1" d="M547.5,176.36c-8.14,8.53-20.41,7.38-29.03-.1s-13.22-18.01-14.66-29.41c-1.15-9.29,1.05-20.5,7.76-27.21,2.49-2.49,5.17-4.5,8.62-5.36,13.03-3.26,23.38,5.56,29.6,16.57,2.01,3.54,3.26,7.19,4.31,11.11,2.3,8.62,2.3,17.63-.86,25.87-1.25,3.35-3.26,6.13-5.56,8.62l-.19-.1Z"/><path class="cls-1" d="M510.33,226.85c-6.71,9.01-19.93,7.76-28.74.96-9.77-7.57-15.81-19.06-16.96-31.52-.57-6.42.57-12.45,3.93-17.92,2.49-4.22,6.32-7.09,11.21-7.86,6.9-1.15,13.6.96,19.06,5.36,6.23,5.08,10.92,11.5,13.8,18.97,4.02,10.63,4.79,22.51-2.3,32Z"/><path class="cls-1" d="M642.06,227.62c-8.81,6.99-22.13,8.33-28.93-.77-4.31-5.75-5.84-12.74-5.17-19.93,1.34-13.03,8.24-25.58,19.26-32.86,8.24-5.46,20.69-5.75,26.73,2.87,3.26,4.69,4.98,10.06,4.98,15.9,0,13.51-6.32,26.35-16.86,34.68v.1Z"/></g></g>
-                <g><rect class="cls-2" x="50" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1" d="M197.8,142.5l5.58,7.69,5.58-7.69c9.29-12.86,24.24-20.48,40.11-20.48,27.32,0,49.48,22.16,49.48,49.48v.97c0,41.71-52.01,90.15-79.14,110.85-4.61,3.49-10.26,5.24-16.02,5.24s-11.45-1.71-16.02-5.24c-27.14-20.71-79.14-69.14-79.14-110.85v-.97c0-27.32,22.16-49.48,49.48-49.48,15.87,0,30.82,7.62,40.11,20.48Z"/></g>
-                <g><rect class="cls-2" x="766.79" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1" d="M921.74,120.39c-29.9,0-53.84,13.62-71.27,29.83-17.32,16.1-28.9,35.3-34.42,48.51-1.22,2.92-1.22,6.18,0,9.1,5.51,13.21,17.1,32.45,34.42,48.51,17.43,16.17,41.37,29.83,71.27,29.83s53.84-13.62,71.27-29.83c17.32-16.1,28.9-35.3,34.42-48.51,1.22-2.92,1.22-6.18,0-9.1-5.51-13.21-17.1-32.45-34.42-48.51-17.43-16.17-41.37-29.83-71.27-29.83ZM868.45,203.28c0-29.42,23.87-53.29,53.29-53.29s53.29,23.87,53.29,53.29-23.87,53.29-53.29,53.29-53.29-23.87-53.29-53.29ZM921.74,179.6c0,13.06-10.62,23.68-23.68,23.68-4.26,0-8.25-1.11-11.73-3.11-.37,4.03-.04,8.18,1.07,12.29,5.07,18.95,24.57,30.2,43.52,25.13,18.95-5.07,30.2-24.57,25.13-43.52-4.51-16.91-20.54-27.68-37.41-26.2,1.96,3.44,3.11,7.44,3.11,11.73Z"/></g>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="downloads">
-        <button id="dl-btn" onclick="downloadVisual()">⬇ Télécharger le visuel (PNG 1080×1080)</button>
-      </div>
+      </details>
 
       <div class="captions-wrap">
         <div class="caption-block">
@@ -713,31 +714,35 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
   const bgRemoveBtn = $('bg-remove');
   const bgLayer = $('bg-layer');
   let photoImage = null;
-  let photoType = 'image/jpeg';
+  let photoType = '';
   let photoRenderPending = false;
 
   function renderPhoto(){
     if (!photoImage) { bgLayer.style.backgroundImage = 'none'; return; }
-    const scale = Math.min(1, 1600 / Math.max(photoImage.naturalWidth, photoImage.naturalHeight));
+    const longest = Math.max(photoImage.naturalWidth, photoImage.naturalHeight);
+    // Un SVG est vectoriel : on le dessine directement en 1600 px plutôt qu'à sa taille nominale, souvent minuscule
+    const scale = photoType === 'image/svg+xml' ? 1600 / longest : Math.min(1, 1600 / longest);
     const canvas = document.createElement('canvas');
     canvas.width = Math.round(photoImage.naturalWidth * scale);
     canvas.height = Math.round(photoImage.naturalHeight * scale);
     const ctx = canvas.getContext('2d');
     ctx.drawImage(photoImage, 0, 0, canvas.width, canvas.height);
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const d = pixels.data;
     const amount = visualStyle.photo.gray / 100;
-    if (amount > 0) {
-      const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const d = pixels.data;
-      for (let i = 0; i < d.length; i += 4) {
+    let transparent = false;
+    for (let i = 0; i < d.length; i += 4) {
+      if (d[i + 3] < 255) transparent = true;
+      if (amount > 0) {
         const lum = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
         d[i]     += (lum - d[i]) * amount;
         d[i + 1] += (lum - d[i + 1]) * amount;
         d[i + 2] += (lum - d[i + 2]) * amount;
       }
-      ctx.putImageData(pixels, 0, 0);
     }
-    // PNG garde la transparence d'un détourage ; JPEG reste léger pour une photo classique
-    bgLayer.style.backgroundImage = `url(${photoType === 'image/png' ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.9)})`;
+    if (amount > 0) ctx.putImageData(pixels, 0, 0);
+    // PNG dès qu'il y a de la transparence (détourage, quel que soit le format d'origine) ; sinon JPEG, plus léger
+    bgLayer.style.backgroundImage = `url(${transparent ? canvas.toDataURL('image/png') : canvas.toDataURL('image/jpeg', 0.9)})`;
   }
 
   function schedulePhotoRender(){
@@ -861,6 +866,13 @@ Commence dans un endroit calme avant d'affronter la ville.</textarea>
     syncStyleControls();
     onStyleChange();
     renderPhoto();
+  });
+
+  // Le panneau reste ouvert ou fermé comme la dernière fois
+  const stylePanel = $('style-panel');
+  try { stylePanel.open = localStorage.getItem('googlegen_style_open') === '1'; } catch (_) {}
+  stylePanel.addEventListener('toggle', () => {
+    try { localStorage.setItem('googlegen_style_open', stylePanel.open ? '1' : '0'); } catch (_) {}
   });
 
   syncStyleControls();
