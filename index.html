@@ -232,7 +232,7 @@
 
         <div class="field">
           <div class="field-head"><label for="truth">La réalité (texte)</label><button type="button" class="regen-btn" data-field="truth" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
-          <textarea id="truth" placeholder="Ex : Quand la laisse se tend, le chien résiste par réflexe en tirant dans le sens opposé.">Tirer en laisse n'a rien à voir avec la hiérarchie. Quand une traction s'exerce sur le corps, le réflexe naturel est de résister en tirant dans le sens opposé. C'est le réflexe d'opposition, commun à tous les êtres vivants, chiens compris. La tension entretient aussi l'excitation, surtout avec un collier qui comprime le cou et peut faire mal. Le chien tire alors davantage, et le cercle vicieux s'installe.</textarea>
+          <textarea id="truth" placeholder="Ex : Quand la laisse se tend, le chien résiste par réflexe en tirant dans le sens opposé.">Tirer en laisse n'a rien à voir avec la dominance. Quand une traction s'exerce sur le corps, le réflexe naturel est de résister en tirant dans le sens opposé. C'est le réflexe d'opposition, commun à tous les êtres vivants, chiens compris. La tension entretient aussi l'excitation, surtout avec un collier qui comprime le cou et peut faire mal. Le chien tire alors davantage, et le cercle vicieux s'installe.</textarea>
           <div class="count" id="truth-count"></div>
           <div class="field-status"></div>
         </div>
@@ -245,8 +245,8 @@
         </div>
 
         <div class="field">
-          <div class="field-head"><label for="closing">Présentation et contact 📍 (texte)</label><button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
-          <textarea id="closing" placeholder="Ex : Comportementaliste canin en Haute-Garonne et en Ariège, je t'accompagne...">Comportementaliste canin en Haute-Garonne et en Ariège, je t'accompagne avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action. Contacte-moi via le bouton ci-dessous.</textarea>
+          <div class="field-head"><label for="closing">Présentation 📍 (texte)</label><button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
+          <textarea id="closing" placeholder="Ex : Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chiens et propriétaires...">Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chiens et propriétaires avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action.</textarea>
           <div class="count" id="closing-count"></div>
           <div class="field-status"></div>
         </div>
@@ -484,7 +484,7 @@
     updateCount('myth','myth-count',160);
     updateCount('truth','truth-count',700);
     updateCount('bridge','bridge-count',160);
-    updateCount('closing','closing-count',250);
+    updateCount('closing','closing-count',220);
 
     updatePost();
   }
@@ -531,20 +531,50 @@
     if (apiKeyInput.value.trim()) localStorage.setItem('anthropic_api_key', apiKeyInput.value.trim());
   });
 
-  const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPT) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Pour tout contenu portant sur les CPT, appuie-toi exclusivement sur les sources suivantes : http://hogandesvents.nutritionverte.com/articles.html et https://www.cistole.com/etudes-recherche. Tu rédiges des posts pour sa fiche Google Business Profile, au format \"idée reçue / réalité\". Ces posts servent à faire vivre la fiche et à la faire ressortir dans les recherches locales : ils sont lus surtout sur mobile, par des propriétaires qui cherchent de l'aide près de chez eux. Le visuel du post n'affiche que l'idée reçue ; la réalité, une phrase de transition et la présentation de Thomas sont dans le texte, qui doit donc se suffire à lui-même. Ton : calme, scientifique, pédagogique et bienveillant, sans dramatisation ni sensationnalisme. Jamais donneur de leçons, condescendant ni culpabilisant : n'attribue jamais le comportement du chien à une faute, une erreur ou un manque du propriétaire (pas de « tu ne lui as jamais appris », « tu le laisses faire »). Positionnement : sobre, neutre et scientifique, entre deux écueils. Pas de registre mièvre ou sucré : bannis « méthode douce », « tout en douceur », « amour », « tendresse », les diminutifs (« toutou », « loulou ») et les effusions de bons sentiments ; la bienveillance passe par le respect et l'absence de jugement, pas par l'affect. Pas non plus de registre viril, autoritaire ou coercitif (« se faire respecter », « montrer qui est le chef »), sauf pour le citer comme idée reçue à déconstruire. Mets en avant une approche fondée sur l'éthologie et les sciences du comportement, systémique et holistique (le chien, son environnement, sa relation avec son humain), avec un vocabulaire précis et factuel qui parle à tous les propriétaires, hommes comme femmes. L'idée reçue n'est jamais énoncée comme une affirmation brute au premier degré : elle est toujours cadrée, soit sous forme de question (« Un chien qui tire en laisse cherche à dominer son maître ? »), soit précédée d'un marqueur explicite (« Penser que… », « Croire que… », « Non, … »), soit contredite immédiatement dans l'accroche elle-même (« Tirer en laisse n'a rien à voir avec la dominance. »). On passe ensuite directement de l'idée reçue à l'explication comportementale : la réalité est un petit cours d'éthologie, qui explique le phénomène (réflexes, émotions, physiologie, mécanismes d'apprentissage) de façon factuelle et neutre. Bannis absolument les formules racoleuses ou moqueuses comme « Faux ! », « Spoiler alert », « Tu as tout faux », « Erreur ! » ou les points d'exclamation à répétition. La réalité doit être claire et précise, sans jargon inutile. Le post explique, il ne prescrit pas : ne donne aucun conseil pratique, aucune astuce ni solution toute faite, car chaque chien est unique et Thomas construit toujours un accompagnement sur mesure. C'est de l'éducation préventive : faire comprendre le comportement, pas dire quoi faire. Pas de cours magistral pour autant : un post Google se lit vite, sur mobile ; va à l'essentiel. L'observation n'est jamais présentée comme du laisser-faire ou de l'inaction (jamais « ne rien faire ») : elle est le point de départ de la compréhension, qui précède l'action. Adresse-toi toujours aux propriétaires en tutoiement (\"tu\", \"ton\", \"te\", \"t'\"), jamais en vouvoiement. Règles Google à respecter : jamais de numéro de téléphone, jamais d'URL ni de nom de domaine, jamais de hashtag, pas de mots entièrement en majuscules. N'ajoute ni emoji ni puce : la mise en forme du texte est ajoutée automatiquement. La syntaxe **mot** sert uniquement à surligner des mots sur le visuel : utilise-la dans l'idée reçue et nulle part ailleurs. N'utilise jamais le tiret cadratin (—) : remplace-le par une virgule ou reformule la phrase. N'abuse pas non plus des deux-points : réserve-les à une vraie explication ou à une énumération, sinon préfère une virgule ou une nouvelle phrase. Écris dans un français naturel et idiomatique, comme un Français l'écrirait spontanément, jamais comme une traduction de l'anglais : pas de calques (« ce qui se joue », « faire sens », « impacter », « adresser un problème », « être en charge de », « en termes de », « réaliser » au sens de se rendre compte, « opportunité » au sens d'occasion) ; préfère des verbes concrets aux noms abstraits et un ordre de phrase naturel en français. Relis chaque phrase en te demandant si un Français l'aurait écrite ainsi.";
+  // Consigne unique, pensée comme un tout : les quatre parties du post forment un seul raisonnement
+  const systemPrompt = [
+    "Tu rédiges les posts de la fiche Google Business Profile de Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), en Haute-Garonne et en Ariège, spécialisé dans les chiens de protection de troupeau (CPT). Son approche est éthologique et scientifique : renforcement positif, aucune méthode coercitive, aucun jugement envers les propriétaires. Pour tout contenu portant sur les CPT, appuie-toi exclusivement sur ces sources : http://hogandesvents.nutritionverte.com/articles.html et https://www.cistole.com/etudes-recherche.",
+    "",
+    "OBJECTIF",
+    "Ces posts font vivre la fiche et la font ressortir dans les recherches locales. Ils sont lus vite, surtout sur mobile, par des propriétaires qui cherchent un professionnel près de chez eux. Chaque post déconstruit une idée reçue et explique le comportement réel du chien : c'est de l'éducation préventive, qui montre une expertise. Ce n'est ni un cours magistral ni un catalogue de solutions. Le post explique, il ne prescrit pas : aucun conseil pratique, aucune astuce, aucune solution toute faite, car chaque chien est unique et l'accompagnement de Thomas est toujours construit sur mesure.",
+    "",
+    "STRUCTURE : un seul raisonnement en quatre parties qui s'enchaînent",
+    "1. L'idée reçue, affichée seule sur le visuel et reprise en tête du texte. C'est la croyance répandue, toujours cadrée, jamais énoncée comme une affirmation brute : sous forme de question (« Un chien qui tire en laisse cherche à dominer son maître ? »), précédée d'un marqueur explicite (« Penser que… », « Croire que… », « Non, … ») ou contredite dans la même phrase.",
+    "2. La réalité. Elle déconstruit précisément cette idée reçue en reprenant ses termes exacts : si l'idée reçue parle de dominance, la réalité parle de dominance, jamais d'un terme voisin de sens différent (hiérarchie, autorité…). Elle explique ensuite le mécanisme en jeu (réflexe, émotion, physiologie, apprentissage) comme un petit cours d'éthologie, factuel et neutre, en allant à l'essentiel.",
+    "3. La transition. Elle ouvre sur le fait que chaque chien réagit et s'exprime à sa manière, et que le regarder vivre en dit long sur lui. Elle prépare la présentation sans parler de Thomas.",
+    "4. La présentation de Thomas, à la première personne. Elle situe son approche, fondée sur l'éthologie, où la compréhension précède l'action.",
+    "Avant de répondre, relis les quatre parties à la suite, comme un lecteur : chacune doit découler de la précédente, avec le même vocabulaire et sans contradiction.",
+    "",
+    "TON ET POSITIONNEMENT",
+    "Cadre strictement professionnel : sobre, calme, neutre, scientifique et pédagogique. La bienveillance passe par le respect et l'absence de jugement, pas par l'affect.",
+    "Aucune adresse directe au lecteur, ni tutoiement ni vouvoiement : le style reste impersonnel.",
+    "Jamais donneur de leçons, condescendant ni culpabilisant. N'attribue jamais le comportement du chien à une faute ou à un manque du propriétaire, et n'écris rien qui sous-entende que le lecteur ignore quelque chose ou n'en est pas capable (« il suffit de… », « encore faut-il… »).",
+    "Ni mièvre (« méthode douce », « tout en douceur », « amour », « tendresse », « toutou », effusions de bons sentiments), ni viril, autoritaire ou coercitif (« se faire respecter », « montrer qui est le chef »), sauf pour citer une idée reçue à déconstruire.",
+    "Pas de formule racoleuse ou moqueuse (« Faux ! », « Spoiler alert », « Tu as tout faux », « Erreur ! »), pas de dramatisation, pas de points d'exclamation à répétition.",
+    "L'observation n'est jamais présentée comme du laisser-faire ou de l'inaction : elle est le point de départ de la compréhension.",
+    "Approche à mettre en avant : éthologie et sciences du comportement, vision systémique et holistique (le chien, son environnement, sa relation avec son humain), avec un vocabulaire précis qui parle à tous les propriétaires, hommes comme femmes.",
+    "",
+    "LANGUE",
+    "Français naturel et idiomatique, comme un Français l'écrirait spontanément, jamais comme une traduction de l'anglais. Pas de calques : « ce qui se joue », « faire sens », « impacter », « adresser un problème », « être en charge de », « en termes de », « réaliser » au sens de se rendre compte, « opportunité » au sens d'occasion. Préfère des verbes concrets aux noms abstraits.",
+    "N'utilise jamais le tiret cadratin (—), remplace-le par une virgule ou reformule. N'abuse pas des deux-points : garde-les pour une vraie explication ou une énumération.",
+    "N'ajoute ni emoji ni puce : la mise en forme est ajoutée automatiquement. La syntaxe **mot** sert uniquement à surligner des mots de l'idée reçue sur le visuel, nulle part ailleurs.",
+    "",
+    "RÈGLES GOOGLE",
+    "Jamais de numéro de téléphone, d'URL, de nom de domaine ni de hashtag, pas de mots entièrement en majuscules, et pas d'appel à contacter : le bouton du post s'en charge."
+  ].join('\n');
 
   const FIELD_IDS = ['myth', 'truth', 'bridge', 'closing'];
   const FIELD_LABELS = {
     myth:    'idée reçue (visuel + accroche)',
     truth:   'réalité',
     bridge:  'transition (chaque chien est unique)',
-    closing: 'présentation et contact'
+    closing: 'présentation de Thomas'
   };
   const FIELD_SCHEMAS = {
-    myth: { type: 'string', description: "L'idée reçue, affichée seule sur le visuel et reprise en accroche du texte : une seule phrase courte (20 mots maximum, 140 caractères maximum), sans guillemets. Jamais une affirmation brute : formule la croyance en question, ou introduis-la par un marqueur explicite (« Penser que… », « Croire que… », « Non, … »), ou contredis-la dans la même accroche. Ton calme, sans formule racoleuse. Entoure chaque mot ou groupe de mots important de **double astérisques** pour le surligner, plusieurs si le sens le justifie, sinon un seul suffit." },
-    truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue, comme un petit cours d'éthologie : c'est le cœur du post. Un seul paragraphe de 3 à 4 phrases, idéalement 400 à 600 caractères et jamais plus de 700. Va à l'essentiel : un mécanisme clé expliqué simplement, sans tout dire ; le post doit se lire vite. Entre directement dans l'explication du phénomène (réflexe, émotion, physiologie, mécanisme d'apprentissage), sur un ton calme, factuel et scientifique : décris ce qui se passe réellement chez le chien et pourquoi. Ne culpabilise jamais le propriétaire et ne lui attribue pas la cause du comportement. N'y glisse aucun conseil pratique ni solution : tu expliques, tu ne prescris pas. N'ouvre jamais par une réfutation sèche ou racoleuse (« Faux. », « Pas du tout ! », « Spoiler alert »). Sans astérisques." },
-    bridge: { type: 'string', description: "Une transition courte (20 mots maximum, 140 caractères maximum, une ou deux phrases brèves) entre l'explication et la présentation de Thomas. C'est une invitation, d'égal à égal, à prendre le temps de regarder son chien vivre pour le comprendre, plutôt que d'exiger de lui. Exemple, à ne pas recopier tel quel : « Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui. » Varie la formulation à chaque post. Rien qui sous-entende que le lecteur ignore quelque chose ou n'en est pas capable : contre-exemples à ne jamais écrire, « il suffit d'avoir les clés pour le comprendre », « encore faut-il avoir les clés pour le comprendre ». Pas de conseil, pas de formule mièvre, ne parle pas encore de Thomas ni de contact. Sans astérisques." },
-    closing: { type: 'string', description: "La présentation de Thomas, écrite à la première personne, en 1 à 2 phrases (35 mots maximum, 220 caractères maximum). Elle commence par « Comportementaliste canin en Haute-Garonne et en Ariège » (la suite varie d'un post à l'autre), décrit son approche comme fondée sur l'éthologie et les sciences du comportement (jamais « méthodes douces », « en douceur » ni formule mièvre) et peut rappeler, sobrement, que la compréhension précède l'action (pas de tournure familière comme « je commence par comprendre ton chien »), puis invite à le contacter via le bouton du post, avec un verbe neutre comme « contacter » : n'écris ni « écris-moi » ni « appelle-moi », car on ne sait pas quel bouton sera choisi. Jamais de numéro de téléphone, d'URL ni de nom de domaine. Sans astérisques." }
+    myth: { type: 'string', description: "Partie 1, l'idée reçue : une seule phrase courte (20 mots maximum, 140 caractères maximum), sans guillemets, toujours cadrée (question, marqueur « Penser que… », « Croire que… », « Non, … », ou contradiction dans la même phrase), jamais une affirmation brute. Entoure de **double astérisques** le ou les mots clés à surligner sur le visuel." },
+    truth: { type: 'string', description: "Partie 2, la réalité : un seul paragraphe de 3 à 4 phrases, idéalement 400 à 600 caractères et jamais plus de 700. Commence par déconstruire précisément l'idée reçue en reprenant ses termes exacts, puis explique le mécanisme en jeu, simplement et sans tout dire. N'ouvre jamais par une réfutation sèche (« Faux. », « Pas du tout ! »). Aucun conseil, aucune solution. Sans astérisques." },
+    bridge: { type: 'string', description: "Partie 3, la transition : une ou deux phrases brèves (20 mots maximum, 140 caractères maximum). Référence : « Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui. » Reste très proche de cette référence (même idée, même registre) ; seule une légère variation de formulation est permise d'un post à l'autre. Ne parle pas de Thomas. Sans astérisques." },
+    closing: { type: 'string', description: "Partie 4, la présentation de Thomas, à la première personne, en une phrase (30 mots maximum, 200 caractères maximum). Référence : « Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chiens et propriétaires avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action. » Elle commence toujours par « Comportementaliste canin en Haute-Garonne et en Ariège » ; la suite reste très proche de la référence, avec seulement une légère variation de formulation d'un post à l'autre, sans changer de sens ni de registre. Sans astérisques." }
   };
 
   function schemaFor(ids){
@@ -605,11 +635,11 @@
     if ($('myth').value.trim())    ctx.push(`Idée reçue : "${$('myth').value.trim()}"`);
     if ($('truth').value.trim())   ctx.push(`Réalité : "${$('truth').value.trim()}"`);
     if ($('bridge').value.trim())  ctx.push(`Transition : "${$('bridge').value.trim()}"`);
-    if ($('closing').value.trim()) ctx.push(`Présentation et contact : "${$('closing').value.trim()}"`);
+    if ($('closing').value.trim()) ctx.push(`Présentation : "${$('closing').value.trim()}"`);
 
     const topic = $('ai-topic').value.trim();
     const contextStr = ctx.length ? `\n\nContexte du post :\n${ctx.join('\n')}` : '';
-    const userPrompt = `Régénère uniquement le bloc "${FIELD_LABELS[fieldId]}" de ce post Google Business${topic ? ` sur : "${topic}"` : ''}, en restant cohérent avec le reste du post et en proposant une formulation différente de la version actuelle.${contextStr}`;
+    const userPrompt = `Régénère uniquement le bloc "${FIELD_LABELS[fieldId]}" de ce post Google Business${topic ? ` sur : "${topic}"` : ''}, en restant cohérent avec le reste du post (même raisonnement, même vocabulaire) et en proposant une autre formulation, dans les limites fixées pour ce bloc.${contextStr}`;
 
     return callAnthropicAPI(apiKey, userPrompt, schemaFor([fieldId]));
   }
