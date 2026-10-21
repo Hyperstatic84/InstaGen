@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Générateur de posts Instagram · Thomas Le Blanc</title>
+<title>Générateur de posts Google Business · Thomas Le Blanc</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap">
 <style>
   :root{
@@ -74,70 +74,67 @@
   }
   .field input[type="text"], .field input[type="password"]{min-height:auto;height:38px;}
   .field textarea:focus, .field input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 2px rgba(249,115,22,.18);}
+  .field textarea#truth{min-height:110px;}
+  .field textarea#actions{min-height:96px;}
   .count{font-size:10.5px;color:#94a3b8;margin-top:4px;text-align:right;}
   .count.warn{color:var(--orange-600);font-weight:600;}
+  .count.over{color:#dc2626;font-weight:700;}
 
+  .format-switch{
+    display:inline-flex;flex-wrap:wrap;gap:3px;margin-bottom:14px;
+    background:#fff;border-radius:8px;padding:3px;box-shadow:0 2px 12px rgba(20,40,70,.07);
+  }
+  .format-switch .fmt-btn{background:none;color:#475569;padding:7px 12px;font-size:12.5px;}
+  .format-switch .fmt-btn.active{background:var(--nature-800);color:#fff;}
 
-  .carousel{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:8px;}
-  .slide-wrap{
-    width:300px;height:300px;overflow:hidden;border-radius:8px;
+  .preview-wrap{
+    width:100%;max-width:480px;overflow:hidden;border-radius:8px;margin-bottom:14px;
     box-shadow:0 6px 22px rgba(20,40,70,.2);position:relative;
   }
-  .scaler{width:1080px;height:1080px;transform:scale(0.27778);transform-origin:top left;}
+  .scaler{transform-origin:top left;}
 
   .slide{
     width:1080px;height:1080px;display:flex;flex-direction:column;
     font-family:'Outfit',sans-serif;position:relative;overflow:hidden;
     padding:90px 90px 30px;
+    background:var(--orange);color:#ffffff;
   }
-  .slide.light{ background:linear-gradient(to bottom, var(--nature-50), #ffffff); color:var(--nature-800); }
-  .slide.dark{ background:var(--nature-900); color:#ffffff; }
-  .slide.orange{ background:var(--orange); color:#ffffff; }
-  .slide.orange .badge-num{ background:#fff; color:#14528F; }
-  .slide.orange .badge-label{ color:#ffffff; }
-  .slide.orange .hl{ color:var(--nature-900); }
-  .slide.orange .slide-footer{ border-top-color:rgba(40,57,74,.2); }
-  .slide.orange .quote-watermark{ color:#ffffff; opacity:.18; }
+  .slide.landscape{width:1200px;height:900px;padding:64px 90px 24px;}
 
   .slide-badge{display:flex;align-items:center;gap:24px;margin-bottom:56px;}
+  .slide.landscape .slide-badge{margin-bottom:36px;}
   .badge-num{
-    width:92px;height:92px;background:var(--orange);border-radius:22px;flex-shrink:0;
+    width:92px;height:92px;background:#fff;border-radius:22px;flex-shrink:0;
     display:flex;align-items:center;justify-content:center;
-    color:#fff;font-size:44px;font-weight:800;
+    color:#14528F;font-size:52px;font-weight:800;
   }
-  .badge-label{font-size:42px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
-  .slide.light .badge-label{color:#0E3C6B;}
-  .slide.dark .badge-label{color:var(--orange);}
-  .slide.light .badge-num{background:#0E3C6B;}
+  .badge-label{font-size:42px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#ffffff;}
 
   .slide-headline{
-    font-size:80px;font-weight:800;line-height:1.18;
+    font-size:96px;font-weight:800;line-height:1.18;
     flex:1;min-height:0;overflow:hidden;
     white-space:pre-wrap;word-break:break-word;
     position:relative;z-index:1;
   }
-  .hl{color:var(--orange);}
+  .hl{color:var(--nature-900);}
 
   .quote-watermark{
     position:absolute;top:-100px;left:-100px;
     font-family:Georgia,'Times New Roman',serif;
     font-size:1440px;font-weight:700;line-height:1;
-    color:var(--orange);opacity:.13;
+    color:#ffffff;opacity:.18;
     pointer-events:none;
   }
-  .slide.dark .quote-watermark{opacity:.16;}
-  .slide.light .quote-watermark{color:#0E3C6B;}
 
   .slide-bg-layer{
     position:absolute;inset:0;
     background-size:cover;background-position:center;
     opacity:.16;filter:grayscale(45%);
   }
-  .slide.dark .slide-bg-layer{opacity:.24;}
   .slide-badge, .slide-footer{position:relative;z-index:1;}
 
-  .slide-footer{display:flex;align-items:center;justify-content:center;margin-top:30px;padding-top:30px;border-top:2px solid rgba(40,57,74,.08);height:150px;flex-shrink:0;}
-  .slide.dark .slide-footer{border-top-color:rgba(255,255,255,.15);}
+  .slide-footer{display:flex;align-items:center;justify-content:center;margin-top:30px;padding-top:30px;border-top:2px solid rgba(40,57,74,.2);height:150px;flex-shrink:0;}
+  .slide.landscape .slide-footer{height:120px;margin-top:20px;padding-top:24px;}
   .slide-logo{height:100%;width:auto;}
 
   .downloads{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px;}
@@ -150,19 +147,24 @@
   button:hover:not(:disabled){opacity:.88;}
   button:active:not(:disabled){transform:translateY(1px);}
 
-  .ht-count{font-size:10px;color:#94a3b8;font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px;}
-  .ht-count.warn{color:#dc2626;font-weight:700;}
-
   .captions-wrap{display:flex;flex-direction:column;gap:10px;max-width:640px;}
   .caption-block{background:#fff;border-radius:10px;padding:16px 20px;box-shadow:0 2px 12px rgba(20,40,70,.07);}
-  .caption-block-label{font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+  .caption-block-label{
+    display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+    font-size:10.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;
+  }
+  .caption-block-label .count{margin-top:0;text-transform:none;letter-spacing:0;}
   .caption-block textarea{
-    width:100%;min-height:100px;font-family:inherit;font-size:12.5px;line-height:1.55;
+    width:100%;min-height:340px;font-family:inherit;font-size:12.5px;line-height:1.55;
     padding:10px 12px;border:1px solid #d8dee6;border-radius:6px;color:var(--nature-800);resize:vertical;
   }
+  .post-warnings{font-size:12px;line-height:1.45;color:#dc2626;font-weight:600;}
+  .post-warnings div{margin-top:8px;}
   .caption-actions{display:flex;gap:10px;margin-top:10px;}
   .copied{font-size:12px;color:#16a34a;font-weight:600;align-self:center;opacity:0;transition:opacity .2s;}
   .copied.show{opacity:1;}
+  .tips ol{padding-left:18px;font-size:12.5px;line-height:1.6;}
+  .tips li{margin-bottom:2px;}
 
   @media (max-width:860px){
     body{padding:20px 16px 50px;}
@@ -174,15 +176,15 @@
         "ai";
       gap:20px;
     }
-    .carousel{justify-content:center;}
+    .preview-wrap{margin-left:auto;margin-right:auto;}
     .captions-wrap{max-width:100%;}
   }
 </style>
 </head>
 <body>
 
-  <h1>Générateur de posts carrousel — Idées reçues</h1>
-  <p class="sub">Génère le contenu via l'IA ou remplis les champs manuellement (idée reçue, réalité, conseil pratique). L'aperçu et la légende se mettent à jour automatiquement. Télécharge chaque slide en PNG (1080×1080, prêt pour Instagram).</p>
+  <h1>Générateur de posts Google Business · Idées reçues</h1>
+  <p class="sub">Génère le contenu via l'IA ou remplis les champs à la main. Le visuel n'affiche que l'idée reçue : la réalité, les actions concrètes et la conclusion vont dans le texte du post, mis en forme et prêt à coller sur ta fiche Google.</p>
 
   <div class="layout">
 
@@ -205,147 +207,91 @@
         <h2>Contenu du post</h2>
 
         <div class="field">
-          <label>Idée reçue (slide 1)<button type="button" class="regen-btn" data-field="myth" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
-          <textarea id="myth" maxlength="180" placeholder="Ex : Tirer en laisse = vouloir **dominer**.">Tirer en laisse = vouloir **dominer** son maître. Une idée encore très répandue chez les propriétaires.</textarea>
+          <label>Idée reçue (visuel + accroche)<button type="button" class="regen-btn" data-field="myth" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
+          <textarea id="myth" maxlength="160" placeholder="Ex : Tirer en laisse = vouloir **dominer**.">Tirer en laisse = vouloir **dominer** son maître.</textarea>
           <div class="count" id="myth-count"></div>
         </div>
 
         <div class="field">
-          <label>La réalité (slide 2)<button type="button" class="regen-btn" data-field="truth" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
-          <textarea id="truth" maxlength="240" placeholder="Ex : **Faux.** Il n'a jamais appris à marcher en laisse.">**Faux.** Il n'a simplement **jamais appris** à marcher en laisse détendue : ce n'est pas une question de hiérarchie, mais d'apprentissage.</textarea>
+          <label>La réalité (texte)<button type="button" class="regen-btn" data-field="truth" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
+          <textarea id="truth" maxlength="500" placeholder="Ex : Faux. Il n'a jamais appris à marcher en laisse détendue.">Faux. Ton chien n'a simplement jamais appris à marcher en laisse détendue. Ce n'est pas une question de hiérarchie : tirer lui permet d'avancer vers ce qui l'intéresse, alors il recommence.</textarea>
           <div class="count" id="truth-count"></div>
         </div>
 
         <div class="field">
-          <label>Conseil pratique (slide 3)<button type="button" class="regen-btn" data-field="advice" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
-          <textarea id="advice" maxlength="180" placeholder="Ex : **Renforcement positif** dès les premiers pas.">Travaillez le **renforcement positif** dès les premiers pas, dans un environnement calme et sans distraction.</textarea>
-          <div class="count" id="advice-count"></div>
+          <label>En pratique (une action par ligne)<button type="button" class="regen-btn" data-field="actions" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
+          <textarea id="actions" maxlength="450" placeholder="Une action concrète par ligne, les puces s'ajoutent toutes seules">Récompense-le dès que la laisse est détendue, même pour quelques pas.
+Arrête-toi dès que la laisse se tend, repars quand elle se relâche.
+Commence dans un endroit calme avant d'affronter la ville.</textarea>
+          <div class="count" id="actions-count"></div>
         </div>
-        <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Entoure un ou plusieurs mots/groupes de mots de <strong>**double astérisques**</strong> pour les surligner en orange sur le visuel — autant que pertinent. La taille du texte s'adapte automatiquement à la longueur pour rester entre le titre et le pied de page.</p>
 
         <div class="field">
-          <label>Hashtags slide 1<span class="ht-count" id="ht1-count"></span><button type="button" class="regen-btn" data-field="hashtags1" title="Régénérer ces hashtags via IA">↻ Régénérer</button></label>
-          <textarea id="hashtags1" maxlength="150" placeholder="3 hashtags max">#comportementalistecanin #educationcanine #chien</textarea>
+          <label>Conclusion (texte)<button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></label>
+          <textarea id="closing" maxlength="300" placeholder="Ex : Comportementaliste canin en Haute-Garonne et en Ariège, je t'accompagne...">Comportementaliste canin en Haute-Garonne et en Ariège, je t'accompagne avec des méthodes douces et bienveillantes. Écris-moi via le bouton ci-dessous.</textarea>
+          <div class="count" id="closing-count"></div>
         </div>
-        <div class="field">
-          <label>Hashtags slide 2<span class="ht-count" id="ht2-count"></span><button type="button" class="regen-btn" data-field="hashtags2" title="Régénérer ces hashtags via IA">↻ Régénérer</button></label>
-          <textarea id="hashtags2" maxlength="150" placeholder="3 hashtags max">#comportementcanin #renforcementpositif #bienetreanimal</textarea>
-        </div>
-        <div class="field">
-          <label>Hashtags slide 3<span class="ht-count" id="ht3-count"></span><button type="button" class="regen-btn" data-field="hashtags3" title="Régénérer ces hashtags via IA">↻ Régénérer</button></label>
-          <textarea id="hashtags3" maxlength="150" placeholder="3 hashtags max">#thomasleblanc #hautegaronne #ariege</textarea>
-        </div>
+        <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Dans l'idée reçue, entoure un ou plusieurs mots/groupes de mots de <strong>**double astérisques**</strong> pour les surligner sur le visuel. Google n'affiche pas de gras : les astérisques sont retirés du texte du post. La taille du texte du visuel s'adapte automatiquement à la longueur.</p>
 
         <div class="field">
           <label>Photo de fond (filigrane)</label>
           <input type="file" id="bg-photo" accept="image/*">
-          <div class="hint" style="font-size:10.5px;color:#94a3b8;margin-top:5px;line-height:1.4;">Choisis une photo en rapport avec le sujet du post (un chien en laisse, un patou, etc.) — elle s'applique en filigrane discret sur les 3 slides. Reste en local, jamais envoyée nulle part.</div>
+          <div class="hint" style="font-size:10.5px;color:#94a3b8;margin-top:5px;line-height:1.4;">Choisis une photo en rapport avec le sujet du post (un chien en laisse, un patou, etc.) : elle s'applique en filigrane discret sur le visuel. Reste en local, jamais envoyée nulle part.</div>
           <button type="button" id="bg-remove" style="margin-top:8px;background:#94a3b8;display:none;">Retirer la photo</button>
         </div>
       </div>
 
     <div class="right-col">
 
-      <div class="carousel">
+      <div class="format-switch" role="group" aria-label="Format du visuel">
+        <button type="button" class="fmt-btn active" data-format="square">Carré · 1080×1080</button>
+        <button type="button" class="fmt-btn" data-format="landscape">Paysage 4:3 · 1200×900</button>
+      </div>
 
-        <div class="slide-wrap">
-          <div class="scaler">
-            <div class="slide orange" id="slide1">
-              <div class="slide-bg-layer" id="bg1"></div>
-              <div class="quote-watermark">“</div>
-              <div class="slide-badge">
-                <span class="badge-num">1</span>
-                <span class="badge-label">Idée reçue</span>
-              </div>
-              <div class="slide-headline" id="s1-text"></div>
-              <div class="slide-footer">
-                <svg class="slide-logo" viewBox="0 0 1125.18 406.57" xmlns="http://www.w3.org/2000/svg">
-                  <defs><style>.cls-1{fill:#fff;}.cls-2{fill:#1E2D3D;}</style></defs>
-                  <g><rect class="cls-2" x="408.4" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><g><path class="cls-1" d="M581.51,287.21c-7.86-2.87-16.86-5.75-25-4.31-5.84,1.05-11.4,2.68-16.96,4.6-10.54,3.64-21.36,6.9-32.29,4.41-3.64-.86-6.99-2.49-9.39-5.36-5.75-6.9-3.16-19.26.38-27.3,8.62-19.64,23.85-36.12,42.73-46.37,5.17-2.78,10.54-4.79,16.38-5.56,13.8-1.82,27.02,5.36,37.75,13.7,10.73,8.33,20.21,19.06,27.02,31.33,2.97,5.27,5.17,10.63,6.23,16.57,1.53,7.86.96,17.05-6.51,20.79-7.47,3.74-17.72,4.02-25.77,2.11-4.98-1.25-9.68-2.87-14.47-4.6h-.1Z"/><path class="cls-1" d="M608.24,173.11c-9.01,10.25-23.18,13.03-32.48,3.07-2.3-2.49-4.22-5.27-5.46-8.53-2.3-6.13-3.07-12.74-2.11-19.26,1.63-12.07,7.28-24.05,17.44-30.94,5.36-3.74,12.07-4.79,18.3-3.07,3.26.96,5.84,2.87,8.14,5.27,3.35,3.45,5.56,7.66,6.71,12.36,2.59,10.73.86,21.46-3.93,31.42-1.72,3.54-4.02,6.61-6.61,9.58v.1Z"/><path class="cls-1" d="M547.5,176.36c-8.14,8.53-20.41,7.38-29.03-.1s-13.22-18.01-14.66-29.41c-1.15-9.29,1.05-20.5,7.76-27.21,2.49-2.49,5.17-4.5,8.62-5.36,13.03-3.26,23.38,5.56,29.6,16.57,2.01,3.54,3.26,7.19,4.31,11.11,2.3,8.62,2.3,17.63-.86,25.87-1.25,3.35-3.26,6.13-5.56,8.62l-.19-.1Z"/><path class="cls-1" d="M510.33,226.85c-6.71,9.01-19.93,7.76-28.74.96-9.77-7.57-15.81-19.06-16.96-31.52-.57-6.42.57-12.45,3.93-17.92,2.49-4.22,6.32-7.09,11.21-7.86,6.9-1.15,13.6.96,19.06,5.36,6.23,5.08,10.92,11.5,13.8,18.97,4.02,10.63,4.79,22.51-2.3,32Z"/><path class="cls-1" d="M642.06,227.62c-8.81,6.99-22.13,8.33-28.93-.77-4.31-5.75-5.84-12.74-5.17-19.93,1.34-13.03,8.24-25.58,19.26-32.86,8.24-5.46,20.69-5.75,26.73,2.87,3.26,4.69,4.98,10.06,4.98,15.9,0,13.51-6.32,26.35-16.86,34.68v.1Z"/></g></g>
-                  <g><rect class="cls-2" x="50" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1" d="M197.8,142.5l5.58,7.69,5.58-7.69c9.29-12.86,24.24-20.48,40.11-20.48,27.32,0,49.48,22.16,49.48,49.48v.97c0,41.71-52.01,90.15-79.14,110.85-4.61,3.49-10.26,5.24-16.02,5.24s-11.45-1.71-16.02-5.24c-27.14-20.71-79.14-69.14-79.14-110.85v-.97c0-27.32,22.16-49.48,49.48-49.48,15.87,0,30.82,7.62,40.11,20.48Z"/></g>
-                  <g><rect class="cls-2" x="766.79" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1" d="M921.74,120.39c-29.9,0-53.84,13.62-71.27,29.83-17.32,16.1-28.9,35.3-34.42,48.51-1.22,2.92-1.22,6.18,0,9.1,5.51,13.21,17.1,32.45,34.42,48.51,17.43,16.17,41.37,29.83,71.27,29.83s53.84-13.62,71.27-29.83c17.32-16.1,28.9-35.3,34.42-48.51,1.22-2.92,1.22-6.18,0-9.1-5.51-13.21-17.1-32.45-34.42-48.51-17.43-16.17-41.37-29.83-71.27-29.83ZM868.45,203.28c0-29.42,23.87-53.29,53.29-53.29s53.29,23.87,53.29,53.29-23.87,53.29-53.29,53.29-53.29-23.87-53.29-53.29ZM921.74,179.6c0,13.06-10.62,23.68-23.68,23.68-4.26,0-8.25-1.11-11.73-3.11-.37,4.03-.04,8.18,1.07,12.29,5.07,18.95,24.57,30.2,43.52,25.13,18.95-5.07,30.2-24.57,25.13-43.52-4.51-16.91-20.54-27.68-37.41-26.2,1.96,3.44,3.11,7.44,3.11,11.73Z"/></g>
-                </svg>
-              </div>
+      <div class="preview-wrap" id="preview-wrap">
+        <div class="scaler" id="scaler">
+          <div class="slide" id="slide">
+            <div class="slide-bg-layer" id="bg-layer"></div>
+            <div class="quote-watermark">“</div>
+            <div class="slide-badge">
+              <span class="badge-num">?</span>
+              <span class="badge-label">Idée reçue</span>
+            </div>
+            <div class="slide-headline" id="headline"></div>
+            <div class="slide-footer">
+              <svg class="slide-logo" viewBox="0 0 1125.18 406.57" xmlns="http://www.w3.org/2000/svg">
+                <defs><style>.cls-1{fill:#fff;}.cls-2{fill:#1E2D3D;}</style></defs>
+                <g><rect class="cls-2" x="408.4" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><g><path class="cls-1" d="M581.51,287.21c-7.86-2.87-16.86-5.75-25-4.31-5.84,1.05-11.4,2.68-16.96,4.6-10.54,3.64-21.36,6.9-32.29,4.41-3.64-.86-6.99-2.49-9.39-5.36-5.75-6.9-3.16-19.26.38-27.3,8.62-19.64,23.85-36.12,42.73-46.37,5.17-2.78,10.54-4.79,16.38-5.56,13.8-1.82,27.02,5.36,37.75,13.7,10.73,8.33,20.21,19.06,27.02,31.33,2.97,5.27,5.17,10.63,6.23,16.57,1.53,7.86.96,17.05-6.51,20.79-7.47,3.74-17.72,4.02-25.77,2.11-4.98-1.25-9.68-2.87-14.47-4.6h-.1Z"/><path class="cls-1" d="M608.24,173.11c-9.01,10.25-23.18,13.03-32.48,3.07-2.3-2.49-4.22-5.27-5.46-8.53-2.3-6.13-3.07-12.74-2.11-19.26,1.63-12.07,7.28-24.05,17.44-30.94,5.36-3.74,12.07-4.79,18.3-3.07,3.26.96,5.84,2.87,8.14,5.27,3.35,3.45,5.56,7.66,6.71,12.36,2.59,10.73.86,21.46-3.93,31.42-1.72,3.54-4.02,6.61-6.61,9.58v.1Z"/><path class="cls-1" d="M547.5,176.36c-8.14,8.53-20.41,7.38-29.03-.1s-13.22-18.01-14.66-29.41c-1.15-9.29,1.05-20.5,7.76-27.21,2.49-2.49,5.17-4.5,8.62-5.36,13.03-3.26,23.38,5.56,29.6,16.57,2.01,3.54,3.26,7.19,4.31,11.11,2.3,8.62,2.3,17.63-.86,25.87-1.25,3.35-3.26,6.13-5.56,8.62l-.19-.1Z"/><path class="cls-1" d="M510.33,226.85c-6.71,9.01-19.93,7.76-28.74.96-9.77-7.57-15.81-19.06-16.96-31.52-.57-6.42.57-12.45,3.93-17.92,2.49-4.22,6.32-7.09,11.21-7.86,6.9-1.15,13.6.96,19.06,5.36,6.23,5.08,10.92,11.5,13.8,18.97,4.02,10.63,4.79,22.51-2.3,32Z"/><path class="cls-1" d="M642.06,227.62c-8.81,6.99-22.13,8.33-28.93-.77-4.31-5.75-5.84-12.74-5.17-19.93,1.34-13.03,8.24-25.58,19.26-32.86,8.24-5.46,20.69-5.75,26.73,2.87,3.26,4.69,4.98,10.06,4.98,15.9,0,13.51-6.32,26.35-16.86,34.68v.1Z"/></g></g>
+                <g><rect class="cls-2" x="50" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1" d="M197.8,142.5l5.58,7.69,5.58-7.69c9.29-12.86,24.24-20.48,40.11-20.48,27.32,0,49.48,22.16,49.48,49.48v.97c0,41.71-52.01,90.15-79.14,110.85-4.61,3.49-10.26,5.24-16.02,5.24s-11.45-1.71-16.02-5.24c-27.14-20.71-79.14-69.14-79.14-110.85v-.97c0-27.32,22.16-49.48,49.48-49.48,15.87,0,30.82,7.62,40.11,20.48Z"/></g>
+                <g><rect class="cls-2" x="766.79" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1" d="M921.74,120.39c-29.9,0-53.84,13.62-71.27,29.83-17.32,16.1-28.9,35.3-34.42,48.51-1.22,2.92-1.22,6.18,0,9.1,5.51,13.21,17.1,32.45,34.42,48.51,17.43,16.17,41.37,29.83,71.27,29.83s53.84-13.62,71.27-29.83c17.32-16.1,28.9-35.3,34.42-48.51,1.22-2.92,1.22-6.18,0-9.1-5.51-13.21-17.1-32.45-34.42-48.51-17.43-16.17-41.37-29.83-71.27-29.83ZM868.45,203.28c0-29.42,23.87-53.29,53.29-53.29s53.29,23.87,53.29,53.29-23.87,53.29-53.29,53.29-53.29-23.87-53.29-53.29ZM921.74,179.6c0,13.06-10.62,23.68-23.68,23.68-4.26,0-8.25-1.11-11.73-3.11-.37,4.03-.04,8.18,1.07,12.29,5.07,18.95,24.57,30.2,43.52,25.13,18.95-5.07,30.2-24.57,25.13-43.52-4.51-16.91-20.54-27.68-37.41-26.2,1.96,3.44,3.11,7.44,3.11,11.73Z"/></g>
+              </svg>
             </div>
           </div>
         </div>
-
-        <div class="slide-wrap">
-          <div class="scaler">
-            <div class="slide dark" id="slide2">
-              <div class="slide-bg-layer" id="bg2"></div>
-              <div class="quote-watermark">“</div>
-              <div class="slide-badge">
-                <span class="badge-num">2</span>
-                <span class="badge-label">La réalité</span>
-              </div>
-              <div class="slide-headline" id="s2-text"></div>
-              <div class="slide-footer">
-                <svg class="slide-logo" viewBox="0 0 1125.18 406.57" xmlns="http://www.w3.org/2000/svg">
-                  <defs><style>.cls-1b{fill:#fff;}.cls-2b{fill:#f97316;}</style></defs>
-                  <g><rect class="cls-2b" x="408.4" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><g><path class="cls-1b" d="M581.51,287.21c-7.86-2.87-16.86-5.75-25-4.31-5.84,1.05-11.4,2.68-16.96,4.6-10.54,3.64-21.36,6.9-32.29,4.41-3.64-.86-6.99-2.49-9.39-5.36-5.75-6.9-3.16-19.26.38-27.3,8.62-19.64,23.85-36.12,42.73-46.37,5.17-2.78,10.54-4.79,16.38-5.56,13.8-1.82,27.02,5.36,37.75,13.7,10.73,8.33,20.21,19.06,27.02,31.33,2.97,5.27,5.17,10.63,6.23,16.57,1.53,7.86.96,17.05-6.51,20.79-7.47,3.74-17.72,4.02-25.77,2.11-4.98-1.25-9.68-2.87-14.47-4.6h-.1Z"/><path class="cls-1b" d="M608.24,173.11c-9.01,10.25-23.18,13.03-32.48,3.07-2.3-2.49-4.22-5.27-5.46-8.53-2.3-6.13-3.07-12.74-2.11-19.26,1.63-12.07,7.28-24.05,17.44-30.94,5.36-3.74,12.07-4.79,18.3-3.07,3.26.96,5.84,2.87,8.14,5.27,3.35,3.45,5.56,7.66,6.71,12.36,2.59,10.73.86,21.46-3.93,31.42-1.72,3.54-4.02,6.61-6.61,9.58v.1Z"/><path class="cls-1b" d="M547.5,176.36c-8.14,8.53-20.41,7.38-29.03-.1s-13.22-18.01-14.66-29.41c-1.15-9.29,1.05-20.5,7.76-27.21,2.49-2.49,5.17-4.5,8.62-5.36,13.03-3.26,23.38,5.56,29.6,16.57,2.01,3.54,3.26,7.19,4.31,11.11,2.3,8.62,2.3,17.63-.86,25.87-1.25,3.35-3.26,6.13-5.56,8.62l-.19-.1Z"/><path class="cls-1b" d="M510.33,226.85c-6.71,9.01-19.93,7.76-28.74.96-9.77-7.57-15.81-19.06-16.96-31.52-.57-6.42.57-12.45,3.93-17.92,2.49-4.22,6.32-7.09,11.21-7.86,6.9-1.15,13.6.96,19.06,5.36,6.23,5.08,10.92,11.5,13.8,18.97,4.02,10.63,4.79,22.51-2.3,32Z"/><path class="cls-1b" d="M642.06,227.62c-8.81,6.99-22.13,8.33-28.93-.77-4.31-5.75-5.84-12.74-5.17-19.93,1.34-13.03,8.24-25.58,19.26-32.86,8.24-5.46,20.69-5.75,26.73,2.87,3.26,4.69,4.98,10.06,4.98,15.9,0,13.51-6.32,26.35-16.86,34.68v.1Z"/></g></g>
-                  <g><rect class="cls-2b" x="50" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1b" d="M197.8,142.5l5.58,7.69,5.58-7.69c9.29-12.86,24.24-20.48,40.11-20.48,27.32,0,49.48,22.16,49.48,49.48v.97c0,41.71-52.01,90.15-79.14,110.85-4.61,3.49-10.26,5.24-16.02,5.24s-11.45-1.71-16.02-5.24c-27.14-20.71-79.14-69.14-79.14-110.85v-.97c0-27.32,22.16-49.48,49.48-49.48,15.87,0,30.82,7.62,40.11,20.48Z"/></g>
-                  <g><rect class="cls-2b" x="766.79" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1b" d="M921.74,120.39c-29.9,0-53.84,13.62-71.27,29.83-17.32,16.1-28.9,35.3-34.42,48.51-1.22,2.92-1.22,6.18,0,9.1,5.51,13.21,17.1,32.45,34.42,48.51,17.43,16.17,41.37,29.83,71.27,29.83s53.84-13.62,71.27-29.83c17.32-16.1,28.9-35.3,34.42-48.51,1.22-2.92,1.22-6.18,0-9.1-5.51-13.21-17.1-32.45-34.42-48.51-17.43-16.17-41.37-29.83-71.27-29.83ZM868.45,203.28c0-29.42,23.87-53.29,53.29-53.29s53.29,23.87,53.29,53.29-23.87,53.29-53.29,53.29-53.29-23.87-53.29-53.29ZM921.74,179.6c0,13.06-10.62,23.68-23.68,23.68-4.26,0-8.25-1.11-11.73-3.11-.37,4.03-.04,8.18,1.07,12.29,5.07,18.95,24.57,30.2,43.52,25.13,18.95-5.07,30.2-24.57,25.13-43.52-4.51-16.91-20.54-27.68-37.41-26.2,1.96,3.44,3.11,7.44,3.11,11.73Z"/></g>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="slide-wrap">
-          <div class="scaler">
-            <div class="slide light" id="slide3">
-              <div class="slide-bg-layer" id="bg3"></div>
-              <div class="quote-watermark">“</div>
-              <div class="slide-badge">
-                <span class="badge-num">3</span>
-                <span class="badge-label">En pratique</span>
-              </div>
-              <div class="slide-headline" id="s3-text"></div>
-              <div class="slide-footer">
-                <svg class="slide-logo" viewBox="0 0 1125.18 406.57" xmlns="http://www.w3.org/2000/svg">
-                  <defs><style>.cls-1c{fill:#fff;}.cls-2c{fill:#f97316;}</style></defs>
-                  <g><rect class="cls-2c" x="408.4" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><g><path class="cls-1c" d="M581.51,287.21c-7.86-2.87-16.86-5.75-25-4.31-5.84,1.05-11.4,2.68-16.96,4.6-10.54,3.64-21.36,6.9-32.29,4.41-3.64-.86-6.99-2.49-9.39-5.36-5.75-6.9-3.16-19.26.38-27.3,8.62-19.64,23.85-36.12,42.73-46.37,5.17-2.78,10.54-4.79,16.38-5.56,13.8-1.82,27.02,5.36,37.75,13.7,10.73,8.33,20.21,19.06,27.02,31.33,2.97,5.27,5.17,10.63,6.23,16.57,1.53,7.86.96,17.05-6.51,20.79-7.47,3.74-17.72,4.02-25.77,2.11-4.98-1.25-9.68-2.87-14.47-4.6h-.1Z"/><path class="cls-1c" d="M608.24,173.11c-9.01,10.25-23.18,13.03-32.48,3.07-2.3-2.49-4.22-5.27-5.46-8.53-2.3-6.13-3.07-12.74-2.11-19.26,1.63-12.07,7.28-24.05,17.44-30.94,5.36-3.74,12.07-4.79,18.3-3.07,3.26.96,5.84,2.87,8.14,5.27,3.35,3.45,5.56,7.66,6.71,12.36,2.59,10.73.86,21.46-3.93,31.42-1.72,3.54-4.02,6.61-6.61,9.58v.1Z"/><path class="cls-1c" d="M547.5,176.36c-8.14,8.53-20.41,7.38-29.03-.1s-13.22-18.01-14.66-29.41c-1.15-9.29,1.05-20.5,7.76-27.21,2.49-2.49,5.17-4.5,8.62-5.36,13.03-3.26,23.38,5.56,29.6,16.57,2.01,3.54,3.26,7.19,4.31,11.11,2.3,8.62,2.3,17.63-.86,25.87-1.25,3.35-3.26,6.13-5.56,8.62l-.19-.1Z"/><path class="cls-1c" d="M510.33,226.85c-6.71,9.01-19.93,7.76-28.74.96-9.77-7.57-15.81-19.06-16.96-31.52-.57-6.42.57-12.45,3.93-17.92,2.49-4.22,6.32-7.09,11.21-7.86,6.9-1.15,13.6.96,19.06,5.36,6.23,5.08,10.92,11.5,13.8,18.97,4.02,10.63,4.79,22.51-2.3,32Z"/><path class="cls-1c" d="M642.06,227.62c-8.81,6.99-22.13,8.33-28.93-.77-4.31-5.75-5.84-12.74-5.17-19.93,1.34-13.03,8.24-25.58,19.26-32.86,8.24-5.46,20.69-5.75,26.73,2.87,3.26,4.69,4.98,10.06,4.98,15.9,0,13.51-6.32,26.35-16.86,34.68v.1Z"/></g></g>
-                  <g><rect class="cls-2c" x="50" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1c" d="M197.8,142.5l5.58,7.69,5.58-7.69c9.29-12.86,24.24-20.48,40.11-20.48,27.32,0,49.48,22.16,49.48,49.48v.97c0,41.71-52.01,90.15-79.14,110.85-4.61,3.49-10.26,5.24-16.02,5.24s-11.45-1.71-16.02-5.24c-27.14-20.71-79.14-69.14-79.14-110.85v-.97c0-27.32,22.16-49.48,49.48-49.48,15.87,0,30.82,7.62,40.11,20.48Z"/></g>
-                  <g><rect class="cls-2c" x="766.79" y="50" width="306.57" height="306.57" rx="91.49" ry="91.49"/><path class="cls-1c" d="M921.74,120.39c-29.9,0-53.84,13.62-71.27,29.83-17.32,16.1-28.9,35.3-34.42,48.51-1.22,2.92-1.22,6.18,0,9.1,5.51,13.21,17.1,32.45,34.42,48.51,17.43,16.17,41.37,29.83,71.27,29.83s53.84-13.62,71.27-29.83c17.32-16.1,28.9-35.3,34.42-48.51,1.22-2.92,1.22-6.18,0-9.1-5.51-13.21-17.1-32.45-34.42-48.51-17.43-16.17-41.37-29.83-71.27-29.83ZM868.45,203.28c0-29.42,23.87-53.29,53.29-53.29s53.29,23.87,53.29,53.29-23.87,53.29-53.29,53.29-53.29-23.87-53.29-53.29ZM921.74,179.6c0,13.06-10.62,23.68-23.68,23.68-4.26,0-8.25-1.11-11.73-3.11-.37,4.03-.04,8.18,1.07,12.29,5.07,18.95,24.57,30.2,43.52,25.13,18.95-5.07,30.2-24.57,25.13-43.52-4.51-16.91-20.54-27.68-37.41-26.2,1.96,3.44,3.11,7.44,3.11,11.73Z"/></g>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
 
       <div class="downloads">
-        <button onclick="downloadSlide('slide1','1-idee-recue.png')">⬇ Slide 1 (idée reçue)</button>
-        <button onclick="downloadSlide('slide2','2-realite.png')">⬇ Slide 2 (réalité)</button>
-        <button onclick="downloadSlide('slide3','3-conseil.png')">⬇ Slide 3 (conseil)</button>
+        <button id="dl-btn" onclick="downloadVisual()">⬇ Télécharger le visuel (PNG 1080×1080)</button>
       </div>
 
       <div class="captions-wrap">
         <div class="caption-block">
-          <div class="caption-block-label">Légende slide 1 — Idée reçue</div>
-          <textarea id="caption1" readonly></textarea>
+          <div class="caption-block-label">Texte du post Google<span class="count" id="post-count"></span></div>
+          <textarea id="post-text" readonly></textarea>
+          <div class="post-warnings" id="post-warnings"></div>
           <div class="caption-actions">
-            <button class="alt" onclick="copyCaption('caption1','copied-msg1')">Copier</button>
-            <span class="copied" id="copied-msg1">Copié ✓</span>
+            <button class="alt" onclick="copyCaption('post-text','copied-msg')">Copier le texte</button>
+            <span class="copied" id="copied-msg">Copié ✓</span>
           </div>
         </div>
-        <div class="caption-block">
-          <div class="caption-block-label">Légende slide 2 — La réalité</div>
-          <textarea id="caption2" readonly></textarea>
-          <div class="caption-actions">
-            <button class="alt" onclick="copyCaption('caption2','copied-msg2')">Copier</button>
-            <span class="copied" id="copied-msg2">Copié ✓</span>
-          </div>
-        </div>
-        <div class="caption-block">
-          <div class="caption-block-label">Légende slide 3 — Conseil pratique</div>
-          <textarea id="caption3" readonly></textarea>
-          <div class="caption-actions">
-            <button class="alt" onclick="copyCaption('caption3','copied-msg3')">Copier</button>
-            <span class="copied" id="copied-msg3">Copié ✓</span>
-          </div>
+        <div class="caption-block tips">
+          <div class="caption-block-label">Publier sur ta fiche Google</div>
+          <ol>
+            <li>Depuis ta fiche, crée une <strong>mise à jour</strong> (pas une offre ni un événement).</li>
+            <li>Ajoute le visuel PNG téléchargé.</li>
+            <li>Colle le texte du post : les ~100 premiers caractères (l'idée reçue) sont visibles avant « Plus ».</li>
+            <li>Bouton d'action : <strong>En savoir plus</strong> avec le lien thomasleblanc.fr, ou <strong>Appeler</strong>. Jamais de numéro ni de lien dans le texte.</li>
+          </ol>
         </div>
       </div>
 
@@ -356,6 +302,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
   const $ = id => document.getElementById(id);
+
+  const POST_MAX = 1500;
+  const FORMATS = {
+    square:    { w: 1080, h: 1080, label: 'PNG 1080×1080', file: 'post-google-carre.png' },
+    landscape: { w: 1200, h: 900,  label: 'PNG 1200×900',  file: 'post-google-paysage.png' }
+  };
+  let currentFormat = 'square';
 
   function updateCount(fieldId, countId, max){
     const len = $(fieldId).value.length;
@@ -376,8 +329,8 @@
     return str.replace(/\*\*/g, '');
   }
 
-  const HEADLINE_MAX_SIZE = 80;
-  const HEADLINE_MIN_SIZE = 38;
+  const HEADLINE_MAX_SIZE = 96;
+  const HEADLINE_MIN_SIZE = 40;
 
   function fitHeadline(el){
     el.style.fontSize = HEADLINE_MAX_SIZE + 'px';
@@ -388,52 +341,90 @@
     }
   }
 
-  function buildSlides(){
+  // ── Aperçu à l'échelle et choix du format ──
+  function layoutPreview(){
+    const f = FORMATS[currentFormat];
+    const wrap = $('preview-wrap');
+    const scaler = $('scaler');
+    const scale = wrap.clientWidth / f.w;
+    scaler.style.width = f.w + 'px';
+    scaler.style.height = f.h + 'px';
+    scaler.style.transform = `scale(${scale})`;
+    wrap.style.height = (f.h * scale) + 'px';
+  }
+
+  function setFormat(fmt){
+    currentFormat = fmt;
+    $('slide').classList.toggle('landscape', fmt === 'landscape');
+    document.querySelectorAll('.fmt-btn').forEach(b => b.classList.toggle('active', b.dataset.format === fmt));
+    $('dl-btn').textContent = `⬇ Télécharger le visuel (${FORMATS[fmt].label})`;
+    layoutPreview();
+    fitHeadline($('headline'));
+  }
+
+  document.querySelectorAll('.fmt-btn').forEach(b => b.addEventListener('click', () => setFormat(b.dataset.format)));
+  window.addEventListener('resize', layoutPreview);
+
+  // ── Texte du post Google ──
+  function actionLines(){
+    return $('actions').value.split('\n')
+      .map(line => stripHighlight(line).replace(/^\s*(?:[-–•*▪]|\d+[.)])\s*/, '').trim())
+      .filter(Boolean);
+  }
+
+  function buildPostText(){
+    const myth = stripHighlight($('myth').value).trim().replace(/^[«"“\s]+|[»"”\s]+$/g, '');
+    const truth = stripHighlight($('truth').value).trim();
+    const actions = actionLines();
+    const closing = stripHighlight($('closing').value).trim();
+    const parts = [];
+    if (myth) parts.push(`❌ IDÉE REÇUE\n« ${myth} »`);
+    if (truth) parts.push(`✅ LA RÉALITÉ\n${truth}`);
+    if (actions.length) parts.push(`🐾 EN PRATIQUE\n${actions.map(a => '• ' + a).join('\n')}`);
+    if (closing) parts.push(`📍 ${closing}`);
+    return parts.join('\n\n');
+  }
+
+  const PHONE_RE = /(?:\+33\s?|\b0)[1-9](?:[\s.-]?\d{2}){4}\b/;
+  const LINK_RE = /https?:\/\/|\bwww\.|\b[a-z0-9-]+\.(?:fr|com|net|org|eu|info|io)\b/i;
+
+  function updatePost(){
+    const text = buildPostText();
+    $('post-text').value = text;
+
+    const len = text.length;
+    const countEl = $('post-count');
+    countEl.textContent = `${len.toLocaleString('fr-FR')} / ${POST_MAX.toLocaleString('fr-FR')} caractères`;
+    countEl.classList.toggle('warn', len > POST_MAX * 0.9 && len <= POST_MAX);
+    countEl.classList.toggle('over', len > POST_MAX);
+
+    const warnings = [];
+    if (len > POST_MAX) warnings.push(`Le texte dépasse la limite Google de ${POST_MAX.toLocaleString('fr-FR')} caractères : raccourcis un bloc.`);
+    if (PHONE_RE.test(text)) warnings.push("Numéro de téléphone détecté : Google peut refuser le post. Utilise plutôt le bouton « Appeler ».");
+    if (LINK_RE.test(text)) warnings.push("Lien détecté : il ne sera pas cliquable et peut faire refuser le post. Mets-le dans le bouton « En savoir plus ».");
+    if (/#\w/.test(text)) warnings.push("Hashtag détecté : ça ne sert à rien sur Google, tu peux l'enlever.");
+    $('post-warnings').innerHTML = warnings.map(w => `<div>⚠ ${escapeHtml(w)}</div>`).join('');
+  }
+
+  function buildAll(){
     const myth = $('myth').value.trim() || '—';
-    const truth = $('truth').value.trim() || '—';
-    const advice = $('advice').value.trim() || '—';
+    const headline = $('headline');
+    headline.innerHTML = renderHighlighted(myth);
+    fitHeadline(headline);
 
-    const s1 = $('s1-text'), s2 = $('s2-text'), s3 = $('s3-text');
-    s1.innerHTML = renderHighlighted(myth);
-    s2.innerHTML = renderHighlighted(truth);
-    s3.innerHTML = renderHighlighted(advice);
-    [s1, s2, s3].forEach(fitHeadline);
+    updateCount('myth','myth-count',160);
+    updateCount('truth','truth-count',500);
+    updateCount('actions','actions-count',450);
+    updateCount('closing','closing-count',300);
 
-    updateCount('myth','myth-count',180);
-    updateCount('truth','truth-count',240);
-    updateCount('advice','advice-count',180);
-
-    updateCaptions(myth, truth, advice);
+    updatePost();
   }
 
-  function countHashtags(str){ return (str.match(/#\S+/g) || []).length; }
+  ['myth','truth','actions','closing'].forEach(id => $(id).addEventListener('input', buildAll));
 
-  function updateHashtagCount(inputId, countId){
-    const n = countHashtags($(inputId).value);
-    const el = $(countId);
-    el.textContent = `${n}/5`;
-    el.classList.toggle('warn', n > 3);
-  }
-
-  function updateCaptions(myth, truth, advice){
-    const ht1 = $('hashtags1').value.trim();
-    const ht2 = $('hashtags2').value.trim();
-    const ht3 = $('hashtags3').value.trim();
-    const cta = `\n\nUne question sur le comportement de ton chien ? Je t'accompagne en Haute-Garonne & Ariège.\n🔗 thomasleblanc.fr`;
-    $('caption1').value = `❌ Idée reçue : ${stripHighlight(myth)}${cta}${ht1 ? '\n\n' + ht1 : ''}`;
-    $('caption2').value = `✅ La réalité : ${stripHighlight(truth)}${cta}${ht2 ? '\n\n' + ht2 : ''}`;
-    $('caption3').value = `🐾 En pratique : ${stripHighlight(advice)}${cta}${ht3 ? '\n\n' + ht3 : ''}`;
-  }
-
-  ['myth','truth','advice','hashtags1','hashtags2','hashtags3'].forEach(id => $(id).addEventListener('input', buildSlides));
-  ['hashtags1','hashtags2','hashtags3'].forEach((id, i) => {
-    $(id).addEventListener('input', () => updateHashtagCount(id, `ht${i+1}-count`));
-    updateHashtagCount(id, `ht${i+1}-count`);
-  });
-
-  function downloadSlide(slideId, filename){
-    const original = $(slideId);
-    const clone = original.cloneNode(true);
+  function downloadVisual(){
+    const f = FORMATS[currentFormat];
+    const clone = $('slide').cloneNode(true);
     clone.style.position = 'fixed';
     clone.style.top = '0';
     clone.style.left = '-99999px';
@@ -441,11 +432,11 @@
     clone.removeAttribute('id');
     document.body.appendChild(clone);
 
-    html2canvas(clone, { scale: 1, useCORS: true, width: 1080, height: 1080, windowWidth: 1080, windowHeight: 1080 })
+    html2canvas(clone, { scale: 1, useCORS: true, width: f.w, height: f.h, windowWidth: f.w, windowHeight: f.h })
       .then(canvas => {
         document.body.removeChild(clone);
         const link = document.createElement('a');
-        link.download = filename;
+        link.download = f.file;
         link.href = canvas.toDataURL('image/png');
         link.click();
       })
@@ -472,23 +463,52 @@
     if (apiKeyInput.value.trim()) localStorage.setItem('anthropic_api_key', apiKeyInput.value.trim());
   });
 
-  const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPT) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Pour tout contenu portant sur les CPT, appuie-toi exclusivement sur les sources suivantes : http://hogandesvents.nutritionverte.com/articles.html et https://www.cistole.com/etudes-recherche. Tu rédiges du contenu pour des posts Instagram au format \"idée reçue / réalité / conseil pratique\". Le ton doit être percutant et direct, façon accroche publicitaire, mais peut développer en une ou deux phrases pour apporter un minimum de contexte ou d'explication : chaque champ doit rester lisible d'un coup d'œil sur une image carrée. Utilise systématiquement la syntaxe **mot** pour mettre en valeur les mots clés : surligne plusieurs mots ou groupes de mots si plusieurs éléments sont essentiels au message, pas seulement le premier venu. Adresse-toi toujours aux propriétaires en tutoiement (\"tu\", \"ton\", \"te\", \"t'\"), jamais en vouvoiement. N'utilise jamais le tiret cadratin (—) : remplace-le par une virgule, des deux-points ou reformule la phrase.";
+  const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPT) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Pour tout contenu portant sur les CPT, appuie-toi exclusivement sur les sources suivantes : http://hogandesvents.nutritionverte.com/articles.html et https://www.cistole.com/etudes-recherche. Tu rédiges des posts pour sa fiche Google Business Profile, au format \"idée reçue / réalité / en pratique\". Ces posts servent à faire vivre la fiche et à la faire ressortir dans les recherches locales : ils sont lus surtout sur mobile, par des propriétaires qui cherchent de l'aide près de chez eux. Le visuel du post n'affiche que l'idée reçue ; la réalité, les actions concrètes et la conclusion sont dans le texte, qui doit donc se suffire à lui-même. L'idée reçue doit être percutante et directe, façon accroche publicitaire ; la réalité et les actions doivent être claires, concrètes et utiles, sans jargon. Adresse-toi toujours aux propriétaires en tutoiement (\"tu\", \"ton\", \"te\", \"t'\"), jamais en vouvoiement. Règles Google à respecter : jamais de numéro de téléphone, jamais d'URL ni de nom de domaine, jamais de hashtag, pas de mots entièrement en majuscules. N'ajoute ni emoji ni puce : la mise en forme du texte est ajoutée automatiquement. La syntaxe **mot** sert uniquement à surligner des mots sur le visuel : utilise-la dans l'idée reçue et nulle part ailleurs. N'utilise jamais le tiret cadratin (—) : remplace-le par une virgule, des deux-points ou reformule la phrase.";
 
-  async function callAnthropicAPI(apiKey, userPrompt, schema, maxTokens = 1024) {
+  const FIELD_IDS = ['myth', 'truth', 'actions', 'closing'];
+  const FIELD_LABELS = {
+    myth:    'idée reçue (visuel + accroche)',
+    truth:   'réalité',
+    actions: 'actions concrètes (en pratique)',
+    closing: 'conclusion'
+  };
+  const FIELD_SCHEMAS = {
+    myth: { type: 'string', description: "L'idée reçue, affichée seule sur le visuel et reprise en accroche du texte : 1 à 2 phrases courtes et percutantes (20 mots maximum, 140 caractères maximum), formulée comme une croyance répandue, sans guillemets. Entoure chaque mot ou groupe de mots important de **double astérisques** pour le surligner, plusieurs si le sens le justifie, sinon un seul suffit." },
+    truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue : 2 à 4 phrases (70 mots maximum, 450 caractères maximum). Commence par une réfutation nette (par exemple « Faux. » ou « Pas vraiment. »), puis explique simplement pourquoi, en décrivant ce qui se passe réellement chez le chien. Sans astérisques." },
+    actions: { type: 'array', items: { type: 'string' }, description: "2 à 4 actions concrètes que le propriétaire peut appliquer dès aujourd'hui, une par élément du tableau. Chacune tient en une phrase courte (20 mots maximum) et commence par un verbe à l'impératif en tutoiement. Sans puce, sans numéro, sans astérisques." },
+    closing: { type: 'string', description: "La conclusion du post, écrite à la première personne (c'est Thomas qui parle), en 1 à 2 phrases (40 mots maximum, 250 caractères maximum). Elle est différente à chaque post et reliée au sujet : elle présente l'accompagnement de Thomas en mentionnant naturellement « comportementaliste canin » et la Haute-Garonne et/ou l'Ariège, puis invite à le contacter via le bouton du post. Jamais de numéro de téléphone, d'URL ni de nom de domaine. Sans astérisques." }
+  };
+
+  function schemaFor(ids){
+    return {
+      type: 'object',
+      properties: Object.fromEntries(ids.map(id => [id, FIELD_SCHEMAS[id]])),
+      required: ids,
+      additionalProperties: false
+    };
+  }
+
+  function applyField(id, value){
+    $(id).value = Array.isArray(value) ? value.join('\n') : (value || '');
+  }
+
+  async function callAnthropicAPI(apiKey, userPrompt, schema) {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
+        'anthropic-beta': 'server-side-fallback-2026-07-01',
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-8',
-        max_tokens: maxTokens,
+        model: 'claude-opus-5-5',
+        max_tokens: 16000,
+        fallbacks: 'default',
         system: systemPrompt,
         messages: [{ role: 'user', content: userPrompt }],
-        output_config: { format: { type: 'json_schema', schema: schema } }
+        output_config: { effort: 'medium', format: { type: 'json_schema', schema: schema } }
       })
     });
     if (!res.ok) {
@@ -497,63 +517,33 @@
       throw new Error(message);
     }
     const data = await res.json();
-    const textBlock = data.content.find(b => b.type === 'text');
-    if (!textBlock) throw new Error('Réponse inattendue du modèle.');
-    return JSON.parse(textBlock.text);
+    if (data.stop_reason === 'refusal') throw new Error('Le modèle a refusé ce sujet. Reformule-le et réessaie.');
+    if (data.stop_reason === 'max_tokens') throw new Error('Réponse incomplète du modèle. Réessaie.');
+    const textBlocks = data.content.filter(b => b.type === 'text');
+    if (!textBlocks.length) throw new Error('Réponse inattendue du modèle.');
+    return JSON.parse(textBlocks[textBlocks.length - 1].text);
   }
 
   async function generateWithAI(apiKey, topic){
-    const schema = {
-      type: 'object',
-      properties: {
-        myth: { type: 'string', description: "L'idée reçue, en 1 à 2 phrases courtes et percutantes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques** pour le surligner, plusieurs si le sens le justifie, sinon un seul suffit." },
-        truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue, en 1 à 2 phrases (30 mots maximum), avec une brève explication du pourquoi. Entoure chaque mot ou groupe de mots clé de **double astérisques**, autant que nécessaire pour faire ressortir les points essentiels, sans en abuser." },
-        advice: { type: 'string', description: "Un conseil pratique et actionnable, en 1 à 2 phrases courtes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**, plusieurs si le sens le justifie." },
-        hashtags1: { type: 'string', description: "3 hashtags pour le slide 1 (idée reçue), séparés par des espaces, en français." },
-        hashtags2: { type: 'string', description: "3 hashtags pour le slide 2 (réalité), séparés par des espaces, différents du slide 1." },
-        hashtags3: { type: 'string', description: "3 hashtags pour le slide 3 (conseil pratique), séparés par des espaces, différents des slides précédents." }
-      },
-      required: ['myth', 'truth', 'advice', 'hashtags1', 'hashtags2', 'hashtags3'],
-      additionalProperties: false
-    };
-
     const userPrompt = topic
-      ? `Crée un post Instagram qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`
-      : 'Choisis une idée reçue fréquente et pertinente sur le comportement canin (adaptée à la pratique de Thomas, y compris éventuellement sur les chiens de protection de troupeau) et crée un post Instagram qui la déconstruit.';
+      ? `Crée un post Google Business qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`
+      : 'Choisis une idée reçue fréquente et pertinente sur le comportement canin (adaptée à la pratique de Thomas, y compris éventuellement sur les chiens de protection de troupeau) et crée un post Google Business qui la déconstruit.';
 
-    return callAnthropicAPI(apiKey, userPrompt, schema);
+    return callAnthropicAPI(apiKey, userPrompt, schemaFor(FIELD_IDS));
   }
 
   async function generateSingleField(apiKey, fieldId) {
-    const fieldMeta = {
-      myth:      { label: 'idée reçue (slide 1)',       desc: "L'idée reçue, en 1 à 2 phrases courtes et percutantes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**, plusieurs si le sens le justifie." },
-      truth:     { label: 'réalité (slide 2)',           desc: "La réalité qui déconstruit l'idée reçue, en 1 à 2 phrases (30 mots maximum), avec une brève explication. Entoure chaque mot ou groupe de mots clé de **double astérisques**, autant que nécessaire." },
-      advice:    { label: 'conseil pratique (slide 3)',  desc: "Un conseil pratique et actionnable, en 1 à 2 phrases courtes (20 mots maximum). Entoure chaque mot ou groupe de mots important de **double astérisques**." },
-      hashtags1: { label: 'hashtags du slide 1',         desc: "Exactement 3 hashtags pertinents pour le slide de l'idée reçue, séparés par des espaces, en français." },
-      hashtags2: { label: 'hashtags du slide 2',         desc: "Exactement 3 hashtags pertinents pour le slide de la réalité, séparés par des espaces, différents des hashtags du slide 1." },
-      hashtags3: { label: 'hashtags du slide 3',         desc: "Exactement 3 hashtags pertinents pour le slide du conseil pratique, séparés par des espaces, différents des hashtags des slides précédents." }
-    };
-    const meta = fieldMeta[fieldId];
-    const schema = {
-      type: 'object',
-      properties: { [fieldId]: { type: 'string', description: meta.desc } },
-      required: [fieldId],
-      additionalProperties: false
-    };
-
     const ctx = [];
-    if ($('myth').value.trim())      ctx.push(`Idée reçue : "${$('myth').value.trim()}"`);
-    if ($('truth').value.trim())     ctx.push(`Réalité : "${$('truth').value.trim()}"`);
-    if ($('advice').value.trim())    ctx.push(`Conseil : "${$('advice').value.trim()}"`);
-    if ($('hashtags1').value.trim()) ctx.push(`Hashtags slide 1 : "${$('hashtags1').value.trim()}"`);
-    if ($('hashtags2').value.trim()) ctx.push(`Hashtags slide 2 : "${$('hashtags2').value.trim()}"`);
-    if ($('hashtags3').value.trim()) ctx.push(`Hashtags slide 3 : "${$('hashtags3').value.trim()}"`);
+    if ($('myth').value.trim())    ctx.push(`Idée reçue : "${$('myth').value.trim()}"`);
+    if ($('truth').value.trim())   ctx.push(`Réalité : "${$('truth').value.trim()}"`);
+    if (actionLines().length)      ctx.push(`Actions concrètes :\n${actionLines().map(a => '- ' + a).join('\n')}`);
+    if ($('closing').value.trim()) ctx.push(`Conclusion : "${$('closing').value.trim()}"`);
 
     const topic = $('ai-topic').value.trim();
     const contextStr = ctx.length ? `\n\nContexte du post :\n${ctx.join('\n')}` : '';
-    const userPrompt = `Régénère uniquement le bloc "${meta.label}" pour ce post Instagram${topic ? ` sur : "${topic}"` : ''}, en restant cohérent avec le reste du post.${contextStr}`;
+    const userPrompt = `Régénère uniquement le bloc "${FIELD_LABELS[fieldId]}" de ce post Google Business${topic ? ` sur : "${topic}"` : ''}, en restant cohérent avec le reste du post et en proposant une formulation différente de la version actuelle.${contextStr}`;
 
-    return callAnthropicAPI(apiKey, userPrompt, schema, 512);
+    return callAnthropicAPI(apiKey, userPrompt, schemaFor([fieldId]));
   }
 
   $('ai-generate').addEventListener('click', async () => {
@@ -576,14 +566,8 @@
     try {
       const topic = $('ai-topic').value.trim();
       const result = await generateWithAI(apiKey, topic);
-      $('myth').value = result.myth || '';
-      $('truth').value = result.truth || '';
-      $('advice').value = result.advice || '';
-      if (result.hashtags1) $('hashtags1').value = result.hashtags1;
-      if (result.hashtags2) $('hashtags2').value = result.hashtags2;
-      if (result.hashtags3) $('hashtags3').value = result.hashtags3;
-      ['hashtags1','hashtags2','hashtags3'].forEach((id,i) => updateHashtagCount(id,`ht${i+1}-count`));
-      buildSlides();
+      FIELD_IDS.forEach(id => applyField(id, result[id]));
+      buildAll();
       statusEl.textContent = 'Contenu généré ✓';
       statusEl.className = 'ai-status success';
     } catch (err) {
@@ -614,12 +598,8 @@
       try {
         const result = await generateSingleField(apiKey, fieldId);
         if (result[fieldId]) {
-          $(fieldId).value = result[fieldId];
-          if (fieldId.startsWith('hashtags')) {
-            const i = fieldId.slice(-1);
-            updateHashtagCount(fieldId, `ht${i}-count`);
-          }
-          buildSlides();
+          applyField(fieldId, result[fieldId]);
+          buildAll();
         }
         statusEl.textContent = 'Bloc régénéré ✓';
         statusEl.className = 'ai-status success';
@@ -636,27 +616,28 @@
   // ── Photo de fond en filigrane ──
   const bgPhotoInput = $('bg-photo');
   const bgRemoveBtn = $('bg-remove');
-  const bgLayers = ['bg1','bg2','bg3'].map($);
+  const bgLayer = $('bg-layer');
 
   bgPhotoInput.addEventListener('change', () => {
     const file = bgPhotoInput.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
-      bgLayers.forEach(layer => { layer.style.backgroundImage = `url(${reader.result})`; });
+      bgLayer.style.backgroundImage = `url(${reader.result})`;
       bgRemoveBtn.style.display = 'inline-block';
     };
     reader.readAsDataURL(file);
   });
 
   bgRemoveBtn.addEventListener('click', () => {
-    bgLayers.forEach(layer => { layer.style.backgroundImage = 'none'; });
+    bgLayer.style.backgroundImage = 'none';
     bgPhotoInput.value = '';
     bgRemoveBtn.style.display = 'none';
   });
 
-  document.fonts.ready.then(buildSlides);
-  buildSlides();
+  setFormat('square');
+  document.fonts.ready.then(buildAll);
+  buildAll();
 </script>
 
 </body>
