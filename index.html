@@ -103,13 +103,6 @@
   }
   .range-val{float:right;text-transform:none;letter-spacing:0;color:#94a3b8;}
 
-  .format-switch{
-    display:inline-flex;flex-wrap:wrap;gap:3px;margin-bottom:14px;
-    background:#fff;border-radius:8px;padding:3px;box-shadow:0 2px 12px rgba(20,40,70,.07);
-  }
-  .format-switch .fmt-btn{background:none;color:#475569;padding:7px 12px;font-size:12.5px;}
-  .format-switch .fmt-btn.active{background:var(--nature-800);color:#fff;}
-
   .preview-wrap{
     width:100%;max-width:480px;overflow:hidden;border-radius:8px;margin-bottom:14px;
     box-shadow:0 6px 22px rgba(20,40,70,.2);position:relative;
@@ -117,18 +110,17 @@
   .scaler{transform-origin:top left;}
 
   .slide{
-    width:1080px;height:1080px;display:flex;flex-direction:column;
+    /* Toujours en 4:3 paysage : Google recadre les visuels des posts dans ce format */
+    width:1200px;height:900px;display:flex;flex-direction:column;
     font-family:'Outfit',sans-serif;position:relative;overflow:hidden;
-    padding:90px 90px 30px;
+    padding:64px 90px 24px;
     /* Couleurs du visuel, modifiables depuis « Personnaliser le visuel » */
     --v-bg:#f97316;--v-text:#1e2d3d;--v-hl:#ffffff;--v-quote:#ffffff;
     --v-badge-bg:#ffffff;--v-badge-fg:#14528f;--v-line:rgba(30,45,61,.2);
     background:var(--v-bg);color:var(--v-text);
   }
-  .slide.landscape{width:1200px;height:900px;padding:64px 90px 24px;}
 
-  .slide-badge{display:flex;align-items:center;gap:24px;margin-bottom:56px;}
-  .slide.landscape .slide-badge{margin-bottom:36px;}
+  .slide-badge{display:flex;align-items:center;gap:24px;margin-bottom:36px;}
   .badge-num{
     min-width:92px;height:92px;padding:0 22px;background:var(--v-badge-bg);border-radius:22px;flex-shrink:0;
     display:flex;align-items:center;justify-content:center;white-space:nowrap;
@@ -159,8 +151,7 @@
   }
   .slide-badge, .slide-footer{position:relative;z-index:1;}
 
-  .slide-footer{display:flex;align-items:center;justify-content:center;margin-top:30px;padding-top:30px;border-top:2px solid var(--v-line);height:150px;flex-shrink:0;}
-  .slide.landscape .slide-footer{height:120px;margin-top:20px;padding-top:24px;}
+  .slide-footer{display:flex;align-items:center;justify-content:center;margin-top:20px;padding-top:24px;border-top:2px solid var(--v-line);height:120px;flex-shrink:0;}
   .slide-logo{height:100%;width:auto;}
 
   .downloads{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
@@ -210,7 +201,7 @@
 <body>
 
   <h1>Générateur de posts Google Business · Idées reçues</h1>
-  <p class="sub">Génère le contenu via l'IA ou remplis les champs à la main. Le visuel n'affiche que l'idée reçue : la réalité et la conclusion vont dans le texte du post, mis en forme et prêt à coller sur ta fiche Google.</p>
+  <p class="sub">Génère le contenu via l'IA ou remplis les champs à la main. Le visuel n'affiche que l'idée reçue : la réalité, une transition et ta présentation vont dans le texte du post, mis en forme et prêt à coller sur ta fiche Google.</p>
 
   <div class="layout">
 
@@ -241,14 +232,21 @@
 
         <div class="field">
           <div class="field-head"><label for="truth">La réalité (texte)</label><button type="button" class="regen-btn" data-field="truth" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
-          <textarea id="truth" placeholder="Ex : Quand la laisse se tend, le chien résiste par réflexe en tirant dans le sens opposé.">Tirer en laisse n'a rien à voir avec la hiérarchie. Quand une traction s'exerce sur le corps, le réflexe naturel est de résister en tirant dans le sens opposé : c'est le réflexe d'opposition, commun à tous les êtres vivants, chiens compris. La tension entretient aussi l'excitation, surtout avec un collier qui comprime le cou et peut faire mal. Le chien tire alors davantage : un cercle qui s'auto-entretient.</textarea>
+          <textarea id="truth" placeholder="Ex : Quand la laisse se tend, le chien résiste par réflexe en tirant dans le sens opposé.">Tirer en laisse n'a rien à voir avec la hiérarchie. Quand une traction s'exerce sur le corps, le réflexe naturel est de résister en tirant dans le sens opposé. C'est le réflexe d'opposition, commun à tous les êtres vivants, chiens compris. La tension entretient aussi l'excitation, surtout avec un collier qui comprime le cou et peut faire mal. Le chien tire alors davantage, et le cercle vicieux s'installe.</textarea>
           <div class="count" id="truth-count"></div>
           <div class="field-status"></div>
         </div>
 
         <div class="field">
-          <div class="field-head"><label for="closing">Conclusion (texte)</label><button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
-          <textarea id="closing" placeholder="Ex : Chaque chien est unique : pour comprendre ce qui se joue chez le tien...">Chaque chien est unique : pour comprendre ce qui se joue chez le tien, je t'accompagne comme comportementaliste canin en Haute-Garonne et en Ariège, avec une approche fondée sur l'éthologie et les sciences du comportement. Contacte-moi via le bouton ci-dessous.</textarea>
+          <div class="field-head"><label for="bridge">Transition 🔍 (texte)</label><button type="button" class="regen-btn" data-field="bridge" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
+          <textarea id="bridge" placeholder="Ex : Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui.">Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui.</textarea>
+          <div class="count" id="bridge-count"></div>
+          <div class="field-status"></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><label for="closing">Présentation et contact 📍 (texte)</label><button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
+          <textarea id="closing" placeholder="Ex : Comportementaliste canin en Haute-Garonne et en Ariège, je t'accompagne...">Comportementaliste canin en Haute-Garonne et en Ariège, je t'accompagne avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action. Contacte-moi via le bouton ci-dessous.</textarea>
           <div class="count" id="closing-count"></div>
           <div class="field-status"></div>
         </div>
@@ -257,11 +255,6 @@
       </div>
 
     <div class="right-col">
-
-      <div class="format-switch" role="group" aria-label="Format du visuel">
-        <button type="button" class="fmt-btn active" data-format="square">Carré · 1080×1080</button>
-        <button type="button" class="fmt-btn" data-format="landscape">Paysage 4:3 · 1200×900</button>
-      </div>
 
       <div class="preview-wrap" id="preview-wrap">
         <div class="scaler" id="scaler">
@@ -286,7 +279,7 @@
       </div>
 
       <div class="downloads">
-        <button id="dl-btn" onclick="downloadVisual()">⬇ Télécharger le visuel (PNG 1080×1080)</button>
+        <button id="dl-btn" onclick="downloadVisual()">⬇ Télécharger le visuel (PNG 1200×900)</button>
       </div>
 
       <details class="panel style-panel" id="style-panel">
@@ -376,11 +369,7 @@
   const $ = id => document.getElementById(id);
 
   const POST_MAX = 1500;
-  const FORMATS = {
-    square:    { w: 1080, h: 1080, label: 'PNG 1080×1080', file: 'post-google-carre.png' },
-    landscape: { w: 1200, h: 900,  label: 'PNG 1200×900',  file: 'post-google-paysage.png' }
-  };
-  let currentFormat = 'square';
+  const VISUAL = { w: 1200, h: 900, file: 'post-google.png' };
 
   function updateCount(fieldId, countId, max){
     const len = $(fieldId).value.length;
@@ -414,28 +403,17 @@
     }
   }
 
-  // ── Aperçu à l'échelle et choix du format ──
+  // ── Aperçu à l'échelle ──
   function layoutPreview(){
-    const f = FORMATS[currentFormat];
     const wrap = $('preview-wrap');
     const scaler = $('scaler');
-    const scale = wrap.clientWidth / f.w;
-    scaler.style.width = f.w + 'px';
-    scaler.style.height = f.h + 'px';
+    const scale = wrap.clientWidth / VISUAL.w;
+    scaler.style.width = VISUAL.w + 'px';
+    scaler.style.height = VISUAL.h + 'px';
     scaler.style.transform = `scale(${scale})`;
-    wrap.style.height = (f.h * scale) + 'px';
+    wrap.style.height = (VISUAL.h * scale) + 'px';
   }
 
-  function setFormat(fmt){
-    currentFormat = fmt;
-    $('slide').classList.toggle('landscape', fmt === 'landscape');
-    document.querySelectorAll('.fmt-btn').forEach(b => b.classList.toggle('active', b.dataset.format === fmt));
-    $('dl-btn').textContent = `⬇ Télécharger le visuel (${FORMATS[fmt].label})`;
-    layoutPreview();
-    fitHeadline($('headline'));
-  }
-
-  document.querySelectorAll('.fmt-btn').forEach(b => b.addEventListener('click', () => setFormat(b.dataset.format)));
   window.addEventListener('resize', () => { layoutPreview(); autosizePostText(); });
 
   // ── Texte du post Google ──
@@ -445,10 +423,12 @@
     const quoted = myth.match(/^[«"“]\s*([^«»"“”]+?)\s*[»"”]$/);
     if (quoted) myth = quoted[1];
     const truth = stripHighlight($('truth').value).trim();
+    const bridge = stripHighlight($('bridge').value).trim();
     const closing = stripHighlight($('closing').value).trim();
     const parts = [];
     if (myth) parts.push(`❌ IDÉE REÇUE\n« ${myth} »`);
     if (truth) parts.push(`✅ LA RÉALITÉ\n${truth}`);
+    if (bridge) parts.push(`🔍 ${bridge}`);
     if (closing) parts.push(`📍 ${closing}`);
     return frenchSpaces(parts.join('\n\n'));
   }
@@ -464,6 +444,8 @@
   const CLICKBAIT_RE = /(?:^|[\n.!?…«»]\s*)faux\s*[.!,:;]|spoiler|tout faux/i;
   // Registre mièvre à éviter : la com reste sobre et scientifique
   const SUGARY_RE = /m[ée]thodes?\s+douces?|tout en douceur|toutou|loulou/i;
+  // Tournures calquées de l'anglais : le texte doit sonner français
+  const CALQUE_RE = /ce qui se joue|(?:faire|fait|fais|faisait|font)\s+sens(?!\p{L})|impact(?:er|e|es|ent|é|ée|és|ées|ant)(?!\p{L})|adresser\s+(?:un|le|ce|les|des)\s+probl[èe]me|en termes de/iu;
 
   function autosizePostText(){
     const ta = $('post-text');
@@ -488,6 +470,7 @@
     if (LINK_RE.test(text)) warnings.push("Lien détecté : il ne sera pas cliquable et peut faire refuser le post. Mets-le dans le bouton « En savoir plus ».");
     if (/#\p{L}/u.test(text)) warnings.push("Hashtag détecté : ça ne sert à rien sur Google, tu peux l'enlever.");
     if (CLICKBAIT_RE.test(text)) warnings.push("Formule racoleuse détectée (« Faux », « Spoiler », « Tu as tout faux »…) : préfère une explication calme et directe.");
+    if (CALQUE_RE.test(text)) warnings.push("Tournure calquée de l'anglais détectée (« ce qui se joue », « faire sens », « impacter »…) : reformule en français naturel.");
     if (SUGARY_RE.test(text)) warnings.push("Vocabulaire mièvre détecté (« méthode douce », « toutou »…) : préfère un vocabulaire sobre et factuel.");
     $('post-warnings').innerHTML = warnings.map(w => `<div>⚠ ${escapeHtml(w)}</div>`).join('');
   }
@@ -499,16 +482,16 @@
     fitHeadline(headline);
 
     updateCount('myth','myth-count',160);
-    updateCount('truth','truth-count',900);
-    updateCount('closing','closing-count',350);
+    updateCount('truth','truth-count',700);
+    updateCount('bridge','bridge-count',160);
+    updateCount('closing','closing-count',250);
 
     updatePost();
   }
 
-  ['myth','truth','closing'].forEach(id => $(id).addEventListener('input', buildAll));
+  ['myth','truth','bridge','closing'].forEach(id => $(id).addEventListener('input', buildAll));
 
   function downloadVisual(){
-    const f = FORMATS[currentFormat];
     const clone = $('slide').cloneNode(true);
     clone.style.position = 'fixed';
     clone.style.top = '0';
@@ -517,11 +500,11 @@
     clone.removeAttribute('id');
     document.body.appendChild(clone);
 
-    html2canvas(clone, { scale: 1, useCORS: true, width: f.w, height: f.h, windowWidth: f.w, windowHeight: f.h })
+    html2canvas(clone, { scale: 1, useCORS: true, width: VISUAL.w, height: VISUAL.h, windowWidth: VISUAL.w, windowHeight: VISUAL.h })
       .then(canvas => {
         document.body.removeChild(clone);
         const link = document.createElement('a');
-        link.download = f.file;
+        link.download = VISUAL.file;
         link.href = canvas.toDataURL('image/png');
         link.click();
       })
@@ -548,18 +531,20 @@
     if (apiKeyInput.value.trim()) localStorage.setItem('anthropic_api_key', apiKeyInput.value.trim());
   });
 
-  const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPT) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Pour tout contenu portant sur les CPT, appuie-toi exclusivement sur les sources suivantes : http://hogandesvents.nutritionverte.com/articles.html et https://www.cistole.com/etudes-recherche. Tu rédiges des posts pour sa fiche Google Business Profile, au format \"idée reçue / réalité\". Ces posts servent à faire vivre la fiche et à la faire ressortir dans les recherches locales : ils sont lus surtout sur mobile, par des propriétaires qui cherchent de l'aide près de chez eux. Le visuel du post n'affiche que l'idée reçue ; la réalité et la conclusion sont dans le texte, qui doit donc se suffire à lui-même. Ton : calme, scientifique, pédagogique et bienveillant, sans dramatisation ni sensationnalisme. Jamais donneur de leçons, condescendant ni culpabilisant : n'attribue jamais le comportement du chien à une faute, une erreur ou un manque du propriétaire (pas de « tu ne lui as jamais appris », « tu le laisses faire »). Positionnement : sobre, neutre et scientifique, entre deux écueils. Pas de registre mièvre ou sucré : bannis « méthode douce », « tout en douceur », « amour », « tendresse », les diminutifs (« toutou », « loulou ») et les effusions de bons sentiments ; la bienveillance passe par le respect et l'absence de jugement, pas par l'affect. Pas non plus de registre viril, autoritaire ou coercitif (« se faire respecter », « montrer qui est le chef »), sauf pour le citer comme idée reçue à déconstruire. Mets en avant une approche fondée sur l'éthologie et les sciences du comportement, systémique et holistique (le chien, son environnement, sa relation avec son humain), avec un vocabulaire précis et factuel qui parle à tous les propriétaires, hommes comme femmes. L'idée reçue n'est jamais énoncée comme une affirmation brute au premier degré : elle est toujours cadrée, soit sous forme de question (« Un chien qui tire en laisse cherche à dominer son maître ? »), soit précédée d'un marqueur explicite (« Penser que… », « Croire que… », « Non, … »), soit contredite immédiatement dans l'accroche elle-même (« Tirer en laisse n'a rien à voir avec la dominance. »). On passe ensuite directement de l'idée reçue à l'explication comportementale : la réalité est un petit cours d'éthologie, qui explique le phénomène (réflexes, émotions, physiologie, mécanismes d'apprentissage) de façon factuelle et neutre. Bannis absolument les formules racoleuses ou moqueuses comme « Faux ! », « Spoiler alert », « Tu as tout faux », « Erreur ! » ou les points d'exclamation à répétition. La réalité doit être claire et précise, sans jargon inutile. Le post explique, il ne prescrit pas : ne donne aucun conseil pratique, aucune astuce ni solution toute faite, car chaque chien est unique et Thomas construit toujours un accompagnement sur mesure. C'est de l'éducation préventive : faire comprendre le comportement, pas dire quoi faire. Adresse-toi toujours aux propriétaires en tutoiement (\"tu\", \"ton\", \"te\", \"t'\"), jamais en vouvoiement. Règles Google à respecter : jamais de numéro de téléphone, jamais d'URL ni de nom de domaine, jamais de hashtag, pas de mots entièrement en majuscules. N'ajoute ni emoji ni puce : la mise en forme du texte est ajoutée automatiquement. La syntaxe **mot** sert uniquement à surligner des mots sur le visuel : utilise-la dans l'idée reçue et nulle part ailleurs. N'utilise jamais le tiret cadratin (—) : remplace-le par une virgule, des deux-points ou reformule la phrase.";
+  const systemPrompt = "Tu es l'assistant de contenu pour Thomas Le Blanc, comportementaliste canin diplômé du CEACHA (Humanimalis), basé en Haute-Garonne & Ariège. Il est spécialisé dans les chiens de protection de troupeau (CPT) et travaille selon une approche éthologique, scientifique et bienveillante : renforcement positif, pas de méthodes coercitives, pas de jugement envers les propriétaires. Pour tout contenu portant sur les CPT, appuie-toi exclusivement sur les sources suivantes : http://hogandesvents.nutritionverte.com/articles.html et https://www.cistole.com/etudes-recherche. Tu rédiges des posts pour sa fiche Google Business Profile, au format \"idée reçue / réalité\". Ces posts servent à faire vivre la fiche et à la faire ressortir dans les recherches locales : ils sont lus surtout sur mobile, par des propriétaires qui cherchent de l'aide près de chez eux. Le visuel du post n'affiche que l'idée reçue ; la réalité, une phrase de transition et la présentation de Thomas sont dans le texte, qui doit donc se suffire à lui-même. Ton : calme, scientifique, pédagogique et bienveillant, sans dramatisation ni sensationnalisme. Jamais donneur de leçons, condescendant ni culpabilisant : n'attribue jamais le comportement du chien à une faute, une erreur ou un manque du propriétaire (pas de « tu ne lui as jamais appris », « tu le laisses faire »). Positionnement : sobre, neutre et scientifique, entre deux écueils. Pas de registre mièvre ou sucré : bannis « méthode douce », « tout en douceur », « amour », « tendresse », les diminutifs (« toutou », « loulou ») et les effusions de bons sentiments ; la bienveillance passe par le respect et l'absence de jugement, pas par l'affect. Pas non plus de registre viril, autoritaire ou coercitif (« se faire respecter », « montrer qui est le chef »), sauf pour le citer comme idée reçue à déconstruire. Mets en avant une approche fondée sur l'éthologie et les sciences du comportement, systémique et holistique (le chien, son environnement, sa relation avec son humain), avec un vocabulaire précis et factuel qui parle à tous les propriétaires, hommes comme femmes. L'idée reçue n'est jamais énoncée comme une affirmation brute au premier degré : elle est toujours cadrée, soit sous forme de question (« Un chien qui tire en laisse cherche à dominer son maître ? »), soit précédée d'un marqueur explicite (« Penser que… », « Croire que… », « Non, … »), soit contredite immédiatement dans l'accroche elle-même (« Tirer en laisse n'a rien à voir avec la dominance. »). On passe ensuite directement de l'idée reçue à l'explication comportementale : la réalité est un petit cours d'éthologie, qui explique le phénomène (réflexes, émotions, physiologie, mécanismes d'apprentissage) de façon factuelle et neutre. Bannis absolument les formules racoleuses ou moqueuses comme « Faux ! », « Spoiler alert », « Tu as tout faux », « Erreur ! » ou les points d'exclamation à répétition. La réalité doit être claire et précise, sans jargon inutile. Le post explique, il ne prescrit pas : ne donne aucun conseil pratique, aucune astuce ni solution toute faite, car chaque chien est unique et Thomas construit toujours un accompagnement sur mesure. C'est de l'éducation préventive : faire comprendre le comportement, pas dire quoi faire. Pas de cours magistral pour autant : un post Google se lit vite, sur mobile ; va à l'essentiel. L'observation n'est jamais présentée comme du laisser-faire ou de l'inaction (jamais « ne rien faire ») : elle est le point de départ de la compréhension, qui précède l'action. Adresse-toi toujours aux propriétaires en tutoiement (\"tu\", \"ton\", \"te\", \"t'\"), jamais en vouvoiement. Règles Google à respecter : jamais de numéro de téléphone, jamais d'URL ni de nom de domaine, jamais de hashtag, pas de mots entièrement en majuscules. N'ajoute ni emoji ni puce : la mise en forme du texte est ajoutée automatiquement. La syntaxe **mot** sert uniquement à surligner des mots sur le visuel : utilise-la dans l'idée reçue et nulle part ailleurs. N'utilise jamais le tiret cadratin (—) : remplace-le par une virgule ou reformule la phrase. N'abuse pas non plus des deux-points : réserve-les à une vraie explication ou à une énumération, sinon préfère une virgule ou une nouvelle phrase. Écris dans un français naturel et idiomatique, comme un Français l'écrirait spontanément, jamais comme une traduction de l'anglais : pas de calques (« ce qui se joue », « faire sens », « impacter », « adresser un problème », « être en charge de », « en termes de », « réaliser » au sens de se rendre compte, « opportunité » au sens d'occasion) ; préfère des verbes concrets aux noms abstraits et un ordre de phrase naturel en français. Relis chaque phrase en te demandant si un Français l'aurait écrite ainsi.";
 
-  const FIELD_IDS = ['myth', 'truth', 'closing'];
+  const FIELD_IDS = ['myth', 'truth', 'bridge', 'closing'];
   const FIELD_LABELS = {
     myth:    'idée reçue (visuel + accroche)',
     truth:   'réalité',
-    closing: 'conclusion'
+    bridge:  'transition (chaque chien est unique)',
+    closing: 'présentation et contact'
   };
   const FIELD_SCHEMAS = {
-    myth: { type: 'string', description: "L'idée reçue, affichée seule sur le visuel et reprise en accroche du texte : 1 à 2 phrases courtes (20 mots maximum, 140 caractères maximum), sans guillemets. Jamais une affirmation brute : formule la croyance en question, ou introduis-la par un marqueur explicite (« Penser que… », « Croire que… », « Non, … »), ou contredis-la dans la même accroche. Ton calme, sans formule racoleuse. Entoure chaque mot ou groupe de mots important de **double astérisques** pour le surligner, plusieurs si le sens le justifie, sinon un seul suffit." },
-    truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue, comme un petit cours d'éthologie : c'est le cœur du post. 3 à 6 phrases (120 mots maximum, 800 caractères maximum) ; tu peux les répartir en deux courts paragraphes séparés par un saut de ligne pour la lecture sur mobile. Entre directement dans l'explication du phénomène (réflexe, émotion, physiologie, mécanisme d'apprentissage), sur un ton calme, factuel et scientifique : décris ce qui se passe réellement chez le chien et pourquoi. Ne culpabilise jamais le propriétaire et ne lui attribue pas la cause du comportement. N'y glisse aucun conseil pratique ni solution : tu expliques, tu ne prescris pas. N'ouvre jamais par une réfutation sèche ou racoleuse (« Faux. », « Pas du tout ! », « Spoiler alert »). Sans astérisques." },
-    closing: { type: 'string', description: "La conclusion du post, écrite à la première personne (c'est Thomas qui parle), en 1 à 2 phrases (50 mots maximum, 300 caractères maximum). Elle est différente à chaque post et reliée au sujet. Elle peut s'appuyer sur le fait que chaque chien est unique et qu'un accompagnement sur mesure permet de comprendre ce qui se joue chez le sien. Elle présente l'accompagnement de Thomas en mentionnant naturellement « comportementaliste canin » et la Haute-Garonne et/ou l'Ariège, décrit son approche comme fondée sur l'éthologie et les sciences du comportement (jamais « méthodes douces », « en douceur » ni formule mièvre), puis invite à le contacter via le bouton du post, avec un verbe neutre comme « contacter » : n'écris ni « écris-moi » ni « appelle-moi », car on ne sait pas quel bouton sera choisi. Jamais de numéro de téléphone, d'URL ni de nom de domaine. Sans astérisques." }
+    myth: { type: 'string', description: "L'idée reçue, affichée seule sur le visuel et reprise en accroche du texte : une seule phrase courte (20 mots maximum, 140 caractères maximum), sans guillemets. Jamais une affirmation brute : formule la croyance en question, ou introduis-la par un marqueur explicite (« Penser que… », « Croire que… », « Non, … »), ou contredis-la dans la même accroche. Ton calme, sans formule racoleuse. Entoure chaque mot ou groupe de mots important de **double astérisques** pour le surligner, plusieurs si le sens le justifie, sinon un seul suffit." },
+    truth: { type: 'string', description: "La réalité qui déconstruit l'idée reçue, comme un petit cours d'éthologie : c'est le cœur du post. Un seul paragraphe de 3 à 4 phrases, idéalement 400 à 600 caractères et jamais plus de 700. Va à l'essentiel : un mécanisme clé expliqué simplement, sans tout dire ; le post doit se lire vite. Entre directement dans l'explication du phénomène (réflexe, émotion, physiologie, mécanisme d'apprentissage), sur un ton calme, factuel et scientifique : décris ce qui se passe réellement chez le chien et pourquoi. Ne culpabilise jamais le propriétaire et ne lui attribue pas la cause du comportement. N'y glisse aucun conseil pratique ni solution : tu expliques, tu ne prescris pas. N'ouvre jamais par une réfutation sèche ou racoleuse (« Faux. », « Pas du tout ! », « Spoiler alert »). Sans astérisques." },
+    bridge: { type: 'string', description: "Une transition courte (20 mots maximum, 140 caractères maximum, une ou deux phrases brèves) entre l'explication et la présentation de Thomas. C'est une invitation, d'égal à égal, à prendre le temps de regarder son chien vivre pour le comprendre, plutôt que d'exiger de lui. Exemple, à ne pas recopier tel quel : « Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui. » Varie la formulation à chaque post. Rien qui sous-entende que le lecteur ignore quelque chose ou n'en est pas capable : contre-exemples à ne jamais écrire, « il suffit d'avoir les clés pour le comprendre », « encore faut-il avoir les clés pour le comprendre ». Pas de conseil, pas de formule mièvre, ne parle pas encore de Thomas ni de contact. Sans astérisques." },
+    closing: { type: 'string', description: "La présentation de Thomas, écrite à la première personne, en 1 à 2 phrases (35 mots maximum, 220 caractères maximum). Elle commence par « Comportementaliste canin en Haute-Garonne et en Ariège » (la suite varie d'un post à l'autre), décrit son approche comme fondée sur l'éthologie et les sciences du comportement (jamais « méthodes douces », « en douceur » ni formule mièvre) et peut rappeler, sobrement, que la compréhension précède l'action (pas de tournure familière comme « je commence par comprendre ton chien »), puis invite à le contacter via le bouton du post, avec un verbe neutre comme « contacter » : n'écris ni « écris-moi » ni « appelle-moi », car on ne sait pas quel bouton sera choisi. Jamais de numéro de téléphone, d'URL ni de nom de domaine. Sans astérisques." }
   };
 
   function schemaFor(ids){
@@ -619,7 +604,8 @@
     const ctx = [];
     if ($('myth').value.trim())    ctx.push(`Idée reçue : "${$('myth').value.trim()}"`);
     if ($('truth').value.trim())   ctx.push(`Réalité : "${$('truth').value.trim()}"`);
-    if ($('closing').value.trim()) ctx.push(`Conclusion : "${$('closing').value.trim()}"`);
+    if ($('bridge').value.trim())  ctx.push(`Transition : "${$('bridge').value.trim()}"`);
+    if ($('closing').value.trim()) ctx.push(`Présentation et contact : "${$('closing').value.trim()}"`);
 
     const topic = $('ai-topic').value.trim();
     const contextStr = ctx.length ? `\n\nContexte du post :\n${ctx.join('\n')}` : '';
@@ -864,8 +850,8 @@
   });
 
   syncStyleControls();
+  layoutPreview();
   applyStyle();
-  setFormat('square');
   document.fonts.ready.then(buildAll);
   buildAll();
 </script>
