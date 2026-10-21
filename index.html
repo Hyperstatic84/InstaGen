@@ -232,25 +232,25 @@
 
         <div class="field">
           <div class="field-head"><label for="truth">La réalité (texte)</label><button type="button" class="regen-btn" data-field="truth" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
-          <textarea id="truth" placeholder="Ex : Quand la laisse se tend, le chien résiste par réflexe en tirant dans le sens opposé.">Tirer en laisse n'a rien à voir avec la dominance. Quand une traction s'exerce sur le corps, le réflexe naturel est de résister en tirant dans le sens opposé. C'est le réflexe d'opposition, commun à tous les êtres vivants, chiens compris. La tension entretient aussi l'excitation, surtout avec un collier qui comprime le cou et peut faire mal. Le chien tire alors davantage, et le cercle vicieux s'installe.</textarea>
+          <textarea id="truth" placeholder="Ex : Quand la laisse se tend, le chien résiste par réflexe en tirant dans le sens opposé.">Tirer en laisse n'a rien à voir avec la dominance. Quand une traction s'exerce sur le corps, tout être vivant résiste en tirant dans le sens opposé : c'est le réflexe d'opposition. La tension augmente aussi l'excitation, surtout avec un collier qui comprime le cou, et le chien tire encore plus.</textarea>
           <div class="count" id="truth-count"></div>
           <div class="field-status"></div>
         </div>
 
         <div class="field">
-          <div class="field-head"><label for="bridge">Transition 🔍 (texte)</label><button type="button" class="regen-btn" data-field="bridge" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
+          <div class="field-head"><label for="bridge">Transition 🔍 (texte fixe)</label><button type="button" class="regen-btn" data-field="bridge" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
           <textarea id="bridge" placeholder="Ex : Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui.">Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui.</textarea>
           <div class="count" id="bridge-count"></div>
           <div class="field-status"></div>
         </div>
 
         <div class="field">
-          <div class="field-head"><label for="closing">Présentation 📍 (texte)</label><button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
+          <div class="field-head"><label for="closing">Présentation 📍 (texte fixe)</label><button type="button" class="regen-btn" data-field="closing" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
           <textarea id="closing" placeholder="Ex : Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque binôme humain-chien...">Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque binôme humain-chien avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action.</textarea>
           <div class="count" id="closing-count"></div>
           <div class="field-status"></div>
         </div>
-        <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Dans l'idée reçue, entoure un ou plusieurs mots/groupes de mots de <strong>**double astérisques**</strong> pour les surligner sur le visuel. Google n'affiche pas de gras : les astérisques sont retirés du texte du post. La taille du texte du visuel s'adapte automatiquement à la longueur.</p>
+        <p style="font-size:10.5px;color:#94a3b8;line-height:1.4;margin-top:-4px;margin-bottom:16px;">Dans l'idée reçue, entoure un ou plusieurs mots/groupes de mots de <strong>**double astérisques**</strong> pour les surligner sur le visuel. Google n'affiche pas de gras : les astérisques sont retirés du texte du post. La taille du texte du visuel s'adapte automatiquement à la longueur. La transition et la présentation sont fixes : l'IA ne les réécrit pas, et tes versions sont gardées dans ce navigateur. ↻ propose une variante si tu en veux une.</p>
 
       </div>
 
@@ -485,14 +485,27 @@
     fitHeadline(headline);
 
     updateCount('myth','myth-count',160);
-    updateCount('truth','truth-count',700);
+    updateCount('truth','truth-count',450);
     updateCount('bridge','bridge-count',160);
     updateCount('closing','closing-count',220);
 
     updatePost();
+    saveFixedTexts();
   }
 
   ['myth','truth','bridge','closing'].forEach(id => $(id).addEventListener('input', buildAll));
+
+  // ── Transition et présentation : textes fixes, gardés d'un post à l'autre ──
+  const FIXED_IDS = ['bridge', 'closing'];
+  const FIXED_KEY = 'googlegen_fixed_texts';
+  try {
+    const saved = JSON.parse(localStorage.getItem(FIXED_KEY)) || {};
+    FIXED_IDS.forEach(id => { if (typeof saved[id] === 'string' && saved[id].trim()) $(id).value = saved[id]; });
+  } catch (_) {}
+
+  function saveFixedTexts(){
+    try { localStorage.setItem(FIXED_KEY, JSON.stringify(Object.fromEntries(FIXED_IDS.map(id => [id, $(id).value])))); } catch (_) {}
+  }
 
   function downloadVisual(){
     const clone = $('slide').cloneNode(true);
@@ -543,7 +556,7 @@
     "",
     "STRUCTURE : un seul raisonnement en quatre parties qui s'enchaînent",
     "1. L'idée reçue, affichée seule sur le visuel et reprise en tête du texte. C'est la croyance répandue, toujours cadrée, jamais énoncée comme une affirmation brute : sous forme de question (« Un chien qui tire en laisse cherche à dominer ? »), précédée d'un marqueur explicite (« Penser que… », « Croire que… », « Non, … ») ou contredite dans la même phrase.",
-    "2. La réalité. Elle déconstruit précisément cette idée reçue en reprenant ses termes exacts : si l'idée reçue parle de dominance, la réalité parle de dominance, jamais d'un terme voisin de sens différent (hiérarchie, autorité…). Elle explique ensuite le mécanisme en jeu (réflexe, émotion, physiologie, apprentissage) comme un petit cours d'éthologie, factuel et neutre, en allant à l'essentiel.",
+    "2. La réalité. Elle déconstruit précisément cette idée reçue en reprenant ses termes exacts : si l'idée reçue parle de dominance, la réalité parle de dominance, jamais d'un terme voisin de sens différent (hiérarchie, autorité…). Elle explique ensuite le mécanisme principal en jeu (réflexe, émotion, physiologie, apprentissage), et lui seul, de façon factuelle et neutre : deux ou trois phrases courtes, sans énumération ni détail secondaire.",
     "3. La transition. Elle ouvre sur le fait que chaque chien réagit et s'exprime à sa manière, et que le regarder vivre en dit long sur lui. Elle prépare la présentation sans parler de Thomas.",
     "4. La présentation de Thomas, à la première personne. Elle situe son approche, fondée sur l'éthologie, où la compréhension précède l'action.",
     "Avant de répondre, relis les quatre parties à la suite, comme un lecteur : chacune doit découler de la précédente, avec le même vocabulaire et sans contradiction.",
@@ -567,7 +580,8 @@
     "Jamais de numéro de téléphone, d'URL, de nom de domaine ni de hashtag, pas de mots entièrement en majuscules, et pas d'appel à contacter : le bouton du post s'en charge."
   ].join('\n');
 
-  const FIELD_IDS = ['myth', 'truth', 'bridge', 'closing'];
+  // La génération complète ne produit que l'idée reçue et la réalité : la transition et la présentation sont fixes
+  const GENERATED_IDS = ['myth', 'truth'];
   const FIELD_LABELS = {
     myth:    'idée reçue (visuel + accroche)',
     truth:   'réalité',
@@ -576,7 +590,7 @@
   };
   const FIELD_SCHEMAS = {
     myth: { type: 'string', description: "Partie 1, l'idée reçue : une seule phrase courte (20 mots maximum, 140 caractères maximum), sans guillemets, toujours cadrée (question, marqueur « Penser que… », « Croire que… », « Non, … », ou contradiction dans la même phrase), jamais une affirmation brute. Entoure de **double astérisques** le ou les mots clés à surligner sur le visuel." },
-    truth: { type: 'string', description: "Partie 2, la réalité : un seul paragraphe de 3 à 4 phrases, idéalement 400 à 600 caractères et jamais plus de 700. Commence par déconstruire précisément l'idée reçue en reprenant ses termes exacts, puis explique le mécanisme en jeu, simplement et sans tout dire. N'ouvre jamais par une réfutation sèche (« Faux. », « Pas du tout ! »). Aucun conseil, aucune solution. Sans astérisques." },
+    truth: { type: 'string', description: "Partie 2, la réalité : un seul paragraphe de 2 à 3 phrases courtes (25 mots maximum chacune), idéalement 300 à 400 caractères et jamais plus de 450. La première phrase déconstruit l'idée reçue en peu de mots, avec son mot clé (dominance, content…), sans recopier toute la phrase de l'idée reçue. Explique ensuite le mécanisme principal, et lui seul : pas d'énumération, pas de détail secondaire, pas d'étude citée. Aucun conseil, aucune solution. N'ouvre jamais par une réfutation sèche (« Faux. », « Pas du tout ! »). Sans astérisques." },
     bridge: { type: 'string', description: "Partie 3, la transition : une ou deux phrases brèves (20 mots maximum, 140 caractères maximum). Référence : « Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui. » Reste très proche de cette référence (même idée, même registre) ; seule une légère variation de formulation est permise d'un post à l'autre. Ne parle pas de Thomas. Sans astérisques." },
     closing: { type: 'string', description: "Partie 4, la présentation de Thomas, à la première personne, en une phrase (30 mots maximum, 200 caractères maximum). Référence : « Comportementaliste canin en Haute-Garonne et en Ariège, j'accompagne chaque binôme humain-chien avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action. » Elle commence toujours par « Comportementaliste canin en Haute-Garonne et en Ariège » ; la suite reste très proche de la référence, avec seulement une légère variation de formulation d'un post à l'autre, sans changer de sens ni de registre. Sans astérisques." }
   };
@@ -627,11 +641,12 @@
   }
 
   async function generateWithAI(apiKey, topic){
-    const userPrompt = topic
-      ? `Crée un post Google Business qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`
-      : 'Choisis une idée reçue fréquente et pertinente sur le comportement canin (adaptée à la pratique de Thomas, y compris éventuellement sur les chiens de protection de troupeau) et crée un post Google Business qui la déconstruit.';
+    const request = topic
+      ? `Rédige l'idée reçue et la réalité d'un post Google Business qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`
+      : "Choisis une idée reçue fréquente et pertinente sur le comportement canin (adaptée à la pratique de Thomas, y compris éventuellement sur les chiens de protection de troupeau) et rédige l'idée reçue et la réalité d'un post Google Business qui la déconstruit.";
+    const fixedTexts = `\n\nLa transition et la présentation sont fixes et suivront la réalité telles quelles : la réalité doit s'y enchaîner naturellement.\nTransition : "${$('bridge').value.trim()}"\nPrésentation : "${$('closing').value.trim()}"`;
 
-    return callAnthropicAPI(apiKey, userPrompt, schemaFor(FIELD_IDS));
+    return callAnthropicAPI(apiKey, request + fixedTexts, schemaFor(GENERATED_IDS));
   }
 
   async function generateSingleField(apiKey, fieldId) {
@@ -668,7 +683,7 @@
     try {
       const topic = $('ai-topic').value.trim();
       const result = await generateWithAI(apiKey, topic);
-      FIELD_IDS.forEach(id => applyField(id, result[id]));
+      GENERATED_IDS.forEach(id => applyField(id, result[id]));
       buildAll();
       statusEl.textContent = 'Contenu généré ✓';
       statusEl.className = 'ai-status success';
