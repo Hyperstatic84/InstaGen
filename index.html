@@ -102,6 +102,8 @@
     font-family:inherit;font-size:13px;color:var(--nature-800);background:#fff;
   }
   .range-val{float:right;text-transform:none;letter-spacing:0;color:#94a3b8;}
+  .history-line{font-size:11px;color:#94a3b8;margin-top:6px;}
+  .history-line button{background:none;color:var(--orange-600);padding:0;font-size:11px;font-weight:600;text-decoration:underline;}
 
   .preview-wrap{
     width:100%;max-width:480px;overflow:hidden;border-radius:8px;margin-bottom:14px;
@@ -113,26 +115,32 @@
     /* Toujours en 4:3 paysage : Google recadre les visuels des posts dans ce format */
     width:1200px;height:900px;display:flex;flex-direction:column;
     font-family:'Outfit',sans-serif;position:relative;overflow:hidden;
-    padding:64px 90px 24px;
-    /* Couleurs du visuel, modifiables depuis « Personnaliser le visuel » */
+    padding:56px 80px 40px;
+    /* Couleurs et tailles du visuel, modifiables depuis « Personnaliser le visuel » */
     --v-bg:#f97316;--v-text:#1e2d3d;--v-hl:#ffffff;--v-quote:#ffffff;
-    --v-badge-bg:#ffffff;--v-badge-fg:#14528f;--v-line:rgba(30,45,61,.2);
+    --v-badge-bg:#ffffff;--v-badge-fg:#14528f;
+    --v-badge-size:110px;--v-label-size:50px;
     background:var(--v-bg);color:var(--v-text);
   }
 
-  .slide-badge{display:flex;align-items:center;gap:24px;margin-bottom:36px;}
+  .slide-badge{display:flex;align-items:center;gap:30px;margin-bottom:40px;}
   .badge-num{
-    min-width:92px;height:92px;padding:0 22px;background:var(--v-badge-bg);border-radius:22px;flex-shrink:0;
+    min-width:var(--v-badge-size);height:var(--v-badge-size);padding:0 calc(var(--v-badge-size) * .24);
+    background:var(--v-badge-bg);border-radius:calc(var(--v-badge-size) * .24);flex-shrink:0;
     display:flex;align-items:center;justify-content:center;white-space:nowrap;
-    color:var(--v-badge-fg);font-size:52px;font-weight:800;
+    color:var(--v-badge-fg);font-size:calc(var(--v-badge-size) * .56);font-weight:800;
   }
-  .badge-label{font-size:42px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--v-text);}
+  .badge-label{font-size:var(--v-label-size);font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--v-text);}
 
+  /* L'idée reçue est centrée en hauteur entre l'en-tête et le pied */
   .slide-headline{
-    font-size:96px;font-weight:800;line-height:1.18;
     flex:1;min-height:0;overflow:hidden;
-    white-space:pre-wrap;word-break:break-word;
+    display:flex;flex-direction:column;justify-content:center;
     position:relative;z-index:1;
+  }
+  .headline-text{
+    font-size:96px;font-weight:800;line-height:1.18;
+    white-space:pre-wrap;word-break:break-word;
   }
   .hl{color:var(--v-hl);}
 
@@ -151,7 +159,8 @@
   }
   .slide-badge, .slide-footer{position:relative;z-index:1;}
 
-  .slide-footer{display:flex;align-items:center;justify-content:center;margin-top:20px;padding-top:24px;border-top:2px solid var(--v-line);height:120px;flex-shrink:0;}
+  /* Les pictos signent le visuel, alignés à droite, sans trait de séparation */
+  .slide-footer{display:flex;align-items:center;justify-content:flex-end;margin-top:24px;height:112px;flex-shrink:0;}
   .slide-logo{height:100%;width:auto;}
 
   .downloads{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
@@ -218,6 +227,7 @@
         </div>
         <button class="alt" id="ai-generate" style="width:100%">✨ Générer via IA</button>
         <div class="ai-status" id="ai-status"></div>
+        <div class="history-line" id="history-line"></div>
       </div>
 
       <div class="panel content-panel">
@@ -265,7 +275,7 @@
               <span class="badge-num" id="badge-num">?</span>
               <span class="badge-label" id="badge-label">Idée reçue</span>
             </div>
-            <div class="slide-headline" id="headline"></div>
+            <div class="slide-headline"><div class="headline-text" id="headline"></div></div>
             <div class="slide-footer">
               <svg class="slide-logo" viewBox="0 0 1125.18 406.57" xmlns="http://www.w3.org/2000/svg">
                 <defs><style id="logo-style">.cls-1{fill:#fff;}.cls-2{fill:#1E2D3D;}</style></defs>
@@ -295,6 +305,14 @@
             <label for="v-symbol">Badge</label>
             <input type="text" id="v-symbol" maxlength="8">
           </div>
+        </div>
+        <div class="field">
+          <label for="v-badge-size">Taille du badge<span class="range-val" id="v-badge-size-val"></span></label>
+          <input type="range" id="v-badge-size" min="70" max="160" step="2">
+        </div>
+        <div class="field">
+          <label for="v-label-size">Taille de l'étiquette<span class="range-val" id="v-label-size-val"></span></label>
+          <input type="range" id="v-label-size" min="30" max="80" step="1">
         </div>
 
         <div class="style-section">Couleurs</div>
@@ -372,7 +390,8 @@
   const VISUAL = { w: 1200, h: 900, file: 'post-google.png' };
 
   function updateCount(fieldId, countId, max){
-    const len = $(fieldId).value.length;
+    // Les ** du surlignage ne comptent pas : ils disparaissent du visuel et du texte
+    const len = stripHighlight($(fieldId).value).length;
     const el = $(countId);
     el.textContent = len + ' / ' + max;
     el.classList.toggle('warn', len > max * 0.85 && len <= max);
@@ -395,9 +414,10 @@
   const HEADLINE_MIN_SIZE = 40;
 
   function fitHeadline(el){
+    const box = el.parentElement;
     el.style.fontSize = HEADLINE_MAX_SIZE + 'px';
     let size = HEADLINE_MAX_SIZE;
-    while (el.scrollHeight > el.clientHeight && size > HEADLINE_MIN_SIZE) {
+    while (el.offsetHeight > box.clientHeight && size > HEADLINE_MIN_SIZE) {
       size -= 2;
       el.style.fontSize = size + 'px';
     }
@@ -484,7 +504,7 @@
     headline.innerHTML = renderHighlighted(frenchSpaces(myth));
     fitHeadline(headline);
 
-    updateCount('myth','myth-count',160);
+    updateCount('myth','myth-count',100);
     updateCount('truth','truth-count',450);
     updateCount('bridge','bridge-count',160);
     updateCount('closing','closing-count',220);
@@ -510,6 +530,7 @@
         link.download = VISUAL.file;
         link.href = canvas.toDataURL('image/png');
         link.click();
+        rememberCurrentMyth();
       })
       .catch(err => {
         document.body.removeChild(clone);
@@ -524,6 +545,7 @@
     const msg = $(msgId);
     msg.classList.add('show');
     setTimeout(() => msg.classList.remove('show'), 1500);
+    rememberCurrentMyth();
   }
 
   // ── Génération de contenu via l'API Claude (appel direct navigateur) ──
@@ -576,7 +598,7 @@
     closing: 'présentation de Thomas'
   };
   const FIELD_SCHEMAS = {
-    myth: { type: 'string', description: "Partie 1, l'idée reçue : une seule phrase courte (20 mots maximum, 140 caractères maximum), sans guillemets, qui énonce la croyance introduite par « On croit souvent que… », « Beaucoup pensent que… » ou « On entend souvent que… » (varie le marqueur d'un post à l'autre). Jamais de question, jamais d'affirmation brute, jamais « Croire que… » ou « Penser que… » seul en début de phrase. Entoure de **double astérisques** le ou les mots clés à surligner sur le visuel." },
+    myth: { type: 'string', description: "Partie 1, l'idée reçue : une seule phrase courte et une seule idée (15 mots environ, 100 caractères maximum, sans ajout du type « et qu'il faut… »), sans guillemets, qui énonce la croyance introduite par « On croit souvent que… », « Beaucoup pensent que… » ou « On entend souvent que… » (varie le marqueur d'un post à l'autre). Jamais de question, jamais d'affirmation brute, jamais « Croire que… » ou « Penser que… » seul en début de phrase. Entoure de **double astérisques** le ou les mots clés à surligner sur le visuel." },
     truth: { type: 'string', description: "Partie 2, la réalité : un seul paragraphe de 2 à 3 phrases courtes (25 mots maximum chacune), idéalement 300 à 400 caractères et jamais plus de 450. La première phrase déconstruit l'idée reçue en peu de mots, avec son mot clé (dominance, content…), sans recopier toute la phrase de l'idée reçue. Explique ensuite le mécanisme principal, et lui seul : pas d'énumération, pas de détail secondaire, pas d'étude citée. Aucun conseil, aucune solution. N'ouvre jamais par une réfutation sèche (« Faux. », « Pas du tout ! »). Sans astérisques." },
     bridge: { type: 'string', description: "Partie 3, la transition : une ou deux phrases brèves (20 mots maximum, 140 caractères maximum). Référence : « Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui. » Reste très proche de cette référence (même idée, même registre) ; seule une légère variation de formulation est permise d'un post à l'autre. Ne parle pas de Thomas. Sans astérisques." },
     closing: { type: 'string', description: "Partie 4, la présentation de Thomas, à la première personne, en une phrase (30 mots maximum, 200 caractères maximum). Référence : « Comportementaliste canin à Toulouse et alentours, j'accompagne chaque binôme humain-chien avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action. » Elle commence toujours par « Comportementaliste canin à Toulouse et alentours » ; la suite reste très proche de la référence, avec seulement une légère variation de formulation d'un post à l'autre, sans changer de sens ni de registre. Sans astérisques." }
@@ -639,17 +661,34 @@
     'la mastication et les destructions', 'le contact physique et les caresses', 'la manipulation et les soins',
     'le comportement alimentaire', 'la vie en ville', 'les chiens de protection de troupeau (CPT)'
   ];
-  const HISTORY_KEY = 'googlegen_history';
+  // Seuls les sujets réellement utilisés (texte copié ou visuel téléchargé) sont écartés des tirages suivants
+  const HISTORY_KEY = 'googlegen_used';
   const HISTORY_MAX = 20;
+  try { localStorage.removeItem('googlegen_history'); } catch (_) {}
 
   function loadHistory(){
     try { const h = JSON.parse(localStorage.getItem(HISTORY_KEY)); return Array.isArray(h) ? h.filter(x => typeof x === 'string') : []; } catch (_) { return []; }
   }
 
-  function rememberMyth(myth){
-    const history = [stripHighlight(myth).trim(), ...loadHistory()].filter(Boolean).slice(0, HISTORY_MAX);
+  function rememberCurrentMyth(){
+    const myth = stripHighlight($('myth').value).trim();
+    if (!myth) return;
+    const history = [myth, ...loadHistory().filter(h => h !== myth)].slice(0, HISTORY_MAX);
     try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch (_) {}
+    updateHistoryLine();
   }
+
+  function updateHistoryLine(){
+    const n = loadHistory().length;
+    $('history-line').innerHTML = n
+      ? `${n} sujet${n > 1 ? 's' : ''} déjà utilisé${n > 1 ? 's' : ''}, écarté${n > 1 ? 's' : ''} des sujets au hasard · <button type="button" id="history-reset">Réinitialiser</button>`
+      : '';
+    if (n) $('history-reset').addEventListener('click', () => {
+      try { localStorage.removeItem(HISTORY_KEY); } catch (_) {}
+      updateHistoryLine();
+    });
+  }
+  updateHistoryLine();
 
   async function generateWithAI(apiKey, topic){
     let request;
@@ -659,7 +698,7 @@
       const domain = TOPIC_DOMAINS[Math.floor(Math.random() * TOPIC_DOMAINS.length)];
       const history = loadHistory();
       request = `Choisis une idée reçue répandue et pertinente sur le comportement canin, dans ce domaine : ${domain}. Elle doit correspondre à la pratique de Thomas. Rédige ensuite un post Google Business qui la déconstruit.`
-        + (history.length ? `\n\nCes idées reçues ont déjà été traitées, choisis-en une autre :\n${history.map(h => '- ' + h).join('\n')}` : '');
+        + (history.length ? `\n\nCes idées reçues ont déjà été publiées, choisis-en une autre :\n${history.map(h => '- ' + h).join('\n')}` : '');
     }
 
     return callAnthropicAPI(apiKey, request, schemaFor(GENERATED_IDS));
@@ -700,7 +739,6 @@
       const topic = $('ai-topic').value.trim();
       const result = await generateWithAI(apiKey, topic);
       GENERATED_IDS.forEach(id => applyField(id, result[id]));
-      if (result.myth) rememberMyth(result.myth);
       buildAll();
       statusEl.textContent = 'Contenu généré ✓';
       statusEl.className = 'ai-status success';
@@ -820,6 +858,7 @@
   const DEFAULT_STYLE = {
     label: 'Idée reçue',
     symbol: '?',
+    sizes: { badge: 110, label: 50 },
     colors: { bg: '#f97316', text: '#1e2d3d', hl: '#ffffff', quote: '#ffffff', badgeBg: '#ffffff', badgeFg: '#14528f', logoBg: '#1e2d3d', logoFg: '#ffffff' },
     photo: { opacity: 16, gray: 45, position: 'center' }
   };
@@ -835,6 +874,9 @@
       if (saved) {
         if (typeof saved.label === 'string') style.label = saved.label;
         if (typeof saved.symbol === 'string') style.symbol = saved.symbol;
+        const z = saved.sizes || {};
+        if (Number.isFinite(z.badge)) style.sizes.badge = Math.min(160, Math.max(70, z.badge));
+        if (Number.isFinite(z.label)) style.sizes.label = Math.min(80, Math.max(30, z.label));
         Object.keys(style.colors).forEach(k => { if (HEX_RE.test(saved.colors?.[k])) style.colors[k] = saved.colors[k]; });
         const p = saved.photo || {};
         if (Number.isFinite(p.opacity)) style.photo.opacity = Math.min(60, Math.max(0, p.opacity));
@@ -851,21 +893,20 @@
 
   let visualStyle = loadStyle();
 
-  function hexToRgba(hex, alpha){
-    const n = parseInt(hex.slice(1), 16);
-    return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${alpha})`;
-  }
 
   function applyStyle(){
-    const { colors, photo } = visualStyle;
+    const { colors, photo, sizes } = visualStyle;
     const slide = $('slide');
+    slide.style.setProperty('--v-badge-size', sizes.badge + 'px');
+    slide.style.setProperty('--v-label-size', sizes.label + 'px');
+    $('v-badge-size-val').textContent = sizes.badge + ' px';
+    $('v-label-size-val').textContent = sizes.label + ' px';
     slide.style.setProperty('--v-bg', colors.bg);
     slide.style.setProperty('--v-text', colors.text);
     slide.style.setProperty('--v-hl', colors.hl);
     slide.style.setProperty('--v-quote', colors.quote);
     slide.style.setProperty('--v-badge-bg', colors.badgeBg);
     slide.style.setProperty('--v-badge-fg', colors.badgeFg);
-    slide.style.setProperty('--v-line', hexToRgba(colors.logoBg, .2));
     // À l'export, le logo SVG est dessiné comme une image : ses couleurs doivent être dans sa propre feuille de style
     $('logo-style').textContent = `.cls-1{fill:${colors.logoFg};}.cls-2{fill:${colors.logoBg};}`;
     $('badge-label').textContent = visualStyle.label;
@@ -874,13 +915,15 @@
     bgLayer.style.backgroundPosition = photo.position;
     $('v-photo-opacity-val').textContent = photo.opacity + ' %';
     $('v-photo-gray-val').textContent = photo.gray + ' %';
-    // Une étiquette longue peut passer sur deux lignes : on réajuste la taille de l'idée reçue
+    // Le badge et l'étiquette changent la place disponible : on réajuste la taille de l'idée reçue
     fitHeadline($('headline'));
   }
 
   function syncStyleControls(){
     $('v-label').value = visualStyle.label;
     $('v-symbol').value = visualStyle.symbol;
+    $('v-badge-size').value = visualStyle.sizes.badge;
+    $('v-label-size').value = visualStyle.sizes.label;
     document.querySelectorAll('[data-color]').forEach(input => { input.value = visualStyle.colors[input.dataset.color]; });
     $('v-photo-opacity').value = visualStyle.photo.opacity;
     $('v-photo-gray').value = visualStyle.photo.gray;
@@ -894,6 +937,8 @@
 
   $('v-label').addEventListener('input', e => { visualStyle.label = e.target.value; onStyleChange(); });
   $('v-symbol').addEventListener('input', e => { visualStyle.symbol = e.target.value; onStyleChange(); });
+  $('v-badge-size').addEventListener('input', e => { visualStyle.sizes.badge = Number(e.target.value); onStyleChange(); });
+  $('v-label-size').addEventListener('input', e => { visualStyle.sizes.label = Number(e.target.value); onStyleChange(); });
   document.querySelectorAll('[data-color]').forEach(input => input.addEventListener('input', () => {
     visualStyle.colors[input.dataset.color] = input.value;
     onStyleChange();
