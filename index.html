@@ -214,7 +214,7 @@
         </div>
         <div class="field">
           <label for="ai-topic">Sujet (optionnel)</label>
-          <input type="text" id="ai-topic" placeholder="Ex : le collier étrangleur — laisse vide pour une suggestion">
+          <input type="text" id="ai-topic" placeholder="Ex : le collier étrangleur (laisse vide pour un sujet au hasard)">
         </div>
         <button class="alt" id="ai-generate" style="width:100%">✨ Générer via IA</button>
         <div class="ai-status" id="ai-status"></div>
@@ -640,10 +640,40 @@
     return JSON.parse(textBlocks[textBlocks.length - 1].text);
   }
 
+  // ── Sujet au hasard : l'IA retombe toujours sur le même cliché si on lui pose la même question,
+  // donc l'outil tire un domaine au sort et lui rappelle les idées reçues déjà traitées ──
+  const TOPIC_DOMAINS = [
+    'la communication et les signaux corporels', 'les émotions et le stress', 'le chiot et son développement',
+    'la socialisation', 'les peurs', 'la solitude et l\'absence de son humain', 'les relations entre chiens',
+    'le chien et les enfants', 'le jeu', 'le sommeil et le repos', 'la promenade et l\'exploration',
+    'le flair et les besoins olfactifs', 'le grognement et la morsure', 'les rapports sociaux et la dominance',
+    'l\'apprentissage et les récompenses', 'les punitions et la coercition', 'le chien âgé',
+    'l\'arrivée d\'un chien à la maison', 'les races et la génétique', 'les aboiements',
+    'la mastication et les destructions', 'le contact physique et les caresses', 'la manipulation et les soins',
+    'le comportement alimentaire', 'la vie en ville', 'les chiens de protection de troupeau (CPT)'
+  ];
+  const HISTORY_KEY = 'googlegen_history';
+  const HISTORY_MAX = 20;
+
+  function loadHistory(){
+    try { const h = JSON.parse(localStorage.getItem(HISTORY_KEY)); return Array.isArray(h) ? h.filter(x => typeof x === 'string') : []; } catch (_) { return []; }
+  }
+
+  function rememberMyth(myth){
+    const history = [stripHighlight(myth).trim(), ...loadHistory()].filter(Boolean).slice(0, HISTORY_MAX);
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(history)); } catch (_) {}
+  }
+
   async function generateWithAI(apiKey, topic){
-    const request = topic
-      ? `Rédige l'idée reçue et la réalité d'un post Google Business qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`
-      : "Choisis une idée reçue fréquente et pertinente sur le comportement canin (adaptée à la pratique de Thomas, y compris éventuellement sur les chiens de protection de troupeau) et rédige l'idée reçue et la réalité d'un post Google Business qui la déconstruit.";
+    let request;
+    if (topic) {
+      request = `Rédige l'idée reçue et la réalité d'un post Google Business qui déconstruit cette idée reçue sur le comportement canin : "${topic}".`;
+    } else {
+      const domain = TOPIC_DOMAINS[Math.floor(Math.random() * TOPIC_DOMAINS.length)];
+      const history = loadHistory();
+      request = `Choisis une idée reçue répandue et pertinente sur le comportement canin, dans ce domaine : ${domain}. Elle doit correspondre à la pratique de Thomas. Rédige ensuite l'idée reçue et la réalité d'un post Google Business qui la déconstruit.`
+        + (history.length ? `\n\nCes idées reçues ont déjà été traitées, choisis-en une autre :\n${history.map(h => '- ' + h).join('\n')}` : '');
+    }
     const fixedTexts = `\n\nLa transition et la présentation sont fixes et suivront la réalité telles quelles : la réalité doit s'y enchaîner naturellement.\nTransition : "${$('bridge').value.trim()}"\nPrésentation : "${$('closing').value.trim()}"`;
 
     return callAnthropicAPI(apiKey, request + fixedTexts, schemaFor(GENERATED_IDS));
@@ -684,6 +714,7 @@
       const topic = $('ai-topic').value.trim();
       const result = await generateWithAI(apiKey, topic);
       GENERATED_IDS.forEach(id => applyField(id, result[id]));
+      if (result.myth) rememberMyth(result.myth);
       buildAll();
       statusEl.textContent = 'Contenu généré ✓';
       statusEl.className = 'ai-status success';
