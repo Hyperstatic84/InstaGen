@@ -961,6 +961,15 @@
   });
 
   syncStyleControls();
+  // L'ancien générateur Instagram avait installé un service worker qui ressert l'ancienne page depuis le cache :
+  // on le désinscrit et on vide ce cache pour toujours charger la dernière version
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(reg => reg.unregister())).catch(() => {});
+  }
+  if (window.caches) {
+    caches.keys().then(keys => keys.forEach(key => caches.delete(key))).catch(() => {});
+  }
+
   layoutPreview();
   applyStyle();
   document.fonts.ready.then(buildAll);
