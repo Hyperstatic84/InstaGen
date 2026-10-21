@@ -390,7 +390,8 @@
   const VISUAL = { w: 1200, h: 900, file: 'post-google.png' };
 
   function updateCount(fieldId, countId, max){
-    const len = $(fieldId).value.length;
+    // Les ** du surlignage ne comptent pas : ils disparaissent du visuel et du texte
+    const len = stripHighlight($(fieldId).value).length;
     const el = $(countId);
     el.textContent = len + ' / ' + max;
     el.classList.toggle('warn', len > max * 0.85 && len <= max);
