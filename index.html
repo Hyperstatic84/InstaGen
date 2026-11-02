@@ -119,7 +119,7 @@
     /* Couleurs et tailles du visuel, modifiables depuis « Personnaliser le visuel » */
     --v-bg:#f97316;--v-text:#1e2d3d;--v-hl:#ffffff;--v-quote:#ffffff;
     --v-badge-bg:#ffffff;--v-badge-fg:#14528f;
-    --v-badge-size:110px;--v-label-size:50px;
+    --v-badge-size:110px;--v-label-size:50px;--v-quote-opacity:.18;
     background:var(--v-bg);color:var(--v-text);
   }
 
@@ -148,7 +148,7 @@
     position:absolute;top:-100px;left:-100px;
     font-family:Georgia,'Times New Roman',serif;
     font-size:1440px;font-weight:700;line-height:1;
-    color:var(--v-quote);opacity:.18;
+    color:var(--v-quote);opacity:var(--v-quote-opacity);
     pointer-events:none;
   }
 
@@ -235,7 +235,7 @@
 
         <div class="field">
           <div class="field-head"><label for="myth">Idée reçue (visuel + accroche)</label><button type="button" class="regen-btn" data-field="myth" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
-          <textarea id="myth" placeholder="Ex : On croit souvent qu'un chien qui tire en laisse cherche à **dominer**.">On croit souvent qu'un chien qui tire en laisse cherche à **dominer**.</textarea>
+          <textarea id="myth" placeholder="Ex : On pourrait penser qu'un chien qui tire en laisse cherche à **dominer**.">On pourrait penser qu'un chien qui tire en laisse cherche à **dominer**.</textarea>
           <div class="count" id="myth-count"></div>
           <div class="field-status"></div>
         </div>
@@ -326,6 +326,10 @@
           <label class="color-item"><input type="color" data-color="logoBg"> Logo : carrés</label>
           <label class="color-item"><input type="color" data-color="logoFg"> Logo : pictos</label>
         </div>
+        <div class="field">
+          <label for="v-quote-opacity">Opacité du guillemet<span class="range-val" id="v-quote-opacity-val"></span></label>
+          <input type="range" id="v-quote-opacity" min="0" max="50" step="1">
+        </div>
 
         <div class="style-section">Photo en filigrane</div>
         <div class="field">
@@ -387,7 +391,7 @@
   const $ = id => document.getElementById(id);
 
   const POST_MAX = 1500;
-  const VISUAL = { w: 1200, h: 900, file: 'post-google.png' };
+  const VISUAL = { w: 1200, h: 900 };
 
   function updateCount(fieldId, countId, max){
     // Les ** du surlignage ne comptent pas : ils disparaissent du visuel et du texte
@@ -514,6 +518,19 @@
 
   ['myth','truth','bridge','closing'].forEach(id => $(id).addEventListener('input', buildAll));
 
+  // Nom du fichier tiré de l'idée reçue : ses mots clés, puis l'activité et la ville
+  const FILE_MARKER_RE = /^(?:on pourrait penser|on croit souvent|on entend souvent|beaucoup pensent)\s+qu(?:e\s+|['’]\s*)/i;
+  const FILE_STOPWORDS = new Set(('un une des le la les l d de du au aux en et ou a son sa ses leur leurs ce cet cette ces '
+    + 'qui que qu quand est sont etre doit doivent faut il elle ils elles on se s ne n pas plus tres toujours forcement '
+    + 'souvent vraiment chez pour par sur avec dans sans tout tous cherche chercher veut peut fait faire').split(' '));
+
+  function visualFileName(){
+    const myth = stripHighlight($('myth').value).trim().replace(FILE_MARKER_RE, '');
+    const words = myth.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+      .split(/[^a-z0-9]+/).filter(w => w && !FILE_STOPWORDS.has(w)).slice(0, 7);
+    return [...words, 'comportementaliste', 'canin', 'toulouse'].join('-') + '.png';
+  }
+
   function downloadVisual(){
     const clone = $('slide').cloneNode(true);
     clone.style.position = 'fixed';
@@ -527,7 +544,7 @@
       .then(canvas => {
         document.body.removeChild(clone);
         const link = document.createElement('a');
-        link.download = VISUAL.file;
+        link.download = visualFileName();
         link.href = canvas.toDataURL('image/png');
         link.click();
         rememberCurrentMyth();
@@ -564,7 +581,7 @@
     "Ces posts font vivre la fiche et la font ressortir dans les recherches locales. Ils sont lus vite, surtout sur mobile, par des personnes qui vivent avec un chien et cherchent un professionnel près de chez elles. Chaque post déconstruit une idée reçue et explique le comportement réel du chien : c'est de l'éducation préventive, qui montre une expertise. Ce n'est ni un cours magistral ni un catalogue de solutions. Le post explique, il ne prescrit pas : aucun conseil pratique, aucune astuce, aucune solution toute faite, car chaque chien est unique et l'accompagnement de Thomas est toujours construit sur mesure.",
     "",
     "STRUCTURE : un seul raisonnement en quatre parties qui s'enchaînent",
-    "1. L'idée reçue, affichée seule sur le visuel et reprise en tête du texte. C'est la croyance répandue, énoncée comme une affirmation mais toujours introduite par un marqueur qui montre qu'il s'agit d'une croyance et non de l'avis de Thomas : « On croit souvent que… », « Beaucoup pensent que… » ou « On entend souvent que… », en variant le marqueur d'un post à l'autre (exemple : « On croit souvent qu'un chien qui tire en laisse cherche à dominer. »). Jamais de question, jamais d'affirmation brute, et jamais « Croire que… » ou « Penser que… » seul en début de phrase, qui n'est pas une phrase française correcte.",
+    "1. L'idée reçue, affichée seule sur le visuel et reprise en tête du texte. C'est la croyance répandue, énoncée comme une affirmation mais toujours introduite par un marqueur qui montre qu'il s'agit d'une croyance et non de l'avis de Thomas : « On pourrait penser que… », « Beaucoup pensent que… » ou « On entend souvent que… », en variant le marqueur d'un post à l'autre (exemple : « On pourrait penser qu'un chien qui tire en laisse cherche à dominer. »). Jamais de question, jamais d'affirmation brute, et jamais « Croire que… » ou « Penser que… » seul en début de phrase, qui n'est pas une phrase française correcte.",
     "2. La réalité. Elle déconstruit précisément cette idée reçue en reprenant ses termes exacts : si l'idée reçue parle de dominance, la réalité parle de dominance, jamais d'un terme voisin de sens différent (hiérarchie, autorité…). Elle explique ensuite le mécanisme principal en jeu (réflexe, émotion, physiologie, apprentissage), et lui seul, de façon factuelle et neutre : deux ou trois phrases courtes, sans énumération ni détail secondaire.",
     "3. La transition. Elle ouvre sur le fait que chaque chien réagit et s'exprime à sa manière, et que le regarder vivre en dit long sur lui. Elle prépare la présentation sans parler de Thomas.",
     "4. La présentation de Thomas, à la première personne. Elle situe son approche, fondée sur l'éthologie, où la compréhension précède l'action.",
@@ -598,7 +615,7 @@
     closing: 'présentation de Thomas'
   };
   const FIELD_SCHEMAS = {
-    myth: { type: 'string', description: "Partie 1, l'idée reçue : une seule phrase courte et une seule idée (15 mots environ, 100 caractères maximum, sans ajout du type « et qu'il faut… »), sans guillemets, qui énonce la croyance introduite par « On croit souvent que… », « Beaucoup pensent que… » ou « On entend souvent que… » (varie le marqueur d'un post à l'autre). Jamais de question, jamais d'affirmation brute, jamais « Croire que… » ou « Penser que… » seul en début de phrase. Entoure de **double astérisques** le ou les mots clés à surligner sur le visuel." },
+    myth: { type: 'string', description: "Partie 1, l'idée reçue : une seule phrase courte et une seule idée (15 mots environ, 100 caractères maximum, sans ajout du type « et qu'il faut… »), sans guillemets, qui énonce la croyance introduite par « On pourrait penser que… », « Beaucoup pensent que… » ou « On entend souvent que… » (varie le marqueur d'un post à l'autre). Jamais de question, jamais d'affirmation brute, jamais « Croire que… » ou « Penser que… » seul en début de phrase. Entoure de **double astérisques** le ou les mots clés à surligner sur le visuel." },
     truth: { type: 'string', description: "Partie 2, la réalité : un seul paragraphe de 2 à 3 phrases courtes (25 mots maximum chacune), idéalement 300 à 400 caractères et jamais plus de 450. La première phrase déconstruit l'idée reçue en peu de mots, avec son mot clé (dominance, content…), sans recopier toute la phrase de l'idée reçue. Explique ensuite le mécanisme principal, et lui seul : pas d'énumération, pas de détail secondaire, pas d'étude citée. Aucun conseil, aucune solution. N'ouvre jamais par une réfutation sèche (« Faux. », « Pas du tout ! »). Sans astérisques." },
     bridge: { type: 'string', description: "Partie 3, la transition : une ou deux phrases brèves (20 mots maximum, 140 caractères maximum). Référence : « Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui. » Reste très proche de cette référence (même idée, même registre) ; seule une légère variation de formulation est permise d'un post à l'autre. Ne parle pas de Thomas. Sans astérisques." },
     closing: { type: 'string', description: "Partie 4, la présentation de Thomas, à la première personne, en une phrase (30 mots maximum, 200 caractères maximum). Référence : « Comportementaliste canin à Toulouse et alentours, j'accompagne chaque binôme humain-chien avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action. » Elle commence toujours par « Comportementaliste canin à Toulouse et alentours » ; la suite reste très proche de la référence, avec seulement une légère variation de formulation d'un post à l'autre, sans changer de sens ni de registre. Sans astérisques." }
@@ -859,6 +876,7 @@
     label: 'Idée reçue',
     symbol: '?',
     sizes: { badge: 110, label: 50 },
+    quoteOpacity: 18,
     colors: { bg: '#f97316', text: '#1e2d3d', hl: '#ffffff', quote: '#ffffff', badgeBg: '#ffffff', badgeFg: '#14528f', logoBg: '#1e2d3d', logoFg: '#ffffff' },
     photo: { opacity: 16, gray: 45, position: 'center' }
   };
@@ -877,6 +895,7 @@
         const z = saved.sizes || {};
         if (Number.isFinite(z.badge)) style.sizes.badge = Math.min(160, Math.max(70, z.badge));
         if (Number.isFinite(z.label)) style.sizes.label = Math.min(80, Math.max(30, z.label));
+        if (Number.isFinite(saved.quoteOpacity)) style.quoteOpacity = Math.min(50, Math.max(0, saved.quoteOpacity));
         Object.keys(style.colors).forEach(k => { if (HEX_RE.test(saved.colors?.[k])) style.colors[k] = saved.colors[k]; });
         const p = saved.photo || {};
         if (Number.isFinite(p.opacity)) style.photo.opacity = Math.min(60, Math.max(0, p.opacity));
@@ -899,6 +918,8 @@
     const slide = $('slide');
     slide.style.setProperty('--v-badge-size', sizes.badge + 'px');
     slide.style.setProperty('--v-label-size', sizes.label + 'px');
+    slide.style.setProperty('--v-quote-opacity', visualStyle.quoteOpacity / 100);
+    $('v-quote-opacity-val').textContent = visualStyle.quoteOpacity + ' %';
     $('v-badge-size-val').textContent = sizes.badge + ' px';
     $('v-label-size-val').textContent = sizes.label + ' px';
     slide.style.setProperty('--v-bg', colors.bg);
@@ -924,6 +945,7 @@
     $('v-symbol').value = visualStyle.symbol;
     $('v-badge-size').value = visualStyle.sizes.badge;
     $('v-label-size').value = visualStyle.sizes.label;
+    $('v-quote-opacity').value = visualStyle.quoteOpacity;
     document.querySelectorAll('[data-color]').forEach(input => { input.value = visualStyle.colors[input.dataset.color]; });
     $('v-photo-opacity').value = visualStyle.photo.opacity;
     $('v-photo-gray').value = visualStyle.photo.gray;
@@ -939,6 +961,7 @@
   $('v-symbol').addEventListener('input', e => { visualStyle.symbol = e.target.value; onStyleChange(); });
   $('v-badge-size').addEventListener('input', e => { visualStyle.sizes.badge = Number(e.target.value); onStyleChange(); });
   $('v-label-size').addEventListener('input', e => { visualStyle.sizes.label = Number(e.target.value); onStyleChange(); });
+  $('v-quote-opacity').addEventListener('input', e => { visualStyle.quoteOpacity = Number(e.target.value); onStyleChange(); });
   document.querySelectorAll('[data-color]').forEach(input => input.addEventListener('input', () => {
     visualStyle.colors[input.dataset.color] = input.value;
     onStyleChange();
