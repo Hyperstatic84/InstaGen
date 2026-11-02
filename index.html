@@ -518,17 +518,23 @@
 
   ['myth','truth','bridge','closing'].forEach(id => $(id).addEventListener('input', buildAll));
 
-  // Nom du fichier tiré de l'idée reçue : ses mots clés, puis l'activité et la ville
+  // Nom du fichier tiré de l'idée reçue, court : quelques mots clés, puis l'activité et la ville
   const FILE_MARKER_RE = /^(?:on pourrait penser|on croit souvent|on entend souvent|beaucoup pensent)\s+qu(?:e\s+|['’]\s*)/i;
   const FILE_STOPWORDS = new Set(('un une des le la les l d de du au aux en et ou a son sa ses leur leurs ce cet cette ces '
     + 'qui que qu quand est sont etre doit doivent faut il elle ils elles on se s ne n pas plus tres toujours forcement '
     + 'souvent vraiment chez pour par sur avec dans sans tout tous cherche chercher veut peut fait faire').split(' '));
 
+  function fileKeywords(str){
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+      .split(/[^a-z0-9]+/).filter(w => w && !FILE_STOPWORDS.has(w));
+  }
+
+  // Les 3 premiers mots clés, puis les mots surlignés (qui portent le sens), 5 au maximum
   function visualFileName(){
-    const myth = stripHighlight($('myth').value).trim().replace(FILE_MARKER_RE, '');
-    const words = myth.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
-      .split(/[^a-z0-9]+/).filter(w => w && !FILE_STOPWORDS.has(w)).slice(0, 7);
-    return [...words, 'comportementaliste', 'canin', 'toulouse'].join('-') + '.png';
+    const myth = $('myth').value.trim().replace(FILE_MARKER_RE, '');
+    const highlighted = [...myth.matchAll(/\*\*(.+?)\*\*/g)].flatMap(m => fileKeywords(m[1]));
+    const words = [...new Set([...fileKeywords(stripHighlight(myth)).slice(0, 3), ...highlighted])].slice(0, 5);
+    return [...words, 'comportementaliste', 'toulouse'].join('-') + '.png';
   }
 
   function downloadVisual(){
