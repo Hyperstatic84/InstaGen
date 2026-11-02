@@ -25,18 +25,23 @@
   h1{font-size:21px;font-weight:700;margin-bottom:4px;}
   .sub{color:#64748b;font-size:13px;margin-bottom:28px;max-width:640px;line-height:1.5;}
 
+  /* Ordinateur : contenu | aperçu | personnalisation côte à côte, texte du post dessous, IA tout en bas */
   .layout{
     display:grid;
-    grid-template-columns:360px 1fr;
+    grid-template-columns:360px 480px minmax(270px,520px);
     grid-template-areas:
-      "ai      right"
-      "content right";
+      "content preview style"
+      "content post    post"
+      "ai      post    post";
     gap:30px;
     align-items:start;
   }
   .ai-panel{grid-area:ai;}
   .content-panel{grid-area:content;}
-  .right-col{grid-area:right;min-width:0;}
+  /* L'aperçu reste à l'écran pendant qu'on fait défiler les réglages à côté */
+  .preview-col{grid-area:preview;min-width:0;position:sticky;top:16px;}
+  .style-panel{grid-area:style;}
+  .captions-wrap{grid-area:post;}
 
   .panel{
     background:#fff;
@@ -47,7 +52,7 @@
   }
   .panel h2{font-size:14px;margin-bottom:16px;letter-spacing:.02em;}
 
-  .ai-panel{border:1.5px solid #fed7aa;background:#fff8f1;margin-bottom:20px;}
+  .ai-panel{border:1.5px solid #fed7aa;background:#fff8f1;}
   .ai-panel h2{color:var(--orange-600);}
   .ai-status{font-size:12px;margin-top:10px;min-height:14px;}
   .ai-status.success{color:#16a34a;font-weight:600;}
@@ -84,13 +89,12 @@
   .field-status.success{color:#16a34a;font-weight:600;}
   .field-status.error{color:#dc2626;font-weight:600;}
 
-  .style-panel{max-width:640px;margin-bottom:20px;}
   .style-panel summary{cursor:pointer;font-size:14px;font-weight:700;letter-spacing:.02em;}
   .style-panel summary span{font-size:12.5px;font-weight:400;color:#64748b;letter-spacing:0;}
   .style-panel[open] summary{margin-bottom:16px;}
   .style-section{font-size:12px;font-weight:700;margin:6px 0 10px;}
   .style-row{display:grid;grid-template-columns:1fr 96px;gap:12px;}
-  .color-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px 12px;margin-bottom:18px;}
+  .color-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:8px 12px;margin-bottom:18px;}
   .color-item{display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer;}
   .color-item input[type="color"]{
     width:34px;height:28px;flex-shrink:0;cursor:pointer;
@@ -173,7 +177,7 @@
   button:hover:not(:disabled){opacity:.88;}
   button:active:not(:disabled){transform:translateY(1px);}
 
-  .captions-wrap{display:flex;flex-direction:column;gap:10px;max-width:640px;}
+  .captions-wrap{display:flex;flex-direction:column;gap:10px;}
   .caption-block{background:#fff;border-radius:10px;padding:16px 20px;box-shadow:0 2px 12px rgba(20,40,70,.07);}
   .caption-block-label{
     display:flex;align-items:baseline;justify-content:space-between;gap:10px;
@@ -192,18 +196,32 @@
   .tips ol{padding-left:18px;font-size:12.5px;line-height:1.6;}
   .tips li{margin-bottom:2px;}
 
+  /* Écran moyen : la personnalisation passe sous l'aperçu */
+  @media (max-width:1249px){
+    .layout{
+      grid-template-columns:360px minmax(0,1fr);
+      grid-template-areas:
+        "content preview"
+        "content style"
+        "content post"
+        "ai      post";
+    }
+    .preview-col{position:static;}
+  }
+
   @media (max-width:860px){
     body{padding:20px 16px 50px;}
     .layout{
       grid-template-columns:1fr;
       grid-template-areas:
         "content"
-        "right"
+        "preview"
+        "style"
+        "post"
         "ai";
       gap:20px;
     }
     .preview-wrap{margin-left:auto;margin-right:auto;}
-    .captions-wrap, .style-panel{max-width:100%;}
   }
 </style>
 </head>
@@ -264,8 +282,7 @@
 
       </div>
 
-    <div class="right-col">
-
+    <div class="preview-col">
       <div class="preview-wrap" id="preview-wrap">
         <div class="scaler" id="scaler">
           <div class="slide" id="slide">
@@ -291,6 +308,7 @@
       <div class="downloads">
         <button id="dl-btn" onclick="downloadVisual()">⬇ Télécharger le visuel (PNG 1200×900)</button>
       </div>
+    </div>
 
       <details class="panel style-panel" id="style-panel">
         <summary>🎨 Personnaliser le visuel <span>· textes, couleurs, photo</span></summary>
@@ -381,8 +399,6 @@
           </ol>
         </div>
       </div>
-
-    </div>
 
   </div>
 
@@ -982,12 +998,8 @@
     renderPhoto();
   });
 
-  // Le panneau reste ouvert ou fermé comme la dernière fois
-  const stylePanel = $('style-panel');
-  try { stylePanel.open = localStorage.getItem('googlegen_style_open') === '1'; } catch (_) {}
-  stylePanel.addEventListener('toggle', () => {
-    try { localStorage.setItem('googlegen_style_open', stylePanel.open ? '1' : '0'); } catch (_) {}
-  });
+  // Sur ordinateur, le panneau est ouvert à côté de l'aperçu ; sur mobile, il reste replié
+  $('style-panel').open = window.matchMedia('(min-width: 861px)').matches;
 
   syncStyleControls();
   // L'ancien générateur Instagram avait installé un service worker qui ressert l'ancienne page depuis le cache :
