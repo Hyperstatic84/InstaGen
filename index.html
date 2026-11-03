@@ -228,7 +228,7 @@
 <body>
 
   <h1>Générateur de posts Google Business · Idées reçues</h1>
-  <p class="sub">Génère le contenu via l'IA ou remplis les champs à la main. Le visuel n'affiche que l'idée reçue : la réalité, une transition et ta présentation vont dans le texte du post, mis en forme et prêt à coller sur ta fiche Google.</p>
+  <p class="sub">Génère le contenu via l'IA ou remplis les champs à la main. Le visuel n'affiche que l'idée reçue : la réalité, une ouverture liée au sujet et ta présentation vont dans le texte du post, mis en forme et prêt à coller sur ta fiche Google.</p>
 
   <div class="layout">
 
@@ -266,8 +266,8 @@
         </div>
 
         <div class="field">
-          <div class="field-head"><label for="bridge">Transition 🔍 (texte)</label><button type="button" class="regen-btn" data-field="bridge" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
-          <textarea id="bridge" placeholder="Ex : Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui.">Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui.</textarea>
+          <div class="field-head"><label for="bridge">Ouverture 💡 (texte)</label><button type="button" class="regen-btn" data-field="bridge" title="Régénérer ce bloc via IA">↻ Régénérer</button></div>
+          <textarea id="bridge" placeholder="Ex : La solitude est un sujet sensible. Bien la préparer aide le chien à mieux l'accepter.">La marche en laisse se construit, avec du temps et un cadre adapté à chaque chien.</textarea>
           <div class="count" id="bridge-count"></div>
           <div class="field-status"></div>
         </div>
@@ -468,7 +468,7 @@
     const parts = [];
     if (myth) parts.push(`❌ IDÉE REÇUE\n« ${myth} »`);
     if (truth) parts.push(`✅ LA RÉALITÉ\n${truth}`);
-    if (bridge) parts.push(`🔍 ${bridge}`);
+    if (bridge) parts.push(`💡 ${bridge}`);
     if (closing) parts.push(`📍 ${closing}`);
     return frenchSpaces(parts.join('\n\n'));
   }
@@ -605,7 +605,7 @@
     "STRUCTURE : un seul raisonnement en quatre parties qui s'enchaînent",
     "1. L'idée reçue, affichée seule sur le visuel et reprise en tête du texte. C'est la croyance répandue, énoncée comme une affirmation mais toujours introduite par un marqueur qui montre qu'il s'agit d'une croyance et non de l'avis de Thomas : « On pourrait penser que… », « Beaucoup pensent que… » ou « On entend souvent que… », en variant le marqueur d'un post à l'autre (exemple : « On pourrait penser qu'un chien qui tire en laisse cherche à dominer. »). Jamais de question, jamais d'affirmation brute, et jamais « Croire que… » ou « Penser que… » seul en début de phrase, qui n'est pas une phrase française correcte.",
     "2. La réalité. Elle déconstruit précisément cette idée reçue en reprenant ses termes exacts : si l'idée reçue parle de dominance, la réalité parle de dominance, jamais d'un terme voisin de sens différent (hiérarchie, autorité…). Elle explique ensuite le mécanisme principal en jeu (réflexe, émotion, physiologie, apprentissage), et lui seul, de façon factuelle et neutre : deux ou trois phrases courtes, sans énumération ni détail secondaire.",
-    "3. La transition. Elle ouvre sur le fait que chaque chien réagit et s'exprime à sa manière, et que le regarder vivre en dit long sur lui. Elle prépare la présentation sans parler de Thomas.",
+    "3. L'ouverture. Une ou deux phrases brèves, liées au sujet du post, qui montrent que la situation peut se comprendre, se préparer ou s'accompagner. Ni méthode ni conseil concret, aucune promesse de résultat, et pas encore de mention de Thomas : elle amène la présentation.",
     "4. La présentation de Thomas, à la première personne. Elle situe son approche, fondée sur l'éthologie, où la compréhension précède l'action.",
     "Avant de répondre, relis les quatre parties à la suite, comme un lecteur : chacune doit découler de la précédente, avec le même vocabulaire et sans contradiction.",
     "",
@@ -633,13 +633,13 @@
   const FIELD_LABELS = {
     myth:    'idée reçue (visuel + accroche)',
     truth:   'réalité',
-    bridge:  'transition (chaque chien est unique)',
+    bridge:  'ouverture liée au sujet',
     closing: 'présentation de Thomas'
   };
   const FIELD_SCHEMAS = {
     myth: { type: 'string', description: "Partie 1, l'idée reçue : une seule phrase courte et une seule idée (15 mots environ, 100 caractères maximum, sans ajout du type « et qu'il faut… »), sans guillemets, qui énonce la croyance introduite par « On pourrait penser que… », « Beaucoup pensent que… » ou « On entend souvent que… » (varie le marqueur d'un post à l'autre). Jamais de question, jamais d'affirmation brute, jamais « Croire que… » ou « Penser que… » seul en début de phrase. Entoure de **double astérisques** le ou les mots clés à surligner sur le visuel." },
     truth: { type: 'string', description: "Partie 2, la réalité : un seul paragraphe de 2 à 3 phrases courtes (25 mots maximum chacune), idéalement 300 à 400 caractères et jamais plus de 450. La première phrase déconstruit l'idée reçue en peu de mots, avec son mot clé (dominance, content…), sans recopier toute la phrase de l'idée reçue. Explique ensuite le mécanisme principal, et lui seul : pas d'énumération, pas de détail secondaire, pas d'étude citée. Aucun conseil, aucune solution. N'ouvre jamais par une réfutation sèche (« Faux. », « Pas du tout ! »). Sans astérisques." },
-    bridge: { type: 'string', description: "Partie 3, la transition : une ou deux phrases brèves (20 mots maximum, 140 caractères maximum). Référence : « Chaque chien réagit et s'exprime à sa manière. Le regarder vivre en dit souvent long sur lui. » Reste très proche de cette référence (même idée, même registre) ; seule une légère variation de formulation est permise d'un post à l'autre. Ne parle pas de Thomas. Sans astérisques." },
+    bridge: { type: 'string', description: "Partie 3, l'ouverture : une ou deux phrases brèves (25 mots maximum, 160 caractères maximum), liées au sujet du post. Elle montre que la situation peut se comprendre, se préparer ou s'accompagner, sans donner de méthode ni de conseil concret, sans promettre de résultat et sans culpabiliser. Exemples de ton, à ne pas recopier : « La solitude est un sujet sensible. Bien la préparer aide le chien à mieux l'accepter. », « Un grognement est une information précieuse. Mieux le comprendre permet d'apaiser bien des situations. » Ne parle pas encore de Thomas ni de contact. Sans astérisques." },
     closing: { type: 'string', description: "Partie 4, la présentation de Thomas, à la première personne, en une phrase (30 mots maximum, 200 caractères maximum). Référence : « Comportementaliste canin à Toulouse et alentours, j'accompagne chaque binôme humain-chien avec une approche fondée sur l'éthologie, où la compréhension précède toujours l'action. » Elle commence toujours par « Comportementaliste canin à Toulouse et alentours » ; la suite reste très proche de la référence, avec seulement une légère variation de formulation d'un post à l'autre, sans changer de sens ni de registre. Sans astérisques." }
   };
 
@@ -747,7 +747,7 @@
     const ctx = [];
     if ($('myth').value.trim())    ctx.push(`Idée reçue : "${$('myth').value.trim()}"`);
     if ($('truth').value.trim())   ctx.push(`Réalité : "${$('truth').value.trim()}"`);
-    if ($('bridge').value.trim())  ctx.push(`Transition : "${$('bridge').value.trim()}"`);
+    if ($('bridge').value.trim())  ctx.push(`Ouverture : "${$('bridge').value.trim()}"`);
     if ($('closing').value.trim()) ctx.push(`Présentation : "${$('closing').value.trim()}"`);
 
     const topic = $('ai-topic').value.trim();
